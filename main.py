@@ -1,6 +1,6 @@
 import Interface
 
-
+# On crée l'objet Interface
 interface = Interface.Interface()
 
 

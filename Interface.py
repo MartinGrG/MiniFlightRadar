@@ -54,7 +54,7 @@ class Interface(customtkinter.CTk):
         self.input_date = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="aaaa/mm/jj")
         self.input_date.grid(row=3, column=0, sticky="nsew", padx=10, pady=(0, 5))
 
-        self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, fg_color="grey", text="Rechercher", command=self.button_search_event)
+        self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, text="Rechercher", command=self.button_search_event)
         self.button_search.grid(row=3, column=1, sticky="nsew", padx=(0,10), pady=(0, 5))
 
         self.scroframe_liste_vols = customtkinter.CTkScrollableFrame(self.frame_gauche)
@@ -62,7 +62,7 @@ class Interface(customtkinter.CTk):
         self.scroframe_liste_vols.grid_columnconfigure((0,1), weight=1)
 
         for i in range(20):
-            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, fg_color="grey", text=f"Vol n°{i}", command=lambda code=i: self.button_vol_event(code))
+            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol n°{i}", command=lambda code=i: self.button_vol_event(code))
             button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
 
         # configuration de la frame du milieu
@@ -87,19 +87,23 @@ class Interface(customtkinter.CTk):
 
         # configuration de la frame de droite
 
-        self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2")
+        self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2", font=('Arial', 25, "bold"))
         self.label_carbon_titre.grid(row=0,column=0, padx=10, pady=10)
 
-        self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_droite, text="Ce vol a émis\n 500kg de CO2")
-        self.label_carbon_resultat.grid(row=1,column=0, padx=10, pady=10)
+        self.frame_actuelle_emission = customtkinter.CTkFrame(self.frame_droite)
+        self.frame_actuelle_emission.grid(row=1, sticky="nswe", padx=10, pady=10)
+        self.frame_actuelle_emission.grid_columnconfigure(0, weight=1)
+
+        self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_actuelle_emission, text="Ce vol a émis\n 500kg de CO2")
+        self.label_carbon_resultat.grid(row=1,column=0, padx=5, pady=5)
 
         self.frame_compare_emission = customtkinter.CTkFrame(self.frame_droite)
-        self.frame_compare_emission.grid(row=2, sticky="nswe", padx=20, pady=10)
+        self.frame_compare_emission.grid(row=2, sticky="nswe", padx=10, pady=(0,10))
         self.frame_compare_emission.grid_columnconfigure(0, weight=1)
         self.frame_compare_emission.grid_rowconfigure(3, weight=1)
 
         check_avions_compare_var = customtkinter.StringVar(value="off")
-        self.check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission, text="B777", command=self.checkbox_event,
+        self.check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission, text="B777 : 366kg", command= self.checkbox_event,
                                              variable=check_avions_compare_var, onvalue="on", offvalue="off")
         self.check_avions_compare.grid(row=0, sticky="nsw", padx=10, pady=10)
 
