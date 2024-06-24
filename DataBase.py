@@ -54,17 +54,17 @@ def vol_aeroport(aeroport, debut, fin):
 def FAA(DF):
     """Chargement et traitement de la base de donnée de la FAA"""
     """Base de donnee master"""
-    FAA_df = pd.read_csv('base_donnee_FAA.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2, 3, 33])
+    FAA_df = pd.read_csv('FAA/master.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2, 3, 33])
     FAA_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)
     FAA_df.rename(columns={'MFR MDL CODE': 'CODE'}, inplace=True)
     FAA_df.rename(columns={'ENG MFR MDL': 'CODE ENGINE'}, inplace=True)
     FAA_df['icao24'] = FAA_df['icao24'].str.strip()
 
-    """Base de donnee aircraftref"""
-    model_df = pd.read_csv('modele.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
+    """Base de donnee modele"""
+    model_df = pd.read_csv('FAA/modele.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
 
     """Base de donnee des moteurs"""
-    engine_df = pd.read_csv('engine.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
+    engine_df = pd.read_csv('FAA/engine.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
     engine_df.rename(columns={'CODE': 'CODE ENGINE'}, inplace=True)
     engine_df.rename(columns={'MODEL': 'ENGINE'}, inplace=True)
     DF['icao24'] = DF['icao24'].str.upper()
@@ -86,6 +86,5 @@ def airplane_traj(icao24, t):
     data = api.get_track_by_aircraft(icao24, t)
     return data.path
 
-
-def sortie(aeroport, debut, fin):
-    return FAA(vol_aeroport(aeroport, debut, fin))
+def sortie(aeroport, temps):
+    return FAA(vol_aeroport(aeroport,temps, temps+86400))
