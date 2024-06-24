@@ -205,7 +205,7 @@ class Interface(customtkinter.CTk):
             i = 0
 
             for vol in self.liste_vols.itertuples():
-                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"{vol.estDepartureAirport}-{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)}", command=lambda index=vol.index: self.button_vol_event(index))
+                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"{vol.compagnie} : {vol.estDepartureAirport}-{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)-timestamp_to_hour(vol.lastSeen)}", command=lambda index=vol.index: self.button_vol_event(index))
                 button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
                 i+=1
         else:
@@ -216,7 +216,7 @@ class Interface(customtkinter.CTk):
     def curseur_temps_event(self, value):
         value = int(value)
         traj = [x[1:3] for x in self.traj]
-        self.label_temps_indicateur.configure(text=timestamp_to_date(self.traj[value-1][0]))
+        self.label_temps_indicateur.configure(text=timestamp_to_hour(self.traj[value-1][0]))
 
         self.map_widget.delete_all_path()
         self.map_widget.set_path(traj[0:value], color="red", width=3)
