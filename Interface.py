@@ -6,7 +6,7 @@ import customtkinter
 from tkintermapview import TkinterMapView
 import datetime
 import time
-from DataBase import sortie
+from DataBase import sortie, airplane_traj
 import pandas as pd
 
 
@@ -19,6 +19,7 @@ class Interface(customtkinter.CTk):
 
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
+        self.map_traj = None
 
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
@@ -133,8 +134,15 @@ class Interface(customtkinter.CTk):
             self.input_date.delete(lenght - 1)
 
 
-    def button_vol_event(self, nbre):
-        print(nbre)
+    def button_vol_event(self, index):
+        vol_traj = airplane_traj(index)
+        print(vol_traj[-1])
+        traj = [x[1:3] for x in vol_traj]
+        print(traj)
+
+        self.map_widget.delete_all_path()
+        self.map_traj = self.map_widget.set_position(traj[0][0], traj[0][1])
+        self.map_widget.set_path(traj, color="red", width=3)
 
     def button_search_event(self):
         airport = self.input_airport.get().upper()
@@ -149,7 +157,7 @@ class Interface(customtkinter.CTk):
         i = 0
 
         for vol in self.liste_vols.itertuples():
-            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol {vol.estDepartureAirport}-{vol.estArrivalAirport} : {vol.firstSeen}", command=lambda code=vol.index: self.button_vol_event(code))
+            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol {vol.estDepartureAirport}-{vol.estArrivalAirport} : {vol.firstSeen}", command=lambda index=vol.index: self.button_vol_event(index))
             button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
             i+=1
 
