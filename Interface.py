@@ -20,7 +20,7 @@ class Interface(customtkinter.CTk):
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
         self.map_traj = None
-
+        self.traj = []
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
         self.geometry("1300x600")  # dimensions de la fenètre
@@ -91,7 +91,7 @@ class Interface(customtkinter.CTk):
         self.frame_curseur_temps.grid(row=2,sticky="nswe", padx=20,pady=10)
         self.frame_curseur_temps.grid_columnconfigure(1, weight=1)
 
-        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps, from_=0, to=100, height=25, command=self.curseur_temps_event)
+        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps,state="disabled", from_=0, to=100, height=25, command=self.curseur_temps_event)
         self.curseur_temps.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
         self.curseur_temps.set(10)
 
@@ -181,12 +181,13 @@ class Interface(customtkinter.CTk):
     def button_vol_event(self, index):
         vol_traj = airplane_traj(index)
         print(vol_traj[-1])
-        traj = [x[1:3] for x in vol_traj]
-        print(traj)
+        self.traj = [x[1:3] for x in vol_traj]
 
         self.map_widget.delete_all_path()
-        self.map_traj = self.map_widget.set_position(traj[0][0], traj[0][1])
-        self.map_widget.set_path(traj, color="red", width=3)
+        self.map_traj = self.map_widget.set_position(self.traj[0][0], self.traj[0][1])
+        self.map_widget.set_path(self.traj, color="red", width=3)
+        self.curseur_temps.configure(state="normal")
+        self.curseur_temps.configure(to=len(self.traj))
 
     def button_search_event(self):
         etat = (len(self.input_heure_fin.get()) == 5 and len(self.input_heure_debut.get()) == 5 and
@@ -216,6 +217,10 @@ class Interface(customtkinter.CTk):
 
     def curseur_temps_event(self, value):
         self.label_temps_indicateur.configure(text=value)
+
+        self.map_widget.delete_all_path()
+        self.map_traj = self.map_widget.set_position(self.traj[0][0], self.traj[0][1])
+        self.map_widget.set_path(self.traj[0:value], color="red", width=3)
 
     def checkbox_event(self):
         print("B777")
