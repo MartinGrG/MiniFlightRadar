@@ -19,7 +19,6 @@ class Interface(customtkinter.CTk):
 
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
-        self.map_traj = None
         self.traj = []
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
@@ -78,7 +77,7 @@ class Interface(customtkinter.CTk):
         self.scroframe_liste_vols.grid(row=5,column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
         self.scroframe_liste_vols.grid_columnconfigure((0,1), weight=1)
 
-        # configuration de la frame du milieu
+        # Configuration de la frame du milieu
         # On ajoute la map
         self.map_widget = TkinterMapView(self.frame_milieu, corner_radius=10, width=700)
         self.map_widget.grid(row=0, rowspan=2, sticky="nswe", padx=10, pady=10)
@@ -91,11 +90,11 @@ class Interface(customtkinter.CTk):
         self.frame_curseur_temps.grid(row=2,sticky="nswe", padx=20,pady=10)
         self.frame_curseur_temps.grid_columnconfigure(1, weight=1)
 
-        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps,state="disabled", from_=0, to=100, height=25, command=self.curseur_temps_event)
+        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps,state="disabled", from_=2, to=100, height=25, command=self.curseur_temps_event)
         self.curseur_temps.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
         self.curseur_temps.set(10)
 
-        self.label_temps_indicateur = customtkinter.CTkLabel(self.frame_curseur_temps, text="13h46", corner_radius=5, fg_color="grey", padx="5", pady="5")
+        self.label_temps_indicateur = customtkinter.CTkLabel(self.frame_curseur_temps, text="__:__", corner_radius=5, fg_color="grey", padx="5", pady="5")
         self.label_temps_indicateur.grid(row=0, column=0, padx=(10,0))
 
         # configuration de la frame de droite
@@ -180,12 +179,12 @@ class Interface(customtkinter.CTk):
 
     def button_vol_event(self, index):
         vol_traj = airplane_traj(index)
-        print(vol_traj[-1])
-        self.traj = [x[1:3] for x in vol_traj]
+        self.traj = [x[0:3] for x in vol_traj]
 
+        traj = [x[1:3] for x in self.traj]
         self.map_widget.delete_all_path()
-        self.map_traj = self.map_widget.set_position(self.traj[0][0], self.traj[0][1])
-        self.map_widget.set_path(self.traj, color="red", width=3)
+        self.map_widget.set_position(traj[0][0], traj[0][1])
+        self.map_widget.set_path(traj, color="red", width=3)
         self.curseur_temps.configure(state="normal")
         self.curseur_temps.configure(to=len(self.traj))
 
@@ -198,8 +197,7 @@ class Interface(customtkinter.CTk):
             date_fin = self.input_date.get() + " " + self.input_heure_fin.get()
             timestamp_debut = int(time.mktime(datetime.datetime.strptime(date_debut, "%Y/%m/%d %H:%M").timetuple()))
             timestamp_fin = int(time.mktime(datetime.datetime.strptime(date_fin, "%Y/%m/%d %H:%M").timetuple()))
-            print(timestamp_debut,timestamp_fin)
-            #self.liste_vols = sortie(airport, timestamp_debut, timestamp_fin)
+            self.liste_vols = sortie(airport, timestamp_debut, timestamp_fin)
 
             for widget in self.scroframe_liste_vols.winfo_children():
                 widget.destroy()
@@ -207,7 +205,7 @@ class Interface(customtkinter.CTk):
             i = 0
 
             for vol in self.liste_vols.itertuples():
-                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol {vol.estDepartureAirport}-{vol.estArrivalAirport} : {vol.firstSeen}", command=lambda index=vol.index: self.button_vol_event(index))
+                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"{vol.estDepartureAirport}-{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)}", command=lambda index=vol.index: self.button_vol_event(index))
                 button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
                 i+=1
         else:
@@ -216,11 +214,12 @@ class Interface(customtkinter.CTk):
 
 
     def curseur_temps_event(self, value):
-        self.label_temps_indicateur.configure(text=value)
+        value = int(value)
+        traj = [x[1:3] for x in self.traj]
+        self.label_temps_indicateur.configure(text=timestamp_to_date(self.traj[value-1][0]))
 
         self.map_widget.delete_all_path()
-        self.map_traj = self.map_widget.set_position(self.traj[0][0], self.traj[0][1])
-        self.map_widget.set_path(self.traj[0:value], color="red", width=3)
+        self.map_widget.set_path(traj[0:value], color="red", width=3)
 
     def checkbox_event(self):
         print("B777")
@@ -228,8 +227,11 @@ class Interface(customtkinter.CTk):
     def export_event(self):
         print("export")
 
+def timestamp_to_hour(timestamp):
+    return str(datetime.datetime.fromtimestamp(timestamp))[11:16]
 
-
+def date_to_timestamp(date):
+    return
 
 
 

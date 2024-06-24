@@ -96,7 +96,7 @@ def compagnie(DF):
     DF['nom compagnie'] = DF['nom compagnie'].fillna('Inconnue')
     return DF
 
-def sortie(aeroport, temps):
-    return FAA(vol_aeroport(aeroport, temps, temps+86400))
 
+def sortie(aeroport, temps_debut, temps_fin):
+    return FAA(vol_aeroport(aeroport, temps_debut, temps_fin))
 
