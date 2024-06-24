@@ -81,7 +81,6 @@ def FAA(DF):
     return merged_df
 
 
-
 def airplane_traj(index):
     traj_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0,4,5])
     icao24 = traj_df.loc[index, 'icao24'].lower()
@@ -89,6 +88,15 @@ def airplane_traj(index):
     api = OpenSkyApi()
     data = api.get_track_by_aircraft(icao24, t)
     return data.path
+def compagnie(DF):
+    compagnie_df = pd.read_csv('callsign.csv', sep=',', encoding='utf-8')
+    DF['callsign3'] = DF['callsign'].str[:3]
+    DF = pd.merge(DF, compagnie_df, left_on='callsign3',right_on='callsign',how='left')
+    DF = DF.drop(columns=['callsign3', 'callsign_y'])
+    DF['nom compagnie'] = DF['nom compagnie'].fillna('Inconnue')
+    return DF
 
 def sortie(aeroport, temps):
     return FAA(vol_aeroport(aeroport, temps, temps+86400))
+
+
