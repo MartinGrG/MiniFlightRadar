@@ -13,8 +13,8 @@ def vol_aeroport(aeroport, debut, fin):
     """'firstSeen': temps en UNIX pour laquelle l'avion a été vu la première fois"""
     """'lasttSeen': temps en UNIX pour laquelle l'avion a été vu la dernière fois"""
 
-    """En argument [début,fin] est l'interval de temps en UNIX (<2h) ...."""
-    """aeroport: code OACI de l'aéroport en question"""
+    """En argument [début,fin] est l'interval de temps en UNIX                   """
+    """aeroport: code OACI de l'aéroport en question                             """
     api = OpenSkyApi()
     data_depart = api.get_departures_by_airport(aeroport, debut, fin)
     data_arrivee = api.get_arrivals_by_airport(aeroport, debut, fin)
@@ -87,4 +87,4 @@ def airplane_traj(icao24, t):
     return data.path
 
 def sortie(aeroport, temps):
-    return FAA(vol_aeroport(aeroport,temps, temps+86400))
+    return FAA(vol_aeroport(aeroport, temps, temps+86400))
