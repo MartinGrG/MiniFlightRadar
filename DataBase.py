@@ -3,7 +3,8 @@
 from opensky_api import OpenSkyApi
 import pandas as pd
 
-def aeroport_depart(aeroport,debut, fin):
+
+def vol_aeroport(aeroport, debut, fin):
     """Utitlisation de l'API de OpenSky pour récupérer les informations suivantes:"""
     """'callsign': Numéro donnée à l'appareil par la compagnie aérienne          """
     """'estArrivalAirport': Code de l'aéropot d'arrivée                          """
@@ -15,8 +16,8 @@ def aeroport_depart(aeroport,debut, fin):
     """En argument [début,fin] est l'interval de temps en UNIX (<2h) ...."""
     """aeroport: code OACI de l'aéroport en question"""
     api = OpenSkyApi()
-    data_depart = api.get_departures_by_airport(aeroport,debut, fin)
-    data_arrivee = api.get_arrivals_by_airport(aeroport,debut, fin)
+    data_depart = api.get_departures_by_airport(aeroport, debut, fin)
+    data_arrivee = api.get_arrivals_by_airport(aeroport, debut, fin)
     # Extraire les attributs des vols et les mettre dans une liste de dictionnaires
     flights_data_depart = []
     flights_data_arrivee = []
@@ -48,10 +49,12 @@ def aeroport_depart(aeroport,debut, fin):
     flight_arrivee_df = pd.DataFrame(flights_data_arrivee, columns=col_names)
     flight_df = pd.concat([flight_depart_df, flight_arrivee_df], ignore_index=True)
     return flight_df
-def FAA_DB(DF):
+
+
+def FAA(DF):
     """Chargement et traitement de la base de donnée de la FAA"""
     """Base de donnee master"""
-    FAA_df = pd.read_csv('base_donnee_FAA.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2,3, 33])
+    FAA_df = pd.read_csv('base_donnee_FAA.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2, 3, 33])
     FAA_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)
     FAA_df.rename(columns={'MFR MDL CODE': 'CODE'}, inplace=True)
     FAA_df.rename(columns={'ENG MFR MDL': 'CODE ENGINE'}, inplace=True)
@@ -83,6 +86,6 @@ def airplane_traj(icao24, t):
     data = api.get_track_by_aircraft(icao24, t)
     return data.path
 
-aeroport = aeroport_depart('KJFK', 1718982000, 1718985000)
-FAA_DB(aeroport)
 
+def sortie(aeroport, debut, fin):
+    return FAA(vol_aeroport(aeroport, debut, fin))
