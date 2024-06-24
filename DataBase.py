@@ -81,7 +81,11 @@ def FAA(DF):
     return merged_df
 
 
-def airplane_traj(icao24, t):
+
+def airplane_traj(index):
+    traj_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0,4,5])
+    icao24 = traj_df.loc[index, 'icao24'].lower()
+    t = traj_df.loc[index, 'firstSeen']
     api = OpenSkyApi()
     data = api.get_track_by_aircraft(icao24, t)
     return data.path
