@@ -28,6 +28,7 @@ class Interface(customtkinter.CTk):
         self.frame_gauche = customtkinter.CTkFrame(self, corner_radius=5)
         self.frame_gauche.grid(row=0, column=0, rowspan=4, sticky="nsew", padx=10, pady=10)
         self.frame_gauche.grid_columnconfigure(0, weight=1)
+        self.frame_gauche.grid_rowconfigure(4, weight=1)
 
         self.frame_milieu = customtkinter.CTkFrame(self, corner_radius=5)
         self.frame_milieu.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
@@ -37,30 +38,31 @@ class Interface(customtkinter.CTk):
         self.frame_droite = customtkinter.CTkFrame(self, corner_radius=5)
         self.frame_droite.grid(row=0, column=2, rowspan=3, sticky="nsew", padx=10, pady=10)
         self.frame_droite.grid_columnconfigure(0,weight=1)
+        self.frame_droite.grid_rowconfigure(2, weight=1)
 
         # Création des éléments de la frame gauche :
-        self.airport_label = customtkinter.CTkLabel(self.frame_gauche, text="Code de l'aéroport de départ")
-        self.airport_label.grid(row=0, column=0, columnspan=2, sticky="nsw", padx=10, pady=(5,0))
+        self.label_airport = customtkinter.CTkLabel(self.frame_gauche, text="Code de l'aéroport de départ")
+        self.label_airport.grid(row=0, column=0, columnspan=2, sticky="nsw", padx=10, pady=(5,0))
 
-        self.airport_input = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : AX500")
-        self.airport_input.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0,5))
+        self.input_airport = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : AX500")
+        self.input_airport.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0,5))
 
         # prochainement remplacé par un calendrier plus facile d'utilisation
-        self.date_label = customtkinter.CTkLabel(self.frame_gauche, text="Selectionnez la date")
-        self.date_label.grid(row=2, column=0, sticky="nsw", padx=10, pady=(5, 0))
+        self.label_date = customtkinter.CTkLabel(self.frame_gauche, text="Selectionnez la date")
+        self.label_date.grid(row=2, column=0, sticky="nsw", padx=10, pady=(5, 0))
 
-        self.date_input = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="aaaa/mm/jj")
-        self.date_input.grid(row=3, column=0, sticky="nsew", padx=10, pady=(0, 5))
+        self.input_date = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="aaaa/mm/jj")
+        self.input_date.grid(row=3, column=0, sticky="nsew", padx=10, pady=(0, 5))
 
-        self.search_button = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, fg_color="grey", text="Rechercher", command=self.button_search_event)
-        self.search_button.grid(row=3, column=1, sticky="nsew", padx=(0,10), pady=(0, 5))
+        self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, fg_color="grey", text="Rechercher", command=self.button_search_event)
+        self.button_search.grid(row=3, column=1, sticky="nsew", padx=(0,10), pady=(0, 5))
 
-        self.liste_vols = customtkinter.CTkScrollableFrame(self.frame_gauche, height=400)
-        self.liste_vols.grid(row=4,column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
-        self.liste_vols.grid_columnconfigure((0,1), weight=1)
+        self.scroframe_liste_vols = customtkinter.CTkScrollableFrame(self.frame_gauche)
+        self.scroframe_liste_vols.grid(row=4,column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
+        self.scroframe_liste_vols.grid_columnconfigure((0,1), weight=1)
 
         for i in range(20):
-            button = customtkinter.CTkButton(self.liste_vols, corner_radius=5, fg_color="grey", text=f"Vol n°{i}", command=lambda code=i: self.button_vol_event(code))
+            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, fg_color="grey", text=f"Vol n°{i}", command=lambda code=i: self.button_vol_event(code))
             button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
 
         # configuration de la frame du milieu
@@ -80,13 +82,29 @@ class Interface(customtkinter.CTk):
         self.curseur_temps.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
         self.curseur_temps.set(10)
 
-        self.temps_indicateur_label = customtkinter.CTkLabel(self.frame_curseur_temps, text="13h46", corner_radius=5, fg_color="grey", padx="5", pady="5")
-        self.temps_indicateur_label.grid(row=0, column=0, padx=(10,0))
+        self.label_temps_indicateur = customtkinter.CTkLabel(self.frame_curseur_temps, text="13h46", corner_radius=5, fg_color="grey", padx="5", pady="5")
+        self.label_temps_indicateur.grid(row=0, column=0, padx=(10,0))
 
         # configuration de la frame de droite
 
-        self.carbon_label = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2")
-        self.carbon_label.grid(row=0,column=0, padx=10)
+        self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2")
+        self.label_carbon_titre.grid(row=0,column=0, padx=10, pady=10)
+
+        self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_droite, text="Ce vol a émis\n 500kg de CO2")
+        self.label_carbon_resultat.grid(row=1,column=0, padx=10, pady=10)
+
+        self.frame_compare_emission = customtkinter.CTkFrame(self.frame_droite)
+        self.frame_compare_emission.grid(row=2, sticky="nswe", padx=20, pady=10)
+        self.frame_compare_emission.grid_columnconfigure(0, weight=1)
+        self.frame_compare_emission.grid_rowconfigure(3, weight=1)
+
+        check_avions_compare_var = customtkinter.StringVar(value="off")
+        self.check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission, text="B777", command=self.checkbox_event,
+                                             variable=check_avions_compare_var, onvalue="on", offvalue="off")
+        self.check_avions_compare.grid(row=0, sticky="nsw", padx=10, pady=10)
+
+        self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter", command=self.export_event)
+        self.button_export_data.grid(row=4, column=0, sticky="swe", padx=10, pady=10)
 
 
     def button_vol_event(self, nbre):
@@ -97,3 +115,9 @@ class Interface(customtkinter.CTk):
 
     def curseur_temps_event(self, value):
         self.temps_indicateur_label.configure(text=value)
+
+    def checkbox_event(self):
+        print("B777")
+
+    def export_event(self):
+        print("export")
