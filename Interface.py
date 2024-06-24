@@ -4,6 +4,10 @@ pop up permettant à l'utilisateur d'intéragir avec le code. """
 
 import customtkinter
 from tkintermapview import TkinterMapView
+import datetime
+import time
+from DataBase import sortie
+import pandas as pd
 
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
@@ -13,6 +17,7 @@ class Interface(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
+        self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
 
         # configuration de la fenêtre :
@@ -46,6 +51,7 @@ class Interface(customtkinter.CTk):
 
         self.input_airport = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : AX500")
         self.input_airport.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0,5))
+        self.input_airport.bind("<KeyRelease>", self.check_text_airport)
 
         # prochainement remplacé par un calendrier plus facile d'utilisation
         self.label_date = customtkinter.CTkLabel(self.frame_gauche, text="Selectionnez la date")
@@ -53,6 +59,7 @@ class Interface(customtkinter.CTk):
 
         self.input_date = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="aaaa/mm/jj")
         self.input_date.grid(row=3, column=0, sticky="nsew", padx=10, pady=(0, 5))
+        self.input_date.bind("<KeyRelease>", self.check_text_date)
 
         self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, text="Rechercher", command=self.button_search_event)
         self.button_search.grid(row=3, column=1, sticky="nsew", padx=(0,10), pady=(0, 5))
@@ -60,10 +67,6 @@ class Interface(customtkinter.CTk):
         self.scroframe_liste_vols = customtkinter.CTkScrollableFrame(self.frame_gauche)
         self.scroframe_liste_vols.grid(row=4,column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
         self.scroframe_liste_vols.grid_columnconfigure((0,1), weight=1)
-
-        for i in range(20):
-            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol n°{i}", command=lambda code=i: self.button_vol_event(code))
-            button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
 
         # configuration de la frame du milieu
         # On ajoute la map
@@ -110,18 +113,60 @@ class Interface(customtkinter.CTk):
         self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter", command=self.export_event)
         self.button_export_data.grid(row=4, column=0, sticky="swe", padx=10, pady=10)
 
+    def check_text_airport(self,event):
+        lenght = len(self.input_airport.get())
+
+        if (lenght >= 1):
+            if (self.input_airport.get()[lenght - 1].isnumeric()):
+                self.input_airport.delete(lenght - 1)
+        if (lenght >= 5):
+            self.input_airport.delete(lenght - 1)
+
+    def check_text_date(self,event):
+        lenght = len(self.input_date.get())
+        if (lenght >= 1):
+            if (not self.input_date.get()[lenght - 1].isnumeric()):
+                self.input_date.delete(lenght - 1)
+        if (lenght == 4 or lenght == 7):
+            self.input_date.insert(lenght, '/')
+        if (lenght >= 11):
+            self.input_date.delete(lenght - 1)
+
 
     def button_vol_event(self, nbre):
         print(nbre)
 
     def button_search_event(self):
-        print("hello")
+        airport = self.input_airport.get().upper()
+        date = self.input_date.get()
+        timestamp = int(time.mktime(datetime.datetime.strptime(date, "%Y/%m/%d").timetuple()))
+        print(airport,timestamp)
+        self.liste_vols = sortie(airport, timestamp)
+
+        for widget in self.scroframe_liste_vols.winfo_children():
+            widget.destroy()
+
+        i = 0
+
+        for vol in self.liste_vols.itertuples():
+            button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"Vol {vol.estDepartureAirport}-{vol.estArrivalAirport} : {vol.firstSeen}", command=lambda code=vol.index: self.button_vol_event(code))
+            button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
+            i+=1
+
+
 
     def curseur_temps_event(self, value):
-        self.temps_indicateur_label.configure(text=value)
+        self.label_temps_indicateur.configure(text=value)
 
     def checkbox_event(self):
         print("B777")
 
     def export_event(self):
         print("export")
+
+
+
+
+
+
+
