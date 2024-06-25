@@ -99,4 +99,3 @@ def compagnie(DF):
 def sortie(aeroport, temps_debut, temps_fin):
     return FAA(compagnie(vol_aeroport(aeroport, temps_debut, temps_fin)))
 
-sortie('KJFK',1718909731,1718919999)
