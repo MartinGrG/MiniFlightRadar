@@ -92,10 +92,10 @@ def compagnie(DF):
     DF['callsign3'] = DF['callsign'].str[:3]
     DF = pd.merge(DF, compagnie_df, left_on='callsign3', right_on='callsign', how='left')
     DF = DF.drop(columns=['callsign3', 'callsign_y'])
+    DF.rename(columns={'callsign_x': 'callsign'}, inplace=True)
     DF['compagnie'] = DF['compagnie'].fillna('Inconnue')
     return DF
 
 
 def sortie(aeroport, temps_debut, temps_fin):
     return FAA(compagnie(vol_aeroport(aeroport, temps_debut, temps_fin)))
-
