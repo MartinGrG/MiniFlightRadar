@@ -54,27 +54,17 @@ def vol_aeroport(aeroport, debut, fin):
 def FAA(DF):
     """Chargement et traitement de la base de donnée de la FAA"""
     """Base de donnee master"""
-    FAA_df = pd.read_csv('BaseDonnees/FAA/master.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2, 3, 33])
+    FAA_df = pd.read_csv('BaseDonnees/FAA/master.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[2, 33])
     FAA_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)
     FAA_df.rename(columns={'MFR MDL CODE': 'CODE'}, inplace=True)
-    FAA_df.rename(columns={'ENG MFR MDL': 'CODE ENGINE'}, inplace=True)
     FAA_df['icao24'] = FAA_df['icao24'].str.strip()
 
     """Base de donnee modele"""
     model_df = pd.read_csv('BaseDonnees/FAA/modele.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
 
-    """Base de donnee des moteurs"""
-    engine_df = pd.read_csv('BaseDonnees/FAA/engine.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 2])
-    engine_df.rename(columns={'CODE': 'CODE ENGINE'}, inplace=True)
-    engine_df.rename(columns={'MODEL': 'ENGINE'}, inplace=True)
     DF['icao24'] = DF['icao24'].str.upper()
-
-    engine_df['CODE ENGINE'] = engine_df['CODE ENGINE'].astype(str)
-    FAA_df['CODE ENGINE'] = FAA_df['CODE ENGINE'].astype(str)
-
     merged_df = pd.merge(DF, FAA_df, on='icao24')
     merged_df = pd.merge(merged_df, model_df, on='CODE')
-    merged_df = pd.merge(merged_df, engine_df, on='CODE ENGINE')
     merged_df.insert(0, 'index', range(1, len(merged_df) + 1))
     # Sauvegarder le DataFrame dans un fichier CSV
     merged_df.to_csv('flights_data.csv', index=False)
@@ -101,3 +91,5 @@ def compagnie(DF):
 
 def sortie(aeroport, temps_debut, temps_fin):
     return FAA(compagnie(vol_aeroport(aeroport, temps_debut, temps_fin)))
+
+sortie('KJFK',1718909731,1718909999)
