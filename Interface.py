@@ -1,11 +1,16 @@
 """ Ce script défini la classe interface. Cet objet correspond à une fenêtre
 pop up permettant à l'utilisateur d'intéragir avec le code. """
 
-
+# Librairies pour l'interface
 import customtkinter
 from tkintermapview import TkinterMapView
+import tkinter as tk
+import math
+from PIL import Image, ImageTk
+# Librairies pour les timestamp unix
 import datetime
 import time
+# Librairies pour la gestion des données
 from DataBase import sortie, airplane_traj
 import pandas as pd
 
@@ -20,6 +25,9 @@ class Interface(customtkinter.CTk):
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
         self.traj = []
+        self.avion_image = Image.open("plane_img.png")
+        self.marker_avion = None
+
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
         self.geometry("1300x600")  # dimensions de la fenètre
@@ -84,6 +92,29 @@ class Interface(customtkinter.CTk):
         self.map_widget.set_position(48.860381, 2.338594)
         self.map_widget.set_zoom(5)
 
+        # Ajouter un rectangle avec les infos du vol sur la mapview
+        # (obtenu en fouillant dans la librairie retro-Engineering au plus bas level possible)
+        position_info = (450, 460)
+        width_infos = 250
+        height_infos = 150
+        self.canvas_rect = self.map_widget.canvas.create_polygon(position_info[0], position_info[1],
+                                                                 position_info[0] + width_infos,
+                                                                 position_info[1],
+                                                                 position_info[0] + width_infos,
+                                                                 position_info[1] + height_infos,
+                                                                 position_info[0],
+                                                                 position_info[1] + height_infos,
+                                                                 width=10,
+                                                                 fill="gray25", outline="gray25",
+                                                                 tag="button")
+
+        self.canvas_text = self.map_widget.canvas.create_text(math.floor(position_info[0]+10),
+                                                              math.floor(position_info[1]+11),
+                                                              anchor="nw",
+                                                              fill="white",
+                                                              tag="button",
+                                                              font= ('Arial', 11,"bold"))
+
         # Ajout du curseur de selection de temps pendant le vol
 
         self.frame_curseur_temps = customtkinter.CTkFrame(self.frame_milieu)
@@ -106,7 +137,7 @@ class Interface(customtkinter.CTk):
         self.frame_actuelle_emission.grid(row=1, sticky="nswe", padx=10, pady=10)
         self.frame_actuelle_emission.grid_columnconfigure(0, weight=1)
 
-        self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_actuelle_emission, text="Ce vol a émis\n 500kg de CO2")
+        self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_actuelle_emission, text="émission carbone :")
         self.label_carbon_resultat.grid(row=1,column=0, padx=5, pady=5)
 
         self.frame_compare_emission = customtkinter.CTkFrame(self.frame_droite)
@@ -178,16 +209,30 @@ class Interface(customtkinter.CTk):
 
 
     def button_vol_event(self, index):
-        vol_traj = airplane_traj(index)
-        self.traj = [x[0:3] for x in vol_traj]
-
+        self.traj = airplane_traj(index-1)
         traj = [x[1:3] for x in self.traj]
+
+        if self.marker_avion != None:
+            self.marker_avion.delete()
+        rotated_pil_img = self.avion_image.rotate(self.traj[0][4])
+        tk_icon = ImageTk.PhotoImage(rotated_pil_img)
+
+        self.marker_avion = self.map_widget.set_marker(traj[-1][0], traj[-1][1], icon=tk_icon)
+        self.marker_avion.change_icon(tk_icon)
+
         self.map_widget.delete_all_path()
         self.map_widget.set_position(traj[0][0], traj[0][1])
-        self.map_widget.set_path(traj, color="red", width=3)
+        self.map_widget.set_path(traj, color="#242424", width=3)
         self.curseur_temps.configure(state="normal")
         self.curseur_temps.configure(to=len(self.traj))
-
+        self.map_widget.canvas.itemconfig(self.canvas_text, text=f"Compagnie : {self.liste_vols["compagnie"].values[index-1]}\n"
+                                                                 f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index-1]}\n"
+                                                                 f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index-1]}\n"
+                                                                 f"Call sign : {self.liste_vols["callsign"].values[index-1]}\n"
+                                                                 f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index-1]}\n"
+                                                                 f"Heure de départ : {timestamp_to_hour(self.liste_vols["firstSeen"].values[index-1])}\n"
+                                                                 f"Heure d'arrivée : {timestamp_to_hour(self.liste_vols["lastSeen"].values[index-1])}\n")
+        self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(traj[0],traj[-1]))
     def button_search_event(self):
         etat = (len(self.input_heure_fin.get()) == 5 and len(self.input_heure_debut.get()) == 5 and
                 len(self.input_airport.get()) == 4 and len(self.input_date.get()) == 10)
@@ -205,9 +250,9 @@ class Interface(customtkinter.CTk):
             i = 0
 
             for vol in self.liste_vols.itertuples():
-                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"{vol.compagnie} : {vol.estDepartureAirport}-{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)-timestamp_to_hour(vol.lastSeen)}", command=lambda index=vol.index: self.button_vol_event(index))
+                button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5, text=f"{vol.compagnie} : {vol.estDepartureAirport}-{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)}-{timestamp_to_hour(vol.lastSeen)}", command=lambda index=vol.index: self.button_vol_event(index))
                 button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
-                i+=1
+                i += 1
         else:
             print("Attention remplissez tous les champs")
 
@@ -218,21 +263,38 @@ class Interface(customtkinter.CTk):
         traj = [x[1:3] for x in self.traj]
         self.label_temps_indicateur.configure(text=timestamp_to_hour(self.traj[value-1][0]))
 
+        rotated_pil_img = self.avion_image.rotate(-self.traj[value-1][4])
+        tk_icon = ImageTk.PhotoImage(rotated_pil_img)
+        self.marker_avion.change_icon(tk_icon)
+
+        self.marker_avion.set_position(traj[value-1][0],traj[value-1][1])
         self.map_widget.delete_all_path()
-        self.map_widget.set_path(traj[0:value], color="red", width=3)
+        self.map_widget.set_path(traj[0:value], color="#242424", width=3)
 
     def checkbox_event(self):
         print("B777")
 
     def export_event(self):
         print("export")
+    def calculer_carbon(self, modele,distance):
+        print(modele)
+        print(distance)
+        self.label_carbon_resultat.configure(text=f"modèle : {modele}\ndistance totale : {distance}")
 
 def timestamp_to_hour(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp))[11:16]
 
 def date_to_timestamp(date):
     return
+def calcule_distance(coord1,coord2):
+    lat1 = coord1[0]
+    lon1 = coord1[1]
+    lat2 = coord2[0]
+    lon2 = coord2[1]
+    deltalat = lat2-lat1
+    deltalon = lon2-lon1
 
-
+    d = 2*6371000*math.asin(math.sqrt(math.sin(deltalat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(deltalon/2)**2))
+    return d
 
 
