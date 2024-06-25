@@ -5,16 +5,18 @@ import pandas as pd
 
 
 def vol_aeroport(aeroport, debut, fin):
-    """Utitlisation de l'API de OpenSky pour récupérer les informations suivantes:"""
-    """'callsign': Numéro donnée à l'appareil par la compagnie aérienne          """
-    """'estArrivalAirport': Code de l'aéropot d'arrivée                          """
-    """'estDepartureAirport': Code de l'aéroport de départ                       """
-    """'icao24': Numéro unique donné à l'appareil par l'OACI                     """
-    """'firstSeen': temps en UNIX pour laquelle l'avion a été vu la première fois"""
-    """'lasttSeen': temps en UNIX pour laquelle l'avion a été vu la dernière fois"""
+    """
+    Utitlisation de l'API de OpenSky pour récupérer les informations suivantes:
+    'callsign': Numéro donnée à l'appareil par la compagnie aérienne
+    'estArrivalAirport': Code de l'aéropot d'arrivée
+    'estDepartureAirport': Code de l'aéroport de départ
+    'icao24': Numéro unique donné à l'appareil par l'OACI
+    'firstSeen': temps en UNIX pour laquelle l'avion a été vu la première fois
+    'lasttSeen': temps en UNIX pour laquelle l'avion a été vu la dernière fois
 
-    """En argument [début,fin] est l'interval de temps en UNIX                   """
-    """aeroport: code OACI de l'aéroport en question                             """
+    En argument [début,fin] est l'interval de temps en UNIX
+    aeroport: code OACI de l'aéroport en question
+    """
     api = OpenSkyApi()
     data_depart = api.get_departures_by_airport(aeroport, debut, fin)
     data_arrivee = api.get_arrivals_by_airport(aeroport, debut, fin)
