@@ -228,11 +228,11 @@ class Interface(customtkinter.CTk):
         self.map_widget.canvas.itemconfig(self.canvas_text, text=f"Compagnie : {self.liste_vols["compagnie"].values[index-1]}\n"
                                                                  f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index-1]}\n"
                                                                  f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index-1]}\n"
-                                                                 f"Call sign : {self.liste_vols["callsign_x"].values[index-1]}\n"
+                                                                 f"Call sign : {self.liste_vols["callsign"].values[index-1]}\n"
                                                                  f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index-1]}\n"
                                                                  f"Heure de départ : {timestamp_to_hour(self.liste_vols["firstSeen"].values[index-1])}\n"
                                                                  f"Heure d'arrivée : {timestamp_to_hour(self.liste_vols["lastSeen"].values[index-1])}\n")
-        self.calculer_carbon(self.liste_vols["MODEL"].values[index-1], calcule_distance(traj[0],traj[-1]))
+        self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(traj[0],traj[-1]))
     def button_search_event(self):
         etat = (len(self.input_heure_fin.get()) == 5 and len(self.input_heure_debut.get()) == 5 and
                 len(self.input_airport.get()) == 4 and len(self.input_date.get()) == 10)
