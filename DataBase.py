@@ -65,6 +65,13 @@ def FAA(DF):
     DF['icao24'] = DF['icao24'].str.upper()
     merged_df = pd.merge(DF, FAA_df, on='icao24')
     merged_df = pd.merge(merged_df, model_df, on='CODE')
+
+    merged_df.rename(columns={'CODE': 'code'}, inplace=True)
+    merged_df.rename(columns={'MODEL': 'model'}, inplace=True)
+
+    merged_df['modelReduit'] = merged_df['model'].str[:4]
+    merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')
+
     merged_df.insert(0, 'index', range(1, len(merged_df) + 1))
     # Sauvegarder le DataFrame dans un fichier CSV
     merged_df.to_csv('flights_data.csv', index=False)
@@ -92,4 +99,4 @@ def compagnie(DF):
 def sortie(aeroport, temps_debut, temps_fin):
     return FAA(compagnie(vol_aeroport(aeroport, temps_debut, temps_fin)))
 
-sortie('KJFK',1718909731,1718909999)
+sortie('KJFK',1718909731,1718919999)
