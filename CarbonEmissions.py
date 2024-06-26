@@ -46,7 +46,7 @@ CO2_factors = {
      "a": 0.000032,
      "b": 2.588,
      "c": 1212.084},
-    "Standard long-courrier ":
+    "Standard long-courrier":
     {"S": 302.58,
      "PLF": 0.82,
      "DC": 95,
@@ -88,3 +88,37 @@ CO2_factors = {
      "a": 0.00034,
      "b": 4.384,
      "c": 2457.737}}
+
+
+def global_carbon_emissions(gcd, model):
+    """
+    Calcule les émissions globales de CO2 pour un vol donné.
+
+    Cette fonction utilise les données de distance de vol et le modèle d'avion pour
+    estimer les émissions de CO2 en utilisant une formule quadratique basée sur plusieurs
+    facteurs spécifiques au modèle d'avion.
+
+    Arguments :
+    gcd (float) : La distance géodésique (great circle distance) en kilomètres.
+    model (str) : Le modèle de l'avion. Si le modèle n'est pas reconnu, un modèle par défaut
+                  est sélectionné en fonction de la distance (court-courrier ou long-courrier).
+
+    Retour :
+    float : Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
+    """
+    # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
+    if model not in CO2_factors:
+        # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
+        if gcd < 2000:
+            model = "Standard court-courrier"  # Modèle pour vol court-courrier
+        else:
+            model = "Standard long-courrier"  # Modèle pour vol long-courrier
+
+    # Récupère les facteurs de CO2 pour le modèle déterminé
+    factors = CO2_factors[model]
+
+    # Calcule la distance corrigée en ajoutant la correction de détour (DC)
+    distance = gcd+factors["DC"]
+
+    # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
+    return factors["a"]*distance**2+factors["b"]*distance+factors["c"]*(factors["P"]+factors["FE"])*factors["M"]
