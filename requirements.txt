@@ -1,0 +1,5 @@
+pandas~=2.2.2
+customtkinter~=5.2.2
+pillow~=10.3.0
+requests~=2.31.0
+tkintermapview
