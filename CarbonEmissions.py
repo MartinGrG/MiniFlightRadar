@@ -90,6 +90,14 @@ CO2_factors = {
      "c": 2457.737}}
 
 
+SEAT_CLASS = {
+    "economy": 0,
+    "premium economy": 1,
+    "affaires": 2,
+    "première": 3
+}
+
+
 def global_carbon_emissions(gcd, model):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
@@ -122,3 +130,34 @@ def global_carbon_emissions(gcd, model):
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
     return factors["a"]*distance**2+factors["b"]*distance+factors["c"]*(factors["P"]+factors["FE"])*factors["M"]
+
+
+def passenger_carbon_emissions(gcd, model, seat_class="economy"):
+    """
+    Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
+
+    Parameters:
+    gcd (int): Distance en kilomètres.
+    model (str): Modèle de l'avion.
+    seat_class (str): Classe de siège du passager (par défaut : "economy").
+
+    Returns:
+    float: Emissions de CO2 par passager.
+    """
+    # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
+    if model not in CO2_factors:
+        # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
+        if gcd < 2000:
+            model = "Standard court-courrier"  # Modèle pour vol court-courrier
+        else:
+            model = "Standard long-courrier"  # Modèle pour vol long-courrier
+
+    # Récupère les facteurs de CO2 pour le modèle déterminé
+    factors = CO2_factors[model]
+
+    # Calcule la distance corrigée en ajoutant la correction de détour (DC)
+    distance = gcd+factors["DC"]
+
+    # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
+    return (global_carbon_emissions(gcd, model)*(1-factors["CF"])*factors["CF"][SEAT_CLASS[seat_class]] /
+            (factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
