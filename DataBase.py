@@ -70,10 +70,10 @@ def FAA(DF):
 
     Utilisation des bases de données :
 
-    | -master.csv (fournie par la FAA) : contient le numéro oaci de tous les appareils immatriculés aux États-Unis, leur
+    | -MASTER.csv (fournie par la FAA) : contient le numéro oaci de tous les appareils immatriculés aux États-Unis, leur
      code ainsi que le code de leur moteur
-    | -model.csv (fournie par la FAA) : contient le code des avions et leur modèle correspondant
-    | -engine.csv (fournie par la FAA) : contient le code des moteurs et leur modèle correspondant
+    | -ACFTREF.csv (fournie par la FAA) : contient le code des avions et leur modèle correspondant
+    | -ENGINE.csv (fournie par la FAA) : contient le code des moteurs et leur modèle correspondant
 
     :param DF: DataFrame contenant au moins une colonne 'oaci24'
     :returns: DataFrame comportant les données des avions immatriculés aux États-Unis. 4 colonnes sont ajoutées par
@@ -90,41 +90,40 @@ def FAA(DF):
     """
 
     """Base de donnee master"""
-    FAA_df = pd.read_csv('BaseDonnees/FAA/master.csv', sep=',', encoding='utf-8', low_memory=False,
+    FAA_df = pd.read_csv('BaseDonnees/FAA/MASTER.csv', sep=',', encoding='utf-8', low_memory=False,
                          usecols=[2, 3, 33])  # Lecture des colonnes 'MFR MDL CODE', 'ENG MFR MDL' et 'MODE S CODE HEX'
     FAA_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)  # Changement de nom de 'MODE S CODE HEX' en
     #                                                                     'icao24'
-    FAA_df.rename(columns={'MFR MDL CODE': 'CODE'}, inplace=True)
+    FAA_df.rename(columns={'MFR MDL CODE': 'codeModel'}, inplace=True)
     FAA_df.rename(columns={'ENG MFR MDL': 'codeEngine'}, inplace=True)
     FAA_df['icao24'] = FAA_df['icao24'].str.strip()  # Suppression des '' inutiles
-
-    """Base de donnee modele"""
-    model_df = pd.read_csv('BaseDonnees/FAA/modele.csv', sep=',', encoding='utf-8', low_memory=False,
-                           usecols=[0, 2])  # Lecture des colones 'CODE' et 'MODEL'
-
-    """Base de donnee engine"""
-    engine_df = pd.read_csv('BaseDonnees/FAA/engine.csv', sep=',', encoding='utf-8', usecols=[0, 2],
-                            dtype={'codeEngine': str})  # Lecture des colonnes 'codeEngine' et 'modelEngine'
-    #                                                     Ajout du dtype pour conserver les 0 au début du codeEngine
-    #                                                     sinon 001 devient 1
     DF['icao24'] = DF['icao24'].str.upper()  # Les lettres minuscules deviennent majuscules
-    merged_df = pd.merge(DF, FAA_df, on='icao24')   # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
+    merged_df = pd.merge(DF, FAA_df, on='icao24')  # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
     #                                                 ayant un numéro oaci24 enregistré aux US sont gardés
-    merged_df = pd.merge(merged_df, model_df, on='CODE')  # Fusion de la base de donnée précédemment fusionnée avec
+    """Base de donnee modele"""
+    model_df = pd.read_csv('BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
+                           usecols=[0, 2])  # Lecture des colones 'CODE' et 'MODEL'
+    model_df.rename(columns={'CODE': 'codeModel'}, inplace=True)
+    model_df.rename(columns={'MODEL': 'model'}, inplace=True)
+    merged_df = pd.merge(merged_df, model_df, on='codeModel')  # Fusion de la base de donnée précédemment fusionnée avec
     #                                                       celle contenant les modèles des avions associés à leur
     #                                                       'code'
-    # merged_df['codeEngine'] = merged_df['codeEngine'].astype(str)   # Changement en str des colonnes 'codeEngine' pour
-    # engine_df['codeEngine'] = engine_df['codeEngine'].astype(str)   # pouvoir les comparer et fusionner
-    merged_df = pd.merge(merged_df, engine_df, on='codeEngine', how='left')  # Association de chaque avion à son moteur
-
-    merged_df.rename(columns={'CODE': 'code'}, inplace=True)
-    merged_df.rename(columns={'MODEL': 'model'}, inplace=True)
     merged_df['model'] = merged_df['model'].str.strip()
-
     merged_df['modelReduit'] = merged_df['model'].str[:4]  # Nouvelle colonne 'modelReduit contenant les 4 premiers
     #                                                        caractères de la colonne 'model'
     merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')  # Suppression des '-'
 
+    """Base de donnee engine"""
+    engine_df = pd.read_csv('BaseDonnees/FAA/ENGINE.csv', sep=',', encoding='utf-8', usecols=[0, 2],
+                            dtype={'CODE': str})  # Lecture des colonnes 'codeEngine' et 'modelEngine'
+    #                                                     Ajout du dtype pour conserver les 0 au début du CODE sinon
+    #                                                     00401 devient 401
+    engine_df.rename(columns={'CODE': 'codeEngine'}, inplace=True)
+    engine_df.rename(columns={'MODEL': 'modelEngine'}, inplace=True)
+
+    # merged_df['codeEngine'] = merged_df['codeEngine'].astype(str)   # Changement en str des colonnes 'codeEngine' pour
+    # engine_df['codeEngine'] = engine_df['codeEngine'].astype(str)   # pouvoir les comparer et fusionner
+    merged_df = pd.merge(merged_df, engine_df, on='codeEngine', how='left')  # Association de chaque avion à son moteur
     return merged_df
 
 
@@ -184,11 +183,11 @@ def easa(DF):
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
-    easa_df = pd.read_csv('BaseDonnees/EASA/easaEmission.csv', sep=';', encoding='utf-8', usecols=[0, 3])
-    #                                                                           Lecture des colonnes 'UID No' et 'MODEL'
-    easa_df.rename(columns={'MODEL': 'modelEngine'}, inplace=True)
-    easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
+    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
+                          usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
 
+    easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
+    easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
     easa_df = easa_df.drop_duplicates(subset=['modelEngine'])   # Suppression des doublons dans la colonne 'modelEngine'
 
     DF['modelEngine'] = DF['modelEngine'].str.strip()
@@ -205,7 +204,7 @@ def emission(index):
     :param int index: Index du vol en question
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
-    emission_df = pd.read_csv('BaseDonnees/EASA/easaEmission.csv', sep=';', encoding='utf-8')
+    emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
     flights_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8')
     uid = flights_df.loc[index, 'uid']
     ligne = emission_df[emission_df['UID No'] == uid]
@@ -225,6 +224,3 @@ def sortie(aeroport, debut, fin):
     DF = easa(FAA(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
-
-sortie('KJFK',1718910890,1718911890)
-#print(emission(0))
