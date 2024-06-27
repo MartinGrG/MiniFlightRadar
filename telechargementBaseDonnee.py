@@ -19,7 +19,7 @@ def base_de_donnees_FAA():
         os.makedirs(dossier_de_depot, exist_ok=True)
     else:
         print(f"Le répertoire {dossier_de_depot} existe déjà. Arrêt du téléchargement.")
-        exit()
+        return
 
     # Chemin complet du fichier téléchargé
     destination_file_path = os.path.join(dossier_de_depot, os.path.basename(url))
