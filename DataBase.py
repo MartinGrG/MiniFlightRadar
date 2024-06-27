@@ -222,5 +222,6 @@ def sortie(aeroport, debut, fin):
      l'intervalle de temps [debut, fin]
     """
     DF = easa(FAA(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
+    DF.insert(0, 'Index', range(1, len(DF) + 1))
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
