@@ -9,7 +9,7 @@ import pandas as pd
 
 # FAA("https://registry.faa.gov/database/ReleasableAircraft.zip",'BaseDonnees/FAA',
     #               ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt'])
-def FAA():
+def base_de_donnees_FAA():
     # URL du fichier à télécharger
     url = "https://registry.faa.gov/database/ReleasableAircraft.zip"
 
@@ -85,7 +85,7 @@ def FAA():
 
 
 
-def base_donnee_easa():
+def base_de_donnees_EASA():
     # URL du fichier à télécharger
     url = 'https://www.easa.europa.eu/en/downloads/131424/en'
 
@@ -142,6 +142,3 @@ def base_donnee_easa():
 
 
 
-# Appel de la fonction pour télécharger la base de données EASA
-base_donnee_easa()
-FAA()
