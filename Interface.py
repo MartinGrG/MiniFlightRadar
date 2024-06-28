@@ -6,7 +6,7 @@ import customtkinter
 from tkintermapview import TkinterMapView
 import tkinter as tk
 import math
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageGrab
 # Librairies pour les timestamp unix
 import datetime
 import time
@@ -323,7 +323,7 @@ class Interface(customtkinter.CTk):
 
         # Affichage de la trajectoire du vol sur la map
         self.map_widget.delete_all_path()
-        self.map_widget.set_position(self.traj[0][1], self.traj[0][2])
+        self.map_widget.set_position((max(traj)[0]+min(traj)[0])/2, (max(traj, key=lambda x: x[1])[1]+min(traj, key=lambda x: x[1])[1])/2)
         self.map_widget.set_path(traj, color="#242424", width=3)
 
         # Adaptation du curseur au vol selectionné
@@ -411,9 +411,9 @@ class Interface(customtkinter.CTk):
         print("B777")
 
     def export_event(self, index):
-        print(index-1)
-        pdf = Pdf()
-        #pdf.set_data(self.liste_vols.values[index-1])
+        self.save_map_as_png("Interface/map.png")
+        pdf = Pdf(map_chemin="Interface/map.png")
+        pdf.set_data(self.liste_vols.values[index-1], [["engine1_test","engine2_test","engine3_test"],[0.1,0.2,0.3]])
         pdf.generer_pdf()
 
     def calculer_carbon(self, modele, distance):
@@ -428,7 +428,14 @@ class Interface(customtkinter.CTk):
         print(distance)
         self.label_carbon_resultat.configure(text=f"modèle : {modele}\ndistance totale : {distance}")
 
-
+    def save_map_as_png(self, file_path):
+        widget = self.map_widget
+        x = widget.winfo_rootx()
+        y = widget.winfo_rooty()
+        width = x + widget.winfo_width()
+        height = y + widget.winfo_height()
+        img = ImageGrab.grab(bbox=(x, y, width, height))
+        img.save(file_path)
 def timestamp_to_hour(timestamp):
     """
     Cette fonction permet de convertir un timestamp unix en heures:minutes.

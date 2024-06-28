@@ -8,9 +8,12 @@ class Pdf(FPDF):
     infos_vol = ["index","callsign","estArrivalAirport","estDepartureAirport","icao24","firstSeen","lastSeen","compagnie","codeModel","codeEngine","model","modelReduit","modelEngine","uid"]
     infos_emission = [["engine1_test","engine2_test","engine3_test"],[0.1,0.2,0.3]]
     graphique_emission = ""
-    def __init__(self):
+    map_chemin = ""
+
+    def __init__(self, map_chemin):
         super().__init__(orientation="portrait", unit="mm", format="A4", font_cache_dir="DEPRECATED")
         self.add_page()
+        self.map_chemin = map_chemin
 
     def set_data(self, infos_vol, emission):
         self.infos_vol = infos_vol
@@ -22,6 +25,7 @@ class Pdf(FPDF):
         self.cell(text=self.titre)
         self.graphique_emission = self.generer_graphique()
         self.image(self.graphique_emission)
+        self.image(self.map_chemin)
         self.output("Compte_rendu.pdf")
         del self
 
