@@ -31,7 +31,6 @@ class Interface(customtkinter.CTk):
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
         self.geometry("1300x600")  # dimensions de la fenètre
-        self.attributes('-topmost', True)  # on fait passer la fenètre au-dessus du reste à l'apparition
 
         # configuration de la grille de base (1x3) :
         self.grid_columnconfigure((0, 1, 2), weight=1)
@@ -316,12 +315,12 @@ class Interface(customtkinter.CTk):
             self.marker_avion.delete()
         rotated_pil_img = self.avion_image.rotate(self.traj[0][4])
         tk_icon = ImageTk.PhotoImage(rotated_pil_img)
-        self.marker_avion = self.map_widget.set_marker(traj[-1][0], traj[-1][1], icon=tk_icon)
+        self.marker_avion = self.map_widget.set_marker(self.traj[-1][1], self.traj[-1][2], icon=tk_icon)
         self.marker_avion.change_icon(tk_icon)
 
         # Affichage de la trajectoire du vol sur la map
         self.map_widget.delete_all_path()
-        self.map_widget.set_position(traj[0][0], traj[0][1])
+        self.map_widget.set_position(self.traj[0][1], self.traj[0][2])
         self.map_widget.set_path(traj, color="#242424", width=3)
 
         # Adaptation du curseur au vol selectionné
@@ -339,7 +338,7 @@ class Interface(customtkinter.CTk):
                                                f"Heure d'arrivée : {timestamp_to_hour(self.liste_vols["lastSeen"].values[index-1])}\n")
 
         # Envoie des données de vol au calculateur CO2
-        self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(traj[0],traj[-1]))
+        self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(self.traj))
 
     def button_search_event(self):
         """
@@ -398,7 +397,7 @@ class Interface(customtkinter.CTk):
         rotated_pil_img = self.avion_image.rotate(-self.traj[value-1][4])
         tk_icon = ImageTk.PhotoImage(rotated_pil_img)
         self.marker_avion.change_icon(tk_icon)
-        self.marker_avion.set_position(traj[value-1][0],traj[value-1][1])
+        self.marker_avion.set_position(self.traj[value-1][1], self.traj[value-1][2])
 
         # Mise à jour du tracé de la trajectoire
         self.map_widget.delete_all_path()
@@ -438,15 +437,18 @@ def date_to_timestamp(date): # En construction
     return
 
 
-def calcule_distance(coord1, coord2): # En cours d'amélioration
-    lat1 = coord1[0]
-    lon1 = coord1[1]
-    lat2 = coord2[0]
-    lon2 = coord2[1]
-    deltalat = lat2-lat1
-    deltalon = lon2-lon1
-
-    d = 2*6371000*math.asin(math.sqrt(math.sin(deltalat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(deltalon/2)**2))
-    return d
+def calcule_distance(traj):
+    somme = 0
+    for i in range(len(traj)-1):
+        lat1 = traj[i][1]
+        lon1 = traj[i][2]
+        lat2 = traj[i+1][1]
+        lon2 = traj[i+1][2]
+        deltalat = lat2-lat1
+        deltalon = lon2-lon1
+        d = 2*6371*math.asin(math.sqrt(math.sin(math.radians(deltalat/2))**2 + math.cos(math.radians(lat1)) *
+                                       math.cos(math.radians(lat2))*math.sin(math.radians(deltalon/2))**2))
+        somme += d
+    return somme
 
 
