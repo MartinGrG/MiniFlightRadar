@@ -1,8 +1,10 @@
-pandas
-customtkinter
-pillow
-requests
-tkintermapview
-future
-certifi
+pandas~=2.2.2
+customtkinter~=5.2.2
+pillow~=10.3.0
+requests~=2.31.0
+tkintermapview~=1.29
+future~=1.0.0
+certifi~=2024.6.2
 openpyxl
+fpdf2
+matplotlib

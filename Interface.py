@@ -13,7 +13,8 @@ import time
 # Librairies pour la gestion des données
 from DataBase import sortie, airplane_traj
 import pandas as pd
-
+# Librairie pour générer document PDF
+from Pdf_generateur import Pdf
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
@@ -149,7 +150,7 @@ class Interface(customtkinter.CTk):
                                              variable=check_avions_compare_var, onvalue="on", offvalue="off")
         self.check_avions_compare.grid(row=0, sticky="nsw", padx=10, pady=10)
 
-        self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter", command=self.export_event)
+        self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter", command=self.export_event,variable=0)
         self.button_export_data.grid(row=4, column=0, sticky="swe", padx=10, pady=10)
 
     def check_text_airport(self, event):
@@ -310,6 +311,8 @@ class Interface(customtkinter.CTk):
         self.traj = airplane_traj(index-1)
         traj = [x[1:3] for x in self.traj]
 
+        # On attribue au bouton exporter l'indice du vol sélectionné
+        self.button_export_data.configure(variable=index)
         # Affichage du marqueur sous la forme d'un avion
         if self.marker_avion is not None:
             self.marker_avion.delete()
@@ -339,6 +342,7 @@ class Interface(customtkinter.CTk):
 
         # Envoie des données de vol au calculateur CO2
         self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(self.traj))
+
 
     def button_search_event(self):
         """
@@ -406,8 +410,11 @@ class Interface(customtkinter.CTk):
     def checkbox_event(self):
         print("B777")
 
-    def export_event(self):
-        print("export")
+    def export_event(self, index):
+        print(self.button_export_data.cget("variable"))
+        pdf = Pdf()
+        #pdf.set_data(self.liste_vols.values[index-1])
+        pdf.generer_pdf()
 
     def calculer_carbon(self, modele, distance):
         """
