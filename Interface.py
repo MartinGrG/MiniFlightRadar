@@ -26,7 +26,7 @@ class Interface(customtkinter.CTk):
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
         self.traj = []
-        self.avion_image = Image.open("plane_img.png")
+        self.avion_image = Image.open("Interface/plane_img.png")
         self.marker_avion = None
 
         # configuration de la fenêtre :

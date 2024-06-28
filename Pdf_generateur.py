@@ -12,18 +12,18 @@ class Pdf(FPDF):
         super().__init__(orientation="portrait", unit="mm", format="A4", font_cache_dir="DEPRECATED")
         self.add_page()
 
-    def generer_pdf(self):
-        self.set_font('arial', size=12)
-        self.cell(text=self.titre)
-        self.image(self.graphique_emission)
-        self.output("Compte_rendu.pdf")
-        del self
-
     def set_data(self, infos_vol, emission):
         self.infos_vol = infos_vol
         self.infos_emission = emission
         self.titre = f"Compte rendu du vol : {self.infos_vol[3]} - {self.infos_vol[2]}"
-        self.graphique_emission = self.generer_graphique(self.infos_emission)
+
+    def generer_pdf(self):
+        self.set_font('helvetica', size=12)
+        self.cell(text=self.titre)
+        self.graphique_emission = self.generer_graphique()
+        self.image(self.graphique_emission)
+        self.output("Compte_rendu.pdf")
+        del self
 
     def generer_graphique(self):
         x = self.infos_emission[0]
@@ -32,7 +32,7 @@ class Pdf(FPDF):
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (kg)")
         plt.bar(x, y)
-        repertoire = "/Interface/graphique_emission.png"
+        repertoire = "Interface/graphique_emission.png"
         plt.savefig(repertoire)
         return repertoire
 
