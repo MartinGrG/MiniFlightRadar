@@ -436,6 +436,7 @@ class Interface(customtkinter.CTk):
         height = y + widget.winfo_height()
         img = ImageGrab.grab(bbox=(x, y, width, height))
         img.save(file_path)
+
 def timestamp_to_hour(timestamp):
     """
     Cette fonction permet de convertir un timestamp unix en heures:minutes.
