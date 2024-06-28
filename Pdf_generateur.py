@@ -35,13 +35,3 @@ class Pdf(FPDF):
         repertoire = "Interface/graphique_emission.png"
         plt.savefig(repertoire)
         return repertoire
-
-
-pdf = Pdf()
-
-pdf.generer_pdf()
-
-
-
-
-# fonction generer_pdf, set_data_pdf
