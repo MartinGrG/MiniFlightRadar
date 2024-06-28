@@ -116,26 +116,25 @@ def base_de_donnees_EASA():
         # Charger le fichier Excel en utilisant pandas
         xl = pd.ExcelFile(destination_file_path)
 
-        sheet_name = "Gaseous Emissions and Smoke"
+        sheet_names = ["Gaseous Emissions and Smoke", "nvPM Emissions"]
+        for sheet_name in sheet_names:
+            # Vérifier si la feuille spécifiée existe
+            if sheet_name in xl.sheet_names:
+                # Charger la feuille spécifiée en tant que DataFrame
+                df = xl.parse(sheet_name)
 
-        # Vérifier si la feuille spécifiée existe
-        if sheet_name in xl.sheet_names:
-            # Charger la feuille spécifiée en tant que DataFrame
-            df = xl.parse(sheet_name)
+                # Chemin pour le fichier CSV de sortie
+                csv_file_path = os.path.join(destination_directory, f"{sheet_name}.csv")
 
-            # Chemin pour le fichier CSV de sortie
-            csv_file_path = os.path.join(destination_directory, f"{sheet_name}.csv")
+                # Enregistrer le DataFrame en tant que fichier CSV
+                df.to_csv(csv_file_path, index=False)
+                print(f"La feuille '{sheet_name}' a été enregistrée en CSV : {csv_file_path}")
 
-            # Enregistrer le DataFrame en tant que fichier CSV
-            df.to_csv(csv_file_path, index=False)
-            print(f"La feuille '{sheet_name}' a été enregistrée en CSV : {csv_file_path}")
-
+            else:
+                print(f"La feuille '{sheet_name}' n'existe pas dans le fichier Excel.")
             # Supprimer le fichier Excel une fois le CSV extrait
-            os.remove(destination_file_path)
-            print(f"Le fichier Excel a été supprimé : {destination_file_path}")
-        else:
-            print(f"La feuille '{sheet_name}' n'existe pas dans le fichier Excel.")
-
+        os.remove(destination_file_path)
+        print(f"Le fichier Excel a été supprimé : {destination_file_path}")
 
     except Exception as e:
         print(f"Une erreur est survenue lors du téléchargement : {e}")
