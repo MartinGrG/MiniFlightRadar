@@ -13,7 +13,8 @@ class Pdf(FPDF):
         self.add_page()
 
     def generer_pdf(self):
-        self.cell(txt=self.titre)
+        self.set_font('arial', size=12)
+        self.cell(text=self.titre)
         self.image(self.graphique_emission)
         self.output("Compte_rendu.pdf")
         del self
