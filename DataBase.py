@@ -226,4 +226,3 @@ def sortie(aeroport, debut, fin):
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
 
-sortie('KJFK',1718916316,1718926316)
