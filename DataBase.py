@@ -183,7 +183,7 @@ def easa(DF):
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
-    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
+    easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8',
                           usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
@@ -222,6 +222,8 @@ def sortie(aeroport, debut, fin):
      l'intervalle de temps [debut, fin]
     """
     DF = easa(FAA(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
-    DF.insert(0, 'Index', range(1, len(DF) + 1))
+    DF.insert(0, 'index', range(1, len(DF) + 1))
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
+
+sortie('KJFK',1718916316,1718926316)
