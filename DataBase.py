@@ -102,7 +102,7 @@ def FAA(DF):
     #                                                 ayant un numéro oaci24 enregistré aux US sont gardés
     """Base de donnee modele"""
     model_df = pd.read_csv('BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
-                           usecols=[0, 2])  # Lecture des colones 'CODE' et 'MODEL'
+                           usecols=[0, 2, 7])  # Lecture des colones 'CODE' et 'MODEL'
     model_df.rename(columns={'CODE': 'codeModel'}, inplace=True)
     model_df.rename(columns={'MODEL': 'model'}, inplace=True)
     merged_df = pd.merge(merged_df, model_df, on='codeModel')  # Fusion de la base de donnée précédemment fusionnée avec
