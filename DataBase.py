@@ -197,20 +197,25 @@ def easa(DF):
     return DF
 
 
-def emission(index):
+def emission(uid):
     """
     Fonction fournissant les caractéristiques données par l'EASA du moteur du vol à l'indice 'index' du DataFrame
     d'entrée.
 
-    :param int index: Index du vol en question
+    :param int uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
-    emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
+    emission_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8')
     flights_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8')
-    uid = flights_df.loc[index, 'uid']
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
+def similaire(uid):
+    poussee = emission(uid)['Rated Thrust (kN)']
+    easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8',
+                          usecols=[0, 3, 8])  # Lecture des colonnes 'UID No' et 'MODEL'
+
+    easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
 
 def sortie(aeroport, debut, fin):
     """
@@ -226,3 +231,5 @@ def sortie(aeroport, debut, fin):
     DF.insert(0, 'index', range(1, len(DF) + 1))
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
+
+emission(1)
