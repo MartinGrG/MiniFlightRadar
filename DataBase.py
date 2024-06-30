@@ -242,10 +242,3 @@ class infosVols():
         DF.insert(0, 'index', range(1, len(DF) + 1))
         DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
         return DF
-
-LV = infosVols('KJFK',1719001750,1719011750)
-print(LV.vols.head())
-LV.airplane_traj(2)
-print(LV.trajectoire)
-LV.emission(2)
-print(LV.donneesMoteur)
