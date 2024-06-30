@@ -100,7 +100,7 @@ SEAT_CLASS = {
 }
 
 
-def global_carbon_emissions(gcd, model, index, motors_nb):
+def global_carbon_emissions(gcd, model, index, motors_nb=1):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
 
@@ -135,7 +135,7 @@ def global_carbon_emissions(gcd, model, index, motors_nb):
             * (factors["P"]+factors["FE"]*factors["M"]))
 
 
-def passenger_carbon_emissions(gcd, model, index, motors_nb, seat_class="economy"):
+def passenger_carbon_emissions(gcd, model, index, motors_nb=1, seat_class="economy"):
     """
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
