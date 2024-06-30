@@ -3,6 +3,8 @@ Ce script permet d'établir les fonctions nécessaires au calcul de l'empreinte 
 l'équivalent pour un passager.
 """
 
+from DataBase import emission
+
 CO2_factors = {
     "Standard court-courrier":
     {"S": 157.86,  # Nombre moyen de sièges
@@ -98,7 +100,7 @@ SEAT_CLASS = {
 }
 
 
-def global_carbon_emissions(gcd, model):
+def global_carbon_emissions(gcd, model, index, motors_nb):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
 
@@ -114,6 +116,9 @@ def global_carbon_emissions(gcd, model):
     Retour :
     float : Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
     """
+
+    motor_info = emission(index)
+
     # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
     if model not in CO2_factors:
         # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
@@ -125,14 +130,12 @@ def global_carbon_emissions(gcd, model):
     # Récupère les facteurs de CO2 pour le modèle déterminé
     factors = CO2_factors[model]
 
-    # Calcule la distance corrigée en ajoutant la correction de détour (DC)
-    distance = gcd+factors["DC"]
-
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
-    return (factors["a"]*distance**2+factors["b"]*distance+factors["c"])*(factors["P"]+factors["FE"]*factors["M"])
+    return ((factors["a"]*gcd**2+factors["b"]*gcd+factors["c"]+motor_info["Fuel LTO Cycle (kg)  "]*motors_nb)
+            * (factors["P"]+factors["FE"]*factors["M"]))
 
 
-def passenger_carbon_emissions(gcd, model, seat_class="economy"):
+def passenger_carbon_emissions(gcd, model, index, motors_nb, seat_class="economy"):
     """
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
@@ -159,5 +162,5 @@ def passenger_carbon_emissions(gcd, model, seat_class="economy"):
     distance = gcd+factors["DC"]
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
-    return (global_carbon_emissions(gcd, model)*(1-factors["CF"])*factors["CF"][SEAT_CLASS[seat_class]] /
-            (factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
+    return (global_carbon_emissions(gcd, model, index, motors_nb)*(1-factors["CF"]) *
+            factors["CF"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
