@@ -15,6 +15,7 @@ from DataBase import sortie, airplane_traj
 import pandas as pd
 # Librairie pour générer document PDF
 from Pdf_generateur import Pdf
+import numpy as np
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
@@ -337,8 +338,8 @@ class Interface(customtkinter.CTk):
                                                f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index-1]}\n"
                                                f"Call sign : {self.liste_vols["callsign"].values[index-1]}\n"
                                                f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index-1]}\n"
-                                               f"Heure de départ : {timestamp_to_hour(self.liste_vols["firstSeen"].values[index-1])}\n"
-                                               f"Heure d'arrivée : {timestamp_to_hour(self.liste_vols["lastSeen"].values[index-1])}\n")
+                                               f"Heure de départ : {timestamp_to_date(self.liste_vols["firstSeen"].values[index-1])[11:16]}\n"
+                                               f"Heure d'arrivée : {timestamp_to_date(self.liste_vols["lastSeen"].values[index-1])[11:16]}\n")
 
         # Envoie des données de vol au calculateur CO2
         self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(self.traj))
@@ -373,8 +374,8 @@ class Interface(customtkinter.CTk):
             for vol in self.liste_vols.itertuples():
                 button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5,
                                                  text=f"{vol.compagnie} : {vol.estDepartureAirport}-"
-                                                      f"{vol.estArrivalAirport} : {timestamp_to_hour(vol.firstSeen)}-"
-                                                      f"{timestamp_to_hour(vol.lastSeen)}",
+                                                      f"{vol.estArrivalAirport} : {timestamp_to_date(vol.firstSeen)[11:16]}-"
+                                                      f"{timestamp_to_date(vol.lastSeen)[11:16]}",
                                                  command=lambda index=vol.index: self.button_vol_event(index))
                 button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
                 i += 1
@@ -395,7 +396,7 @@ class Interface(customtkinter.CTk):
         value = int(value)
         traj = [x[1:3] for x in self.traj]
         # Affichage de l'heure dans l'espace correspondant
-        self.label_temps_indicateur.configure(text=timestamp_to_hour(self.traj[value-1][0]))
+        self.label_temps_indicateur.configure(text=timestamp_to_date(self.traj[value-1][0])[11:16])
 
         # Rotation du marqueur et déplacement de ce-dernier
         rotated_pil_img = self.avion_image.rotate(-self.traj[value-1][4])
@@ -413,7 +414,11 @@ class Interface(customtkinter.CTk):
     def export_event(self, index):
         self.save_map_as_png("Interface/map.png")
         pdf = Pdf(map_chemin="Interface/map.png")
-        pdf.set_data(self.liste_vols.values[index-1], [["engine1_test","engine2_test","engine3_test"],[0.1,0.2,0.3]])
+        vol = self.liste_vols.values[index-1]
+        vol = np.append(vol, calcule_distance(self.traj))
+        vol[5] = timestamp_to_date(vol[5])
+        vol[6] = timestamp_to_date(vol[6])
+        pdf.set_data(vol, [["engine1_test","engine2_test","engine3_test"],[0.1,0.2,0.3]])
         pdf.generer_pdf()
 
     def calculer_carbon(self, modele, distance):
@@ -424,8 +429,6 @@ class Interface(customtkinter.CTk):
         :param str modele: Nom du modèle d'avion (ex : B777)
         :param float distance: Valeur de la distance parcourue calculée à l'aide de la fonction :func:calcule_distance.
         """
-        print(modele)
-        print(distance)
         self.label_carbon_resultat.configure(text=f"modèle : {modele}\ndistance totale : {distance}")
 
     def save_map_as_png(self, file_path):
@@ -437,15 +440,15 @@ class Interface(customtkinter.CTk):
         img = ImageGrab.grab(bbox=(x, y, width, height))
         img.save(file_path)
 
-def timestamp_to_hour(timestamp):
+def timestamp_to_date(timestamp):
     """
-    Cette fonction permet de convertir un timestamp unix en heures:minutes.
+    Cette fonction permet de convertir un timestamp unix en date GMT.
 
     :param int timestamp: Valeur du timestamp à convertir
-    :returns: String représentant la valeur de l'horodatage correspondant au timestamp d'origine
+    :returns: String représentant la valeur de la date correspondant au timestamp d'origine
     :rtype: str
     """
-    return str(datetime.datetime.fromtimestamp(timestamp))[11:16]
+    return str(datetime.datetime.fromtimestamp(timestamp))
 
 
 def date_to_timestamp(date): # En construction
