@@ -117,7 +117,7 @@ def global_carbon_emissions(gcd, model, index, motors_nb=1):
     float : Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
     """
 
-    motor_info = emission(index)
+    motor_info = emission(index).reset_index()
 
     # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
     if model not in CO2_factors:
@@ -131,7 +131,7 @@ def global_carbon_emissions(gcd, model, index, motors_nb=1):
     factors = CO2_factors[model]
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
-    return ((factors["a"]*gcd**2+factors["b"]*gcd+factors["c"]+motor_info["Fuel LTO Cycle (kg)  "]*motors_nb)
+    return ((factors["a"]*gcd**2+factors["b"]*gcd+factors["c"]+motor_info["Fuel LTO Cycle (kg)  "][0]*motors_nb)
             * (factors["P"]+factors["FE"]*factors["M"]))
 
 
