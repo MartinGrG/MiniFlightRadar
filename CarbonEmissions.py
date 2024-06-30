@@ -129,7 +129,7 @@ def global_carbon_emissions(gcd, model):
     distance = gcd+factors["DC"]
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
-    return factors["a"]*distance**2+factors["b"]*distance+factors["c"]*(factors["P"]+factors["FE"])*factors["M"]
+    return (factors["a"]*distance**2+factors["b"]*distance+factors["c"])*(factors["P"]+factors["FE"]*factors["M"])
 
 
 def passenger_carbon_emissions(gcd, model, seat_class="economy"):
