@@ -20,7 +20,7 @@ CO2_factors = {
      "a": 0.000007,
      "b": 2.775,
      "c": 1260.608},
-    "B737":
+    "737":
     {"S": 148.00,
      "PLF": 0.796,
      "DC": 95,
@@ -163,4 +163,4 @@ def passenger_carbon_emissions(gcd, model, index, motors_nb=1, seat_class="econo
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
     return (global_carbon_emissions(gcd, model, index, motors_nb)*(1-factors["CF"]) *
-            factors["CF"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
+            factors["CW"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
