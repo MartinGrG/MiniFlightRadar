@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Pdf(FPDF):
     titre = "Titre par défaut"
-    infos_vol = ["index","callsign","AAAA","AAAA","icao24","aaaa/mm/jj he:mi:se","aaaa/mm/jj he:mi:se","compagnie","codeModel","codeEngine","model","modelReduit","modelEngine","uid","1000"]
+    infos_vol = ["index","callsign","AAAA","AAAA","icao24","aaaa/mm/jj he:mi:se","aaaa/mm/jj he:mi:se","compagnie","codeModel","codeEngine","model", "numberEngine", "modelReduit","modelEngine","uid","1000"]
     infos_emission = [["engine1_test","engine2_test","engine3_test","CF34-8C5","engine5"],[0.1,0.2,0.3,0.7,1.2]]
     graphique_emission = ""
     map_chemin = ""
@@ -24,7 +24,7 @@ class Pdf(FPDF):
     def generer_graphique(self):
         x = self.infos_emission[0]
         y = self.infos_emission[1]
-        plt.title(f"émission du {self.infos_vol[11]} pour le vol sélectionné\navec différents moteurs")
+        plt.title(f"émission du {self.infos_vol[12]} pour le vol sélectionné\navec différents moteurs")
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (kg)")
         plt.bar(x, y)
@@ -95,7 +95,7 @@ class Pdf(FPDF):
         self.set_font('helvetica', '', 11)
         x_i = self.x
         y_i = self.y
-        self.cell(long_page-self.get_string_width(self.infos_vol[9])-5, 10, text=self.infos_vol[10]+' ('+self.infos_vol[11]+')', align='L')
+        self.cell(long_page-self.get_string_width(self.infos_vol[9])-5, 10, text=self.infos_vol[10]+' ('+self.infos_vol[12]+')', align='L')
         self.cell(self.get_string_width('Moteur'), h=10, text='Moteur :', align='L')
         self.ln(5)
         self.set_font('helvetica', 'B', 11)
