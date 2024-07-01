@@ -226,7 +226,9 @@ def similaire(uid):
 
     # Trier les moteurs par cette différence et sélectionner les 6 premiers (car on suppose que le moteur d'origine est inclus)
     moteursProches = easa_df.nsmallest(5, 'difference')
-    moteursProches = moteursProches.drop(columns=['difference','Rated Thrust (kN)'])
+    moteursProches = moteursProches.drop(columns=['difference', 'Rated Thrust (kN)'])
+    moteursProches.rename(columns={'UID No': 'uid'}, inplace=True)
+    moteursProches.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
     # Afficher les résultats
     return(moteursProches)
 
