@@ -215,22 +215,28 @@ def similaire(uid):
 
     easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
-
-    (easa_df['Rated Thrust (kN)']-poussee).to_csv('2.csv')
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
     easa_df = easa_df[easa_df['UID No'] != uid]
 
-    # Enregistrer pour débogage
-    easa_df.to_csv('1.csv')
+    # Trier les moteurs par cette différence
+    easa_df = easa_df.sort_values('difference')
+    # Filtrer pour obtenir les moteurs de marques différentes
+    moteursProches = []
+    marques = set()
+    for index, row in easa_df.iterrows():
+        marque = row['Engine Identification'][:2]
+        if marque not in marques:
+            moteursProches.append([row['UID No'], row['Engine Identification']])
+            marques.add(marque)
+        if len(moteursProches) == 5:
+            break
 
-    # Trier les moteurs par cette différence et sélectionner les 6 premiers (car on suppose que le moteur d'origine est inclus)
-    moteursProches = easa_df.nsmallest(5, 'difference')
-    moteursProches = moteursProches.drop(columns=['difference', 'Rated Thrust (kN)'])
-    moteursProches.rename(columns={'UID No': 'uid'}, inplace=True)
-    moteursProches.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
-    # Afficher les résultats
-    return(moteursProches)
+    # Convertir la liste de résultats en DataFrame
+    moteursProches_df = pd.DataFrame(moteursProches, columns=['uid', 'modelEngine'])
+
+    return moteursProches_df
+
 
 def sortie(aeroport, debut, fin):
     """
@@ -247,4 +253,3 @@ def sortie(aeroport, debut, fin):
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
 
-similaire("01P08GE197")
