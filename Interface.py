@@ -477,7 +477,6 @@ class Interface(customtkinter.CTk):
         i = 0
         for element in self.frame_compare_emission.winfo_children()[1:len(self.frame_compare_emission.winfo_children())]:
             if element.get() == "on":
-                print(element.get())
                 liste_emission[0].append(self.liste_emissions[0][i+1])
                 liste_emission[1].append(self.liste_emissions[1][i+1])
             i += 1
