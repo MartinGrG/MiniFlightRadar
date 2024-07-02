@@ -470,3 +470,9 @@ def calcule_distance(traj):
     return somme
 
 
+def calcule_duree(traj):
+    duree = 0
+    for i in range(len(traj)-1):
+        if traj[i][3] and traj[i+1][3]:
+            duree += traj[i+1][0]-traj[i][0]
+    return duree
