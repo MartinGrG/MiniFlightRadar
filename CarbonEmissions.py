@@ -100,7 +100,7 @@ SEAT_CLASS = {
 }
 
 
-def global_carbon_emissions(gcd, duration, model, uid, engine_nb=1):
+def global_carbon_emissions(gcd, duration, model, uid, engines_nb=1):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
 
@@ -131,11 +131,11 @@ def global_carbon_emissions(gcd, duration, model, uid, engine_nb=1):
     factors = CO2_factors[model]
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
-    return ((engine_info["Fuel Flow T/O (kg/sec)"]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engine_nb
+    return ((engine_info["Fuel Flow T/O (kg/sec)"]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engines_nb
             * (factors["P"]+factors["FE"]*factors["M"]))
 
 
-def passenger_carbon_emissions(gcd, duration, model, uid, motors_nb=1, seat_class="economy"):
+def passenger_carbon_emissions(gcd, duration, model, uid, engines_nb=1, seat_class="economy"):
     """
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
@@ -162,5 +162,5 @@ def passenger_carbon_emissions(gcd, duration, model, uid, motors_nb=1, seat_clas
     distance = gcd+factors["DC"]
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
-    return (global_carbon_emissions(gcd, duration, model, uid, motors_nb)*(1-factors["CF"]) *
+    return (global_carbon_emissions(gcd, duration, model, uid, engines_nb)*(1-factors["CF"]) *
             factors["CW"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
