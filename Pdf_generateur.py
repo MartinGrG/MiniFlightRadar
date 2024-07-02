@@ -171,6 +171,3 @@ class Pdf(FPDF):
         # Enregistrer le PDF
         self.output("Compte_rendu.pdf")
         del self
-
-pdf = Pdf("Interface/map.png")
-pdf.generer_pdf()
