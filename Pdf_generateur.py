@@ -24,16 +24,20 @@ class Pdf(FPDF):
     def generer_graphique(self):
         x = self.infos_emission[0]
         y = self.infos_emission[1]
-        couleurs = ['green']+['gray']*len(self.infos_emission[0])
         plt.title(f"émission du {self.infos_vol[12]} pour le vol sélectionné\navec différents moteurs")
         plt.xlabel("Noms des moteurs")
-        plt.ylabel("Valeurs d'émission CO2 par personne (kg)")
-        graph_bar = plt.bar(x, y, color=couleurs)
-        plt.bar_label(graph_bar, labels=y)
+        plt.ylabel("Valeurs d'émission CO2 par personne (t)")
+        graph_bar1 = plt.bar(x[0], y[0], color="green", label="Moteur d'origine")
+        graph_bar2 = plt.bar(x[1:len(x)], y[1:len(y)], color="gray",label="Autres moteurs")
+        plt.bar_label(graph_bar1, labels=[y[0]])
+        plt.bar_label(graph_bar2, labels=y[1:len(y)])
+
+        #plt.bar_label(graph_bar1.container[1], labels=y[1:len(y)])
         plt.xticks(rotation=15)
-        repertoire = "Interface/graphique_emission.png"
-        plt.savefig(repertoire)
-        return repertoire
+        plt.legend()
+        plt.savefig("Interface/graphique_emission.png")
+        plt.close()
+        return "Interface/graphique_emission.png"
 
     def en_tete(self, texte):
         self.set_font('helvetica', 'B', 12)
@@ -152,7 +156,7 @@ class Pdf(FPDF):
         self.ajouter_separateur()
         y_i = self.y
         # Nouveau titre
-        self.titre_chapitre('Emission CO2 du vol (en kg par passager)')
+        self.titre_chapitre('Emission CO2 du vol (en t par passager)')
 
 
         # Image
@@ -162,7 +166,7 @@ class Pdf(FPDF):
         # Tableau
         donnees = self.infos_emission
         donnees[0].insert(0, 'Modèles de moteurs')
-        donnees[1].insert(0, 'Emissions CO2 (kg/prs)')
+        donnees[1].insert(0, 'Emissions CO2 (t/prs)')
         self.ajouter_tableau(donnees)
 
         self.set_line_width(1)  # Épaisseur de trait de 2 points

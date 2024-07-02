@@ -40,7 +40,9 @@ class Interface(customtkinter.CTk):
         self.geometry("1300x600")  # dimensions de la fenètre
 
         # configuration de la grille de base (1x3) :
-        self.grid_columnconfigure((0, 1, 2), weight=1)
+        self.grid_columnconfigure((0, 2), weight=1)
+        self.grid_columnconfigure((1, 2), weight=0)
+
         self.grid_rowconfigure(0, weight=1)
 
         # création des frames de l'interface :
@@ -51,7 +53,7 @@ class Interface(customtkinter.CTk):
 
         self.frame_milieu = customtkinter.CTkFrame(self, corner_radius=5)
         self.frame_milieu.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=(5, 5), pady=10)
-        self.frame_milieu.grid_columnconfigure(0, weight=1)
+        self.frame_milieu.grid_columnconfigure(0, weight=0)
         self.frame_milieu.grid_rowconfigure((0, 1), weight=1)
 
         self.frame_droite = customtkinter.CTkFrame(self, corner_radius=5)
@@ -101,7 +103,7 @@ class Interface(customtkinter.CTk):
 
         # Ajouter un rectangle avec les infos du vol sur la mapview
         # (obtenu en fouillant dans la librairie retro-Engineering au plus bas level possible)
-        position_info = (450, 460)
+        position_info = (435, 460)
         width_infos = 250
         height_infos = 150
         self.canvas_rect = self.map_widget.canvas.create_polygon(position_info[0], position_info[1],
@@ -208,14 +210,14 @@ class Interface(customtkinter.CTk):
             if not self.input_date.get()[lenght - 1] == "/":
                 self.input_date.insert(lenght - 1, '/')
 
+        # On vérifie que les caractères entrés sont des chiffres
+        if 1 <= lenght < 11 and lenght != 5 and lenght != 8:
+            if not self.input_date.get()[lenght - 1].isnumeric():
+                self.input_date.delete(lenght - 1)
+
         # On s'assure de ne pas dépasser la taille maximale de la date
         if lenght >= 11:
             self.input_date.delete(lenght - 1)
-
-        # On vérifie que les caractères entrés sont des chiffres
-        if lenght >= 1 and lenght != 5 and lenght != 8:
-            if not self.input_date.get()[lenght - 1].isnumeric():
-                self.input_date.delete(lenght - 1)
 
     def check_text_heure_debut(self, event):
         """
@@ -351,6 +353,7 @@ class Interface(customtkinter.CTk):
         self.curseur_temps.configure(to=len(self.traj))
 
         # Mise à jour de l'encadré montrant les informations du vol
+        self.map_widget.canvas.itemconfig(self.canvas_rect, fill="gray25", outline="gray25")
         self.map_widget.canvas.itemconfig(self.canvas_text,
                                           text=f"Compagnie : {self.liste_vols["compagnie"].values[index - 1]}\n"
                                                f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index - 1]}\n"
@@ -366,7 +369,7 @@ class Interface(customtkinter.CTk):
                                           motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                           seat_class="economy")/1000, 3)
         self.label_carbon_resultat.configure(
-            text=f'émission CO2 du vol\npar passager\n{round(value_emmi / 1000, 3)} tonnes de CO2')
+            text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
         self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[index - 1])
         self.liste_emissions[1].append(value_emmi)
 
@@ -380,7 +383,7 @@ class Interface(customtkinter.CTk):
                                      moteur.uid, motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                      seat_class="economy") / 1000, 3)
             check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission,
-                                                             text=f'engine {modele_moteur} : {emission} kg',
+                                                             text=f'engine {modele_moteur} : {emission} t',
                                                              variable=check_avions_compare_var, onvalue="on",
                                                              offvalue="off")
             check_avions_compare.grid(row=i, sticky="nsw", padx=10, pady=10)
@@ -453,23 +456,30 @@ class Interface(customtkinter.CTk):
 
     def check_optionmenu_seat_class(self, choice):
         seat_class = choice
-        value_emmi = self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
+        self.liste_emissions = [[], []]
+        value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
                                           calcule_distance(self.traj),
                                           self.liste_vols["uid"].values[self.index_vol - 1],
                                           motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                          seat_class=seat_class)
+                                          seat_class=seat_class) / 1000, 3)
         self.label_carbon_resultat.configure(
-            text=f'émission CO2 du vol\npar passager\n{round(value_emmi / 1000, 3)} tonnes de CO2')
+            text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
+
+        self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[self.index_vol - 1])
+        self.liste_emissions[1].append(value_emmi)
 
         nombre_elem_in_frame = len(self.frame_compare_emission.winfo_children())
         i = 0
         for element in self.frame_compare_emission.winfo_children()[1:nombre_elem_in_frame]:
             texte = element.cget("text")
-            element.configure(text=texte[0:len(texte) - 8] + str(round(
+            value = round(
                 self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
                                      calcule_distance(self.traj), self.liste_moteurs_sim["uid"].values[i],
                                      motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                     seat_class=seat_class) / 1000, 3)) + " kg")
+                                     seat_class=seat_class) / 1000, 3)
+            element.configure(text=texte[0:len(texte) - 8] + str(value) + " t")
+            self.liste_emissions[0].append(self.liste_moteurs_sim["modelEngine"].values[i])
+            self.liste_emissions[1].append(value)
             i += 1
 
     def export_event(self):
