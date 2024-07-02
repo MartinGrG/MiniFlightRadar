@@ -332,7 +332,7 @@ class Interface(customtkinter.CTk):
         self.traj = airplane_traj(index - 1)
         traj = [x[1:3] for x in self.traj]
 
-        # On attribue au bouton exporter l'indice du vol sélectionné
+        # On attribue au bouton exporter la commande quand le vol est sélectionné
         self.button_export_data.configure(command=self.export_event)
         # Affichage du marqueur sous la forme d'un avion
         if self.marker_avion is not None:
