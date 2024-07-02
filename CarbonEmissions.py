@@ -5,13 +5,21 @@ l'équivalent pour un passager.
 
 from DataBase import emission
 
+DC = 95  # Correction de détour
+EF = 3.16  # Facteur d’émission
+P = 0.538  # Facteur de pré-production
+M = 3  # Multiplicateur
+AF = 0.00034  # Facteur de l’aéronef
+A = 11.68  # Facteaur d'aéroport/infrastructure
+# Classe économique, Premium Economy, Affaires, 1ère
+
 CO2_factors = {
     "Standard court-courrier":
     {"S": 157.86,  # Nombre moyen de sièges
      "PLF": 0.796,  # Facteur de charge des passagers
      "DC": 95,  # Correction de détour
      "CF": 0.26,  # Facteur de fret
-     "CW": [1, 1, 1.5, 1.5],  # Classe économique, Premium Economy, Affaires, 1ère
+     "CW": [1, 1, 1.5, 1.5],
      "FE": 3.16,  # Facteur d’émission
      "P": 0.538,  # Pré-production
      "M": 3,  # Multiplicateur
@@ -20,34 +28,6 @@ CO2_factors = {
      "a": 0.000007,
      "b": 2.775,
      "c": 1260.608},
-    "737":
-    {"S": 148.00,
-     "PLF": 0.796,
-     "DC": 95,
-     "CF": 0.23,
-     "CW": [1, 1, 1.5, 1.5],
-     "FE": 3.16,
-     "P": 0.538,
-     "M": 3,
-     "AF": 0.00034,
-     "A": 11.68,
-     "a": 0.00016,
-     "b": 1.454,
-     "c": 1531.722},
-    "A320":
-    {"S": 165.00,
-     "PLF": 0.796,
-     "DC": 95,
-     "CF": 0.26,
-     "CW": [1, 1, 1.5, 1.5],
-     "FE": 3.16,
-     "P": 0.538,
-     "M": 3,
-     "AF": 0.00034,
-     "A": 11.68,
-     "a": 0.000032,
-     "b": 2.588,
-     "c": 1212.084},
     "Standard long-courrier":
     {"S": 302.58,
      "PLF": 0.82,
@@ -61,35 +41,7 @@ CO2_factors = {
      "A": 11.68,
      "a": 0.00029,
      "b": 3.475,
-     "c": 3259.691},
-    "B777":
-    {"Nombre moyen de sièges (S)": 370,
-     "PLF": 0.82,
-     "DC": 95,
-     "CF": 0.45,
-     "CW": [1, 1.5, 4, 5],
-     "FE": 3.16,
-     "P": 0.538,
-     "M": 3,
-     "AF": 0.00034,
-     "A": 11.68,
-     "a": 0.00034,
-     "b": 6.112,
-     "c": 3403.041},
-    "A330":
-    {"S": 287,
-     "PLF": 0.82,
-     "DC": 95,
-     "CF": 0.06,
-     "CW": [1, 1.5, 4, 5],
-     "FE": 3.16,
-     "P": 0.538,
-     "M": 3,
-     "AF": 0.00034,
-     "A": 11.68,
-     "a": 0.00034,
-     "b": 4.384,
-     "c": 2457.737}}
+     "c": 3259.691}}
 
 
 SEAT_CLASS = {
@@ -100,7 +52,7 @@ SEAT_CLASS = {
 }
 
 
-def global_carbon_emissions(gcd, duration, model, uid, engines_nb=1):
+def global_carbon_emissions(duration, uid, engines_nb=1):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
 
@@ -119,20 +71,9 @@ def global_carbon_emissions(gcd, duration, model, uid, engines_nb=1):
 
     engine_info = emission(uid).reset_index()
 
-    # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
-    if model not in CO2_factors:
-        # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
-        if gcd < 2000:
-            model = "Standard court-courrier"  # Modèle pour vol court-courrier
-        else:
-            model = "Standard long-courrier"  # Modèle pour vol long-courrier
-
-    # Récupère les facteurs de CO2 pour le modèle déterminé
-    factors = CO2_factors[model]
-
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
     return ((engine_info["Fuel Flow T/O (kg/sec)"]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engines_nb
-            * (factors["P"]+factors["FE"]*factors["M"]))
+            * (P+EF*M))
 
 
 def passenger_carbon_emissions(gcd, duration, model, uid, engines_nb=1, seat_class="economy"):
@@ -159,8 +100,8 @@ def passenger_carbon_emissions(gcd, duration, model, uid, engines_nb=1, seat_cla
     factors = CO2_factors[model]
 
     # Calcule la distance corrigée en ajoutant la correction de détour (DC)
-    distance = gcd+factors["DC"]
+    distance = gcd+DC
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
-    return (global_carbon_emissions(gcd, duration, model, uid, engines_nb)*(1-factors["CF"]) *
-            factors["CW"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+factors["AF"]*distance+factors["A"])
+    return (global_carbon_emissions(duration, uid, engines_nb)*(1-factors["CF"]) *
+            factors["CW"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+AF*distance+A)
