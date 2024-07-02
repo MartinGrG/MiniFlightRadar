@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Pdf(FPDF):
     titre = "Titre par défaut"
-    infos_vol = ["index","callsign","AAAA","AAAA","icao24","aaaa/mm/jj 13:30:se","aaaa/mm/jj 14:00:se","compagnie","codeModel","codeEngine","model", "numberEngine", "modelReduit","modelEngine","uid","1000"]
+    infos_vol = ["index","callsign","AAAA","AAAA","icao24","aaaa/mm/jj 13:34:se","aaaa/mm/jj 15:23:se","compagnie","codeModel","codeEngine","model", "numberEngine", "modelReduit","modelEngine","uid","1000"]
     infos_emission = [["engine1_test","engine2_test","engine3_test","CF34-8C5","engine5"],[0.1,0.2,0.3,0.7,1.2]]
     graphique_emission = ""
     map_chemin = ""
@@ -30,6 +30,7 @@ class Pdf(FPDF):
         plt.ylabel("Valeurs d'émission CO2 par personne (kg)")
         graph_bar = plt.bar(x, y, color=couleurs)
         plt.bar_label(graph_bar, labels=y)
+        plt.xticks(rotation=15)
         repertoire = "Interface/graphique_emission.png"
         plt.savefig(repertoire)
         return repertoire
@@ -61,8 +62,7 @@ class Pdf(FPDF):
         heure2 = float(h2[11:13]) + float(h2[14:16]) / 60
         diff = heure2 - heure1
         diff_h = int(diff)
-        diff_m = int((diff - int(diff)) * 60)
-
+        diff_m = round((diff - int(diff)) * 60)
         return str(diff_h) + 'h' + str(diff_m) +'min'
 
     def ajouter_tableau(self, donnees):
