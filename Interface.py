@@ -11,13 +11,16 @@ from PIL import Image, ImageTk, ImageGrab
 import datetime
 import time
 # Librairies pour la gestion des données
-from DataBase import sortie, airplane_traj
+from DataBase import sortie, airplane_traj, similaire
 import pandas as pd
 # Librairie pour générer document PDF
 from Pdf_generateur import Pdf
 import numpy as np
+# Librairies pour emissions
+from CarbonEmissions import passenger_carbon_emissions
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
+
 
 class Interface(customtkinter.CTk):
 
@@ -29,7 +32,9 @@ class Interface(customtkinter.CTk):
         self.traj = []
         self.avion_image = Image.open("Interface/plane_img.png")
         self.marker_avion = None
-
+        self.liste_moteurs_sim = []
+        self.index_vol = None
+        self.liste_emissions = [[], []]
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
         self.geometry("1300x600")  # dimensions de la fenètre
@@ -40,26 +45,26 @@ class Interface(customtkinter.CTk):
 
         # création des frames de l'interface :
         self.frame_gauche = customtkinter.CTkFrame(self, corner_radius=5)
-        self.frame_gauche.grid(row=0, column=0, sticky="nsew", padx=(10,5), pady=10)
-        self.frame_gauche.grid_columnconfigure((1,2), weight=1)
+        self.frame_gauche.grid(row=0, column=0, sticky="nsew", padx=(10, 5), pady=10)
+        self.frame_gauche.grid_columnconfigure((1, 2), weight=1)
         self.frame_gauche.grid_rowconfigure(5, weight=1)
 
         self.frame_milieu = customtkinter.CTkFrame(self, corner_radius=5)
-        self.frame_milieu.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=(5,5), pady=10)
+        self.frame_milieu.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=(5, 5), pady=10)
         self.frame_milieu.grid_columnconfigure(0, weight=1)
         self.frame_milieu.grid_rowconfigure((0, 1), weight=1)
 
         self.frame_droite = customtkinter.CTkFrame(self, corner_radius=5)
-        self.frame_droite.grid(row=0, column=2, rowspan=3, sticky="nsew", padx=(5,10), pady=10)
-        self.frame_droite.grid_columnconfigure(0,weight=1)
-        self.frame_droite.grid_rowconfigure(2, weight=1)
+        self.frame_droite.grid(row=0, column=2, rowspan=3, sticky="nsew", padx=(5, 10), pady=10)
+        self.frame_droite.grid_columnconfigure(0, weight=1)
+        self.frame_droite.grid_rowconfigure(3, weight=1)
 
         # Création des éléments de la frame gauche :
         self.label_airport = customtkinter.CTkLabel(self.frame_gauche, text="Code de l'aéroport de départ")
-        self.label_airport.grid(row=0, column=0, columnspan=3, sticky="nsw", padx=10, pady=(5,0))
+        self.label_airport.grid(row=0, column=0, columnspan=3, sticky="nsw", padx=10, pady=(5, 0))
 
-        self.input_airport = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : AX500")
-        self.input_airport.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=(0,5))
+        self.input_airport = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : KJFK")
+        self.input_airport.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=10, pady=(0, 5))
         self.input_airport.bind("<KeyRelease>", self.check_text_airport)
 
         # prochainement remplacé par un calendrier plus facile d'utilisation
@@ -67,7 +72,7 @@ class Interface(customtkinter.CTk):
         self.label_date.grid(row=2, column=0, sticky="nsw", padx=10, pady=(5, 0))
 
         self.input_date = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="aaaa/mm/jj")
-        self.input_date.grid(row=3, column=0, sticky="nsew", padx=(10,0), pady=(0, 5))
+        self.input_date.grid(row=3, column=0, sticky="nsew", padx=(10, 0), pady=(0, 5))
         self.input_date.bind("<KeyRelease>", self.check_text_date)
 
         self.input_heure_debut = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="de : 13:00")
@@ -75,16 +80,17 @@ class Interface(customtkinter.CTk):
         self.input_heure_debut.bind("<KeyRelease>", self.check_text_heure_debut)
 
         self.input_heure_fin = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="à : 15:30")
-        self.input_heure_fin.grid(row=3, column=2, sticky="nsew", padx=(0,10), pady=(0, 5))
+        self.input_heure_fin.grid(row=3, column=2, sticky="nsew", padx=(0, 10), pady=(0, 5))
         self.input_heure_fin.bind("<KeyRelease>", self.check_text_heure_fin)
         self.input_heure_fin.configure(state="disabled")
 
-        self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, text="Rechercher", command=self.button_search_event)
-        self.button_search.grid(row=4, column=0,columnspan=3, sticky="nsew", padx=10, pady=(0, 5))
+        self.button_search = customtkinter.CTkButton(self.frame_gauche, corner_radius=5, text="Rechercher",
+                                                     command=self.button_search_event)
+        self.button_search.grid(row=4, column=0, columnspan=3, sticky="nsew", padx=10, pady=(0, 5))
 
         self.scroframe_liste_vols = customtkinter.CTkScrollableFrame(self.frame_gauche)
-        self.scroframe_liste_vols.grid(row=5,column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
-        self.scroframe_liste_vols.grid_columnconfigure((0,1), weight=1)
+        self.scroframe_liste_vols.grid(row=5, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
+        self.scroframe_liste_vols.grid_columnconfigure((0, 1), weight=1)
 
         # Configuration de la frame du milieu
         # On ajoute la map
@@ -109,50 +115,54 @@ class Interface(customtkinter.CTk):
                                                                  fill="gray25", outline="gray25",
                                                                  tag="button")
 
-        self.canvas_text = self.map_widget.canvas.create_text(math.floor(position_info[0]+10),
-                                                              math.floor(position_info[1]+11),
+        self.canvas_text = self.map_widget.canvas.create_text(math.floor(position_info[0] + 10),
+                                                              math.floor(position_info[1] + 11),
                                                               anchor="nw",
                                                               fill="white",
                                                               tag="button",
-                                                              font= ('Arial', 11,"bold"))
+                                                              font=('Arial', 11, "bold"))
 
         # Ajout du curseur de selection de temps pendant le vol
 
         self.frame_curseur_temps = customtkinter.CTkFrame(self.frame_milieu)
-        self.frame_curseur_temps.grid(row=2,sticky="nswe", padx=20,pady=10)
+        self.frame_curseur_temps.grid(row=2, sticky="nswe", padx=20, pady=10)
         self.frame_curseur_temps.grid_columnconfigure(1, weight=1)
 
-        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps,state="disabled", from_=2, to=100, height=25, command=self.curseur_temps_event)
+        self.curseur_temps = customtkinter.CTkSlider(self.frame_curseur_temps, state="disabled", from_=2, to=100,
+                                                     height=25, command=self.curseur_temps_event)
         self.curseur_temps.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
         self.curseur_temps.set(10)
 
-        self.label_temps_indicateur = customtkinter.CTkLabel(self.frame_curseur_temps, text="__:__", corner_radius=5, fg_color="grey", padx="5", pady="5")
-        self.label_temps_indicateur.grid(row=0, column=0, padx=(10,0))
+        self.label_temps_indicateur = customtkinter.CTkLabel(self.frame_curseur_temps, text="__:__", corner_radius=5,
+                                                             fg_color="grey", padx="5", pady="5")
+        self.label_temps_indicateur.grid(row=0, column=0, padx=(10, 0))
 
         # configuration de la frame de droite
 
-        self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2", font=('Arial', 25, "bold"))
-        self.label_carbon_titre.grid(row=0,column=0, padx=10, pady=10)
+        self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2",
+                                                         font=('Arial', 25, "bold"))
+        self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=10)
+
+        self.optionmenu_seat_class = customtkinter.CTkOptionMenu(self.frame_droite,
+                                                                 values=["economy", "premium economy", "affaires",
+                                                                         "première"],
+                                                                 command=self.check_optionmenu_seat_class)
+        self.optionmenu_seat_class.grid(row=1, column=0, sticky="swe", padx=10, pady=10)
 
         self.frame_actuelle_emission = customtkinter.CTkFrame(self.frame_droite)
-        self.frame_actuelle_emission.grid(row=1, sticky="nswe", padx=10, pady=10)
+        self.frame_actuelle_emission.grid(row=2, sticky="nswe", padx=10, pady=10)
         self.frame_actuelle_emission.grid_columnconfigure(0, weight=1)
 
         self.label_carbon_resultat = customtkinter.CTkLabel(self.frame_actuelle_emission, text="émission carbone :")
-        self.label_carbon_resultat.grid(row=1,column=0, padx=5, pady=5)
+        self.label_carbon_resultat.grid(row=1, column=0, padx=5, pady=5)
 
         self.frame_compare_emission = customtkinter.CTkFrame(self.frame_droite)
-        self.frame_compare_emission.grid(row=2, sticky="nswe", padx=10, pady=(0,10))
+        self.frame_compare_emission.grid(row=3, sticky="nswe", padx=10, pady=(0, 10))
         self.frame_compare_emission.grid_columnconfigure(0, weight=1)
-        self.frame_compare_emission.grid_rowconfigure(3, weight=1)
-
-        check_avions_compare_var = customtkinter.StringVar(value="off")
-        self.check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission, text="B777 : 366kg", command= self.checkbox_event,
-                                             variable=check_avions_compare_var, onvalue="on", offvalue="off")
-        self.check_avions_compare.grid(row=0, sticky="nsw", padx=10, pady=10)
+        self.frame_compare_emission.grid_rowconfigure(5, weight=1)
 
         self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter")
-        self.button_export_data.grid(row=4, column=0, sticky="swe", padx=10, pady=10)
+        self.button_export_data.grid(row=6, column=0, sticky="swe", padx=10, pady=10)
 
     def check_text_airport(self, event):
         """
@@ -230,7 +240,7 @@ class Interface(customtkinter.CTk):
         # On s'assure que le troisième caractère est bien : : sinon on l'insère
         if lenght == 3:
             if not self.input_heure_debut.get()[lenght - 1] == ":":
-                self.input_heure_debut.insert(lenght-1, ':')
+                self.input_heure_debut.insert(lenght - 1, ':')
 
         # On s'assure que seuls des chiffres sont inscrits
         if lenght >= 1 and lenght != 3:
@@ -276,7 +286,7 @@ class Interface(customtkinter.CTk):
         # Vérifie si le troisième caractère est bien un : sinon on le met
         if lenght == 3:
             if not self.input_heure_fin.get()[lenght - 1] == ":":
-                self.input_heure_fin.insert(lenght-1, ':')
+                self.input_heure_fin.insert(lenght - 1, ':')
 
         # On s'assure que seuls les chiffres peuvent être entrés
         if lenght >= 1 and lenght != 3:
@@ -293,9 +303,9 @@ class Interface(customtkinter.CTk):
 
         # On s'assure que l'heure de fin est bien plus grande de 30min par rapport à l'heure de debut du créneau
         if lenght == 5:
-            heure_fin = int(self.input_heure_fin.get()[:2]) + int(self.input_heure_fin.get()[3:5])/100
-            heure_debut = int(self.input_heure_debut.get()[:2]) + int(self.input_heure_debut.get()[3:5])/100
-            if heure_fin <= heure_debut+0.30:
+            heure_fin = int(self.input_heure_fin.get()[:2]) + int(self.input_heure_fin.get()[3:5]) / 100
+            heure_debut = int(self.input_heure_debut.get()[:2]) + int(self.input_heure_debut.get()[3:5]) / 100
+            if heure_fin <= heure_debut + 0.30:
                 self.input_heure_fin.delete(0, 5)
 
     def button_vol_event(self, index):
@@ -308,12 +318,20 @@ class Interface(customtkinter.CTk):
 
         :param int index: Indice lié au boutton pressé (vol selectionné)
         """
+        self.index_vol = index
+        self.optionmenu_seat_class.set("economy")
+        # On supprime les éléments de la zone de comparaison pour en afficher par la suite de nouveaux
+        if len(self.frame_compare_emission.winfo_children()) > 1:
+            for widget in self.frame_compare_emission.winfo_children()[
+                          1:len(self.frame_compare_emission.winfo_children())]:
+                widget.destroy()
+
         # Récupération des données de trajectoire et formatage
-        self.traj = airplane_traj(index-1)
+        self.traj = airplane_traj(index - 1)
         traj = [x[1:3] for x in self.traj]
 
         # On attribue au bouton exporter l'indice du vol sélectionné
-        self.button_export_data.configure(command=lambda indice=index: self.export_event(indice))
+        self.button_export_data.configure(command=self.export_event)
         # Affichage du marqueur sous la forme d'un avion
         if self.marker_avion is not None:
             self.marker_avion.delete()
@@ -324,7 +342,8 @@ class Interface(customtkinter.CTk):
 
         # Affichage de la trajectoire du vol sur la map
         self.map_widget.delete_all_path()
-        self.map_widget.set_position((max(traj)[0]+min(traj)[0])/2, (max(traj, key=lambda x: x[1])[1]+min(traj, key=lambda x: x[1])[1])/2)
+        self.map_widget.set_position((max(traj)[0] + min(traj)[0]) / 2,
+                                     (max(traj, key=lambda x: x[1])[1] + min(traj, key=lambda x: x[1])[1]) / 2)
         self.map_widget.set_path(traj, color="#242424", width=3)
 
         # Adaptation du curseur au vol selectionné
@@ -333,17 +352,41 @@ class Interface(customtkinter.CTk):
 
         # Mise à jour de l'encadré montrant les informations du vol
         self.map_widget.canvas.itemconfig(self.canvas_text,
-                                          text=f"Compagnie : {self.liste_vols["compagnie"].values[index-1]}\n"
-                                               f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index-1]}\n"
-                                               f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index-1]}\n"
-                                               f"Call sign : {self.liste_vols["callsign"].values[index-1]}\n"
-                                               f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index-1]}\n"
-                                               f"Heure de départ : {timestamp_to_date(self.liste_vols["firstSeen"].values[index-1])[11:16]}\n"
-                                               f"Heure d'arrivée : {timestamp_to_date(self.liste_vols["lastSeen"].values[index-1])[11:16]}\n")
+                                          text=f"Compagnie : {self.liste_vols["compagnie"].values[index - 1]}\n"
+                                               f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index - 1]}\n"
+                                               f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index - 1]}\n"
+                                               f"Call sign : {self.liste_vols["callsign"].values[index - 1]}\n"
+                                               f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index - 1]}\n"
+                                               f"Heure de départ : {timestamp_to_date(self.liste_vols["firstSeen"].values[index - 1])[11:16]}\n"
+                                               f"Heure d'arrivée : {timestamp_to_date(self.liste_vols["lastSeen"].values[index - 1])[11:16]}\n")
 
         # Envoie des données de vol au calculateur CO2
-        self.calculer_carbon(self.liste_vols["modelReduit"].values[index-1], calcule_distance(self.traj))
+        value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1], calcule_distance(self.traj),
+                                          self.liste_vols["uid"].values[index - 1],
+                                          motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                          seat_class="economy")/1000, 3)
+        self.label_carbon_resultat.configure(
+            text=f'émission CO2 du vol\npar passager\n{round(value_emmi / 1000, 3)} tonnes de CO2')
+        self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[index - 1])
+        self.liste_emissions[1].append(value_emmi)
 
+        self.liste_moteurs_sim = similaire(self.liste_vols["uid"].values[index - 1])
+        i = 0
+        for moteur in self.liste_moteurs_sim.itertuples():
+            check_avions_compare_var = customtkinter.StringVar(value="on")
+            modele_moteur = moteur.modelEngine
+            emission = round(
+                self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1], calcule_distance(self.traj),
+                                     moteur.uid, motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                     seat_class="economy") / 1000, 3)
+            check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission,
+                                                             text=f'engine {modele_moteur} : {emission} kg',
+                                                             variable=check_avions_compare_var, onvalue="on",
+                                                             offvalue="off")
+            check_avions_compare.grid(row=i, sticky="nsw", padx=10, pady=10)
+            self.liste_emissions[0].append(modele_moteur)
+            self.liste_emissions[1].append(emission)
+            i += 1
 
     def button_search_event(self):
         """
@@ -396,32 +439,58 @@ class Interface(customtkinter.CTk):
         value = int(value)
         traj = [x[1:3] for x in self.traj]
         # Affichage de l'heure dans l'espace correspondant
-        self.label_temps_indicateur.configure(text=timestamp_to_date(self.traj[value-1][0])[11:16])
+        self.label_temps_indicateur.configure(text=timestamp_to_date(self.traj[value - 1][0])[11:16])
 
         # Rotation du marqueur et déplacement de ce-dernier
-        rotated_pil_img = self.avion_image.rotate(-self.traj[value-1][4])
+        rotated_pil_img = self.avion_image.rotate(-self.traj[value - 1][4])
         tk_icon = ImageTk.PhotoImage(rotated_pil_img)
         self.marker_avion.change_icon(tk_icon)
-        self.marker_avion.set_position(self.traj[value-1][1], self.traj[value-1][2])
+        self.marker_avion.set_position(self.traj[value - 1][1], self.traj[value - 1][2])
 
         # Mise à jour du tracé de la trajectoire
         self.map_widget.delete_all_path()
         self.map_widget.set_path(traj[0:value], color="#242424", width=3)
 
-    def checkbox_event(self):
-        print("B777")
+    def check_optionmenu_seat_class(self, choice):
+        seat_class = choice
+        value_emmi = self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
+                                          calcule_distance(self.traj),
+                                          self.liste_vols["uid"].values[self.index_vol - 1],
+                                          motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
+                                          seat_class=seat_class)
+        self.label_carbon_resultat.configure(
+            text=f'émission CO2 du vol\npar passager\n{round(value_emmi / 1000, 3)} tonnes de CO2')
 
-    def export_event(self, index):
+        nombre_elem_in_frame = len(self.frame_compare_emission.winfo_children())
+        i = 0
+        for element in self.frame_compare_emission.winfo_children()[1:nombre_elem_in_frame]:
+            texte = element.cget("text")
+            element.configure(text=texte[0:len(texte) - 8] + str(round(
+                self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
+                                     calcule_distance(self.traj), self.liste_moteurs_sim["uid"].values[i],
+                                     motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
+                                     seat_class=seat_class) / 1000, 3)) + " kg")
+            i += 1
+
+    def export_event(self):
+        liste_emission = [[self.liste_emissions[0][0]], [self.liste_emissions[1][0]]]
+        i = 0
+        for element in self.frame_compare_emission.winfo_children()[1:len(self.frame_compare_emission.winfo_children())]:
+            if element.get() == "on":
+                liste_emission[0].append(self.liste_emissions[0][i+1])
+                liste_emission[1].append(self.liste_emissions[1][i+1])
+            i += 1
         self.save_map_as_png("Interface/map.png")
         pdf = Pdf(map_chemin="Interface/map.png")
-        vol = self.liste_vols.values[index-1]
+        vol = self.liste_vols.values[self.index_vol - 1]
         vol = np.append(vol, calcule_distance(self.traj))
         vol[5] = timestamp_to_date(vol[5])
         vol[6] = timestamp_to_date(vol[6])
-        pdf.set_data(vol, [["engine1_test","engine2_test","engine3_test"],[0.1,0.2,0.3]])
+        pdf.set_data(vol, liste_emission)
         pdf.generer_pdf()
 
-    def calculer_carbon(self, modele, distance):
+
+    def calculer_carbon(self, modele, distance, uid, motors_nb, seat_class):
         """
         Cette procédure est déclenchée à l'exécution de :func:button_vol_event et permet de récupérer l'émission
         carbone d'un modèle d'avion donné pour la distance parcourue et l'affiche dans la zone dédiée.
@@ -429,7 +498,8 @@ class Interface(customtkinter.CTk):
         :param str modele: Nom du modèle d'avion (ex : B777)
         :param float distance: Valeur de la distance parcourue calculée à l'aide de la fonction :func:calcule_distance.
         """
-        self.label_carbon_resultat.configure(text=f"modèle : {modele}\ndistance totale : {distance}")
+        value = passenger_carbon_emissions(distance, modele, uid, motors_nb, seat_class)
+        return value
 
     def save_map_as_png(self, file_path):
         widget = self.map_widget
@@ -439,6 +509,7 @@ class Interface(customtkinter.CTk):
         height = y + widget.winfo_height()
         img = ImageGrab.grab(bbox=(x, y, width, height))
         img.save(file_path)
+
 
 def timestamp_to_date(timestamp):
     """
@@ -451,22 +522,20 @@ def timestamp_to_date(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp))
 
 
-def date_to_timestamp(date): # En construction
+def date_to_timestamp(date):  # En construction
     return
 
 
 def calcule_distance(traj):
     somme = 0
-    for i in range(len(traj)-1):
+    for i in range(len(traj) - 1):
         lat1 = traj[i][1]
         lon1 = traj[i][2]
-        lat2 = traj[i+1][1]
-        lon2 = traj[i+1][2]
-        deltalat = lat2-lat1
-        deltalon = lon2-lon1
-        d = 2*6371*math.asin(math.sqrt(math.sin(math.radians(deltalat/2))**2 + math.cos(math.radians(lat1)) *
-                                       math.cos(math.radians(lat2))*math.sin(math.radians(deltalon/2))**2))
+        lat2 = traj[i + 1][1]
+        lon2 = traj[i + 1][2]
+        deltalat = lat2 - lat1
+        deltalon = lon2 - lon1
+        d = 2 * 6371 * math.asin(math.sqrt(math.sin(math.radians(deltalat / 2)) ** 2 + math.cos(math.radians(lat1)) *
+                                           math.cos(math.radians(lat2)) * math.sin(math.radians(deltalon / 2)) ** 2))
         somme += d
     return somme
-
-
