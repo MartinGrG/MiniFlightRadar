@@ -8,3 +8,4 @@ certifi~=2024.6.2
 openpyxl
 fpdf2
 matplotlib
+numpy
