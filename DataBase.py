@@ -258,3 +258,10 @@ def aircraft_emission(reduced_model):
     """
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
+
+
+def model_is_present(reduced_model):
+    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    if reduced_model in emission_df["modelReduit"].values:
+        return True
+    return False
