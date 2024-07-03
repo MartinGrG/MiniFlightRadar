@@ -355,18 +355,22 @@ class Interface(customtkinter.CTk):
         self.map_widget.canvas.itemconfig(self.canvas_rect, fill="gray25", outline="gray25")
         self.map_widget.canvas.itemconfig(self.canvas_text,
                                           text=f"Compagnie : {self.liste_vols["compagnie"].values[index - 1]}\n"
-                                               f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[index - 1]}\n"
-                                               f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[index - 1]}\n"
+                                               f"Aéroport de départ : {self.liste_vols["estDepartureAirport"].values[
+                                                   index - 1]}\n"
+                                               f"Aéroport d'arrivée : {self.liste_vols["estArrivalAirport"].values[
+                                                   index - 1]}\n"
                                                f"Call sign : {self.liste_vols["callsign"].values[index - 1]}\n"
                                                f"Numéro ICAO24 : {self.liste_vols["icao24"].values[index - 1]}\n"
-                                               f"Heure de départ : {timestamp_to_date(self.liste_vols["firstSeen"].values[index - 1])[11:16]}\n"
-                                               f"Heure d'arrivée : {timestamp_to_date(self.liste_vols["lastSeen"].values[index - 1])[11:16]}\n")
+                                               f"Heure de départ : {timestamp_to_date(self.liste_vols["firstSeen"].
+                                                                                      values[index - 1])[11:16]}\n"
+                                               f"Heure d'arrivée : {timestamp_to_date(self.liste_vols["lastSeen"].values
+                                                                                      [index - 1])[11:16]}\n")
 
         # Envoie des données de vol au calculateur CO2
-        value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1], calcule_distance(self.traj),
-                                          self.liste_vols["uid"].values[index - 1],
-                                          motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                          seat_class="economy")/1000, 3)
+        value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1],
+                                                calcule_distance(self.traj), self.liste_vols["uid"].values[index - 1],
+                                                motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                                seat_class="economy")/1000, 3)
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
         self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[index - 1])
@@ -458,10 +462,10 @@ class Interface(customtkinter.CTk):
         seat_class = choice
         self.liste_emissions = [[], []]
         value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
-                                          calcule_distance(self.traj),
-                                          self.liste_vols["uid"].values[self.index_vol - 1],
-                                          motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                          seat_class=seat_class) / 1000, 3)
+                                                calcule_distance(self.traj),
+                                                self.liste_vols["uid"].values[self.index_vol - 1],
+                                                motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
+                                                seat_class=seat_class) / 1000, 3)
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
 
@@ -485,7 +489,8 @@ class Interface(customtkinter.CTk):
     def export_event(self):
         liste_emission = [[self.liste_emissions[0][0]], [self.liste_emissions[1][0]]]
         i = 0
-        for element in self.frame_compare_emission.winfo_children()[1:len(self.frame_compare_emission.winfo_children())]:
+        for element in self.frame_compare_emission.winfo_children()[
+                       1:len(self.frame_compare_emission.winfo_children())]:
             if element.get() == "on":
                 liste_emission[0].append(self.liste_emissions[0][i+1])
                 liste_emission[1].append(self.liste_emissions[1][i+1])
@@ -498,7 +503,6 @@ class Interface(customtkinter.CTk):
         vol[6] = timestamp_to_date(vol[6])
         pdf.set_data(vol, liste_emission)
         pdf.generer_pdf()
-
 
     def calculer_carbon(self, modele, distance, uid, motors_nb, seat_class):
         """
