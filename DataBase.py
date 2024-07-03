@@ -197,7 +197,7 @@ def easa(DF):
     return DF
 
 
-def emission(uid):
+def engine_emission(uid):
     """
     Fonction fournissant les caractéristiques données par l'EASA du moteur du vol à l'indice 'index' du DataFrame
     d'entrée.
@@ -211,7 +211,7 @@ def emission(uid):
     return ligne
 
 def similaire(uid):
-    poussee = float(emission(uid)['Rated Thrust (kN)'].iloc[0])
+    poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
     easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
@@ -247,4 +247,14 @@ def sortie(aeroport, debut, fin):
     DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return DF
 
-similaire("01P08GE197")
+
+def aircraft_emission(reduced_model):
+    """
+    Fonction fournissant les caractéristiques d'un modèle d'avion reduced_model, nécessaires pour calculer les émissions
+    CO2 par passager.
+
+    :param int reduced_model: Abbréviation du modèle de l'avion
+    :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
+    """
+    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
