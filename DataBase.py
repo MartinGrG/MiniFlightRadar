@@ -1,6 +1,7 @@
 """Programme de récupération et traitement des bases de données utilisées"""
 
 from opensky_api import OpenSkyApi
+from ast import literal_eval
 import pandas as pd
 
 
@@ -63,7 +64,7 @@ def vol_aeroport(aeroport, debut, fin):
     return flight_df
 
 
-def FAA(DF):
+def faa(df):
     """
     Fonction comparant croisant la data frame en entrée avec la base de donnée de la FAA.
     Cela permet de stocker uniquement les avions immatriculés aux États-Unis.
@@ -75,7 +76,7 @@ def FAA(DF):
     | -ACFTREF.csv (fournie par la FAA) : contient le code des avions et leur modèle correspondant
     | -ENGINE.csv (fournie par la FAA) : contient le code des moteurs et leur modèle correspondant
 
-    :param DF: DataFrame contenant au moins une colonne 'oaci24'
+    :param df: DataFrame contenant au moins une colonne 'oaci24'
     :returns: DataFrame comportant les données des avions immatriculés aux États-Unis. 4 colonnes sont ajoutées par
      rapport à la data frame en entrée :
 
@@ -90,15 +91,15 @@ def FAA(DF):
     """
 
     """Base de donnee master"""
-    FAA_df = pd.read_csv('BaseDonnees/FAA/MASTER.csv', sep=',', encoding='utf-8', low_memory=False,
+    faa_df = pd.read_csv('BaseDonnees/FAA/MASTER.csv', sep=',', encoding='utf-8', low_memory=False,
                          usecols=[2, 3, 33])  # Lecture des colonnes 'MFR MDL CODE', 'ENG MFR MDL' et 'MODE S CODE HEX'
-    FAA_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)  # Changement de nom de 'MODE S CODE HEX' en
+    faa_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)  # Changement de nom de 'MODE S CODE HEX' en
     #                                                                     'icao24'
-    FAA_df.rename(columns={'MFR MDL CODE': 'codeModel'}, inplace=True)
-    FAA_df.rename(columns={'ENG MFR MDL': 'codeEngine'}, inplace=True)
-    FAA_df['icao24'] = FAA_df['icao24'].str.strip()  # Suppression des '' inutiles
-    DF['icao24'] = DF['icao24'].str.upper()  # Les lettres minuscules deviennent majuscules
-    merged_df = pd.merge(DF, FAA_df, on='icao24')  # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
+    faa_df.rename(columns={'MFR MDL CODE': 'codeModel'}, inplace=True)
+    faa_df.rename(columns={'ENG MFR MDL': 'codeEngine'}, inplace=True)
+    faa_df['icao24'] = faa_df['icao24'].str.strip()  # Suppression des '' inutiles
+    df['icao24'] = df['icao24'].str.upper()  # Les lettres minuscules deviennent majuscules
+    merged_df = pd.merge(df, faa_df, on='icao24')  # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
     #                                                 ayant un numéro oaci24 enregistré aux US sont gardés
     """Base de donnee modele"""
     model_df = pd.read_csv('BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
@@ -155,32 +156,32 @@ def airplane_traj(index):
     return data.path
 
 
-def compagnie(DF):
+def compagnie(df):
     """
     Fonction qui associe à chaque vol du DataFrame en entrée sa compagnie. La base de donnée 'callsign.csv' (créée pour
     le projet) est utilisée, elle fait le lien entre les 3 premières lettres du callsign à la compagnie.
 
-    :param DF: DataFrame contenant au moins le callsign des vols
+    :param df: DataFrame contenant au moins le callsign des vols
     :return: DataFrame d'entrée avec une nouvelle colonne 'compagnie'
     :rtype: DataFrame
     """
     compagnie_df = pd.read_csv('BaseDonnees/callsign.csv', sep=',', encoding='utf-8')
-    DF['callsign3'] = DF['callsign'].str[:3]
-    DF = pd.merge(DF, compagnie_df, left_on='callsign3', right_on='callsign', how='left')
-    DF = DF.drop(columns=['callsign3', 'callsign_y'])
-    DF.rename(columns={'callsign_x': 'callsign'}, inplace=True)
-    DF['compagnie'] = DF['compagnie'].fillna('Inconnue')
+    df['callsign3'] = df['callsign'].str[:3]
+    df = pd.merge(df, compagnie_df, left_on='callsign3', right_on='callsign', how='left')
+    df = df.drop(columns=['callsign3', 'callsign_y'])
+    df.rename(columns={'callsign_x': 'callsign'}, inplace=True)
+    df['compagnie'] = df['compagnie'].fillna('Inconnue')
 
-    return DF
+    return df
 
 
-def easa(DF):
+def easa(df):
     """
     Fonction qui associe à chaque vol du DataFrame en entrée le numéro UID de l'easa de son moteur. La base de donnée
     'easaEmission.csv' (fournie par l'EASA) est utilisée. Elle contient les différentes émissions d'un grand nombre de
     moteurs.
 
-    :param DF: DataFrame contenant au moins des moteurs
+    :param df: DataFrame contenant au moins des moteurs
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
@@ -191,13 +192,13 @@ def easa(DF):
     easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
     easa_df = easa_df.drop_duplicates(subset=['modelEngine'])   # Suppression des doublons dans la colonne 'modelEngine'
 
-    DF['modelEngine'] = DF['modelEngine'].str.strip()
+    df['modelEngine'] = df['modelEngine'].str.strip()
 
-    DF = pd.merge(DF, easa_df, on='modelEngine')
-    return DF
+    df = pd.merge(df, easa_df, on='modelEngine')
+    return df
 
 
-def emission(uid):
+def engine_emission(uid):
     """
     Fonction fournissant les caractéristiques données par l'EASA du moteur du vol à l'indice 'index' du DataFrame
     d'entrée.
@@ -206,12 +207,12 @@ def emission(uid):
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
     emission_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8')
-    flights_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
+
 def similaire(uid):
-    poussee = float(emission(uid)['Rated Thrust (kN)'].iloc[0])
+    poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
     easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
@@ -222,20 +223,20 @@ def similaire(uid):
     # Trier les moteurs par cette différence
     easa_df = easa_df.sort_values('difference')
     # Filtrer pour obtenir les moteurs de marques différentes
-    moteursProches = []
+    moteurs_proches = []
     marques = set()
     for index, row in easa_df.iterrows():
         marque = row['Engine Identification'][:2]
         if marque not in marques:
-            moteursProches.append([row['UID No'], row['Engine Identification']])
+            moteurs_proches.append([row['UID No'], row['Engine Identification']])
             marques.add(marque)
-        if len(moteursProches) == 5:
+        if len(moteurs_proches) == 5:
             break
 
     # Convertir la liste de résultats en DataFrame
-    moteursProches_df = pd.DataFrame(moteursProches, columns=['uid', 'modelEngine'])
+    moteurs_proches_df = pd.DataFrame(moteurs_proches, columns=['uid', 'modelEngine'])
 
-    return moteursProches_df
+    return moteurs_proches_df
 
 
 def sortie(aeroport, debut, fin):
@@ -248,8 +249,28 @@ def sortie(aeroport, debut, fin):
     :return: DataFrame contenant toutes les informations sur les vols provenant et en direction de 'aeroport' dans
      l'intervalle de temps [debut, fin]
     """
-    DF = easa(FAA(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
-    DF.insert(0, 'index', range(1, len(DF) + 1))
-    DF.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
-    return DF
+    df = easa(faa(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
+    df.insert(0, 'index', range(1, len(df) + 1))
+    df.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
+    return df
 
+
+
+def aircraft_emission(reduced_model):
+    """
+    Fonction fournissant les caractéristiques d'un modèle d'avion reduced_model, nécessaires pour calculer les émissions
+    CO2 par passager.
+
+    :param int reduced_model: Abbréviation du modèle de l'avion
+    :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
+    """
+    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    emission_df['CW'] = emission_df['CW'].apply(lambda x: literal_eval(x))
+    return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
+
+
+def model_is_present(reduced_model):
+    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    if reduced_model in emission_df["modelReduit"].values:
+        return True
+    return False

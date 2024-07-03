@@ -4,7 +4,6 @@ pop up permettant à l'utilisateur d'intéragir avec le code. """
 # Librairies pour l'interface
 import customtkinter
 from tkintermapview import TkinterMapView
-import tkinter as tk
 import math
 from PIL import Image, ImageTk, ImageGrab
 # Librairies pour les timestamp unix
@@ -420,7 +419,8 @@ class Interface(customtkinter.CTk):
             for vol in self.liste_vols.itertuples():
                 button = customtkinter.CTkButton(self.scroframe_liste_vols, corner_radius=5,
                                                  text=f"{vol.compagnie} : {vol.estDepartureAirport}-"
-                                                      f"{vol.estArrivalAirport} : {timestamp_to_date(vol.firstSeen)[11:16]}-"
+                                                      f"{vol.estArrivalAirport} : {timestamp_to_date(vol.firstSeen)[
+                                                                                   11:16]}-"
                                                       f"{timestamp_to_date(vol.lastSeen)[11:16]}",
                                                  command=lambda index=vol.index: self.button_vol_event(index))
                 button.grid(row=i, column=0, columnspan=2, sticky="nsew", pady=1)
@@ -549,3 +549,11 @@ def calcule_distance(traj):
                                            math.cos(math.radians(lat2)) * math.sin(math.radians(deltalon / 2)) ** 2))
         somme += d
     return somme
+
+
+def calcule_duree(traj):
+    duree = 0
+    for i in range(len(traj)-1):
+        if traj[i][3] and traj[i+1][3]:
+            duree += traj[i+1][0]-traj[i][0]
+    return duree
