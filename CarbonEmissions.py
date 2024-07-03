@@ -57,12 +57,12 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
     float: Emissions de CO2 par passager.
     """
     # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
-    if model_is_present(model):
+    if not model_is_present(model):
         # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
         if distance < 2000:
-            model = "Standard court-courrier"  # Modèle pour vol court-courrier
+            model = "Court-courrier"  # Modèle pour vol court-courrier
         else:
-            model = "Standard long-courrier"  # Modèle pour vol long-courrier
+            model = "Long-courrier"  # Modèle pour vol long-courrier
 
     # Récupère les facteurs de CO2 pour le modèle déterminé
     aircraft_info = aircraft_emission(model)
