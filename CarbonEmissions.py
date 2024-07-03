@@ -10,39 +10,8 @@ P = 0.538  # Facteur de pré-production
 M = 3  # Multiplicateur
 AF = 0.00034  # Facteur de l’aéronef
 A = 11.68  # Facteaur d'aéroport/infrastructure
+
 # Classe économique, Premium Economy, Affaires, 1ère
-
-CO2_factors = {
-    "Standard court-courrier":
-    {"S": 157.86,  # Nombre moyen de sièges
-     "PLF": 0.796,  # Facteur de charge des passagers
-     "DC": 95,  # Correction de détour
-     "CF": 0.26,  # Facteur de fret
-     "CW": [1, 1, 1.5, 1.5],
-     "FE": 3.16,  # Facteur d’émission
-     "P": 0.538,  # Pré-production
-     "M": 3,  # Multiplicateur
-     "AF": 0.00034,  # Facteur de l’aéronef
-     "A": 11.68,  # Aéroport/infrastructure
-     "a": 0.000007,
-     "b": 2.775,
-     "c": 1260.608},
-    "Standard long-courrier":
-    {"S": 302.58,
-     "PLF": 0.82,
-     "DC": 95,
-     "CF": 0.26,
-     "CW": [1, 1.5, 4, 5],
-     "FE": 3.16,
-     "P": 0.538,
-     "M": 3,
-     "AF": 0.00034,
-     "A": 11.68,
-     "a": 0.00029,
-     "b": 3.475,
-     "c": 3259.691}}
-
-
 SEAT_CLASS = {
     "economy": 0,
     "premium economy": 1,
