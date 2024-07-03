@@ -3,7 +3,7 @@ Ce script permet d'établir les fonctions nécessaires au calcul de l'empreinte 
 l'équivalent pour un passager.
 """
 
-from DataBase import emission
+from DataBase import engine_emission, aircraft_emission, model_is_present
 
 EF = 3.16  # Facteur d’émission
 P = 0.538  # Facteur de pré-production
@@ -68,7 +68,7 @@ def global_carbon_emissions(duration, uid, engines_nb=1):
     float : Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
     """
 
-    engine_info = emission(uid).reset_index()
+    engine_info = engine_emission(uid).reset_index(drop=True)
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
     return ((engine_info["Fuel Flow T/O (kg/sec)"]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engines_nb
@@ -88,7 +88,7 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
     float: Emissions de CO2 par passager.
     """
     # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
-    if model not in CO2_factors:
+    if model_is_present(model):
         # Si le modèle n'est pas trouvé, détermine si le vol est court-courrier ou long-courrier
         if distance < 2000:
             model = "Standard court-courrier"  # Modèle pour vol court-courrier
@@ -96,8 +96,8 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
             model = "Standard long-courrier"  # Modèle pour vol long-courrier
 
     # Récupère les facteurs de CO2 pour le modèle déterminé
-    factors = CO2_factors[model]
+    aircraft_info = aircraft_emission(model)
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
-    return (global_carbon_emissions(duration, uid, engines_nb)*(1-factors["CF"]) *
-            factors["CW"][SEAT_CLASS[seat_class]]/(factors["S"]*factors["PLF"])+AF*distance+A)
+    return (global_carbon_emissions(duration, uid, engines_nb)*(1-aircraft_info["CF"]) *
+            aircraft_info["CW"][SEAT_CLASS[seat_class]]/(aircraft_info["S"]*aircraft_info["PLF"])+AF*distance+A)
