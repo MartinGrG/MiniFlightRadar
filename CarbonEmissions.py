@@ -40,7 +40,7 @@ def global_carbon_emissions(duration, uid, engines_nb=1):
     engine_info = engine_emission(uid).reset_index(drop=True)
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
-    return ((engine_info["Fuel Flow T/O (kg/sec)"]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engines_nb
+    return ((engine_info["Fuel Flow T/O (kg/sec)"][0]*0.3*duration+engine_info["Fuel LTO Cycle (kg)  "][0])*engines_nb
             * (P+EF*M))
 
 
@@ -68,5 +68,6 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
     aircraft_info = aircraft_emission(model)
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
-    return (global_carbon_emissions(duration, uid, engines_nb)*(1-aircraft_info["CF"]) *
-            aircraft_info["CW"][SEAT_CLASS[seat_class]]/(aircraft_info["S"]*aircraft_info["PLF"])+AF*distance+A)
+    return (global_carbon_emissions(duration, uid, engines_nb)*(1-aircraft_info["CF"][0]) *
+            aircraft_info["CW"][0][SEAT_CLASS[seat_class]]/(aircraft_info["S"][0]*aircraft_info["PLF"][0]) +
+            AF*distance+A)
