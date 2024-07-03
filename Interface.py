@@ -368,7 +368,8 @@ class Interface(customtkinter.CTk):
 
         # Envoie des données de vol au calculateur CO2
         value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1],
-                                                calcule_distance(self.traj), self.liste_vols["uid"].values[index - 1],
+                                                calcule_distance(self.traj), calcule_duree(self.traj),
+                                                self.liste_vols["uid"].values[index - 1],
                                                 motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                                 seat_class="economy")/1000, 3)
         self.label_carbon_resultat.configure(
@@ -383,7 +384,8 @@ class Interface(customtkinter.CTk):
             modele_moteur = moteur.modelEngine
             emission = round(
                 self.calculer_carbon(self.liste_vols["modelReduit"].values[index - 1], calcule_distance(self.traj),
-                                     moteur.uid, motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                     calcule_duree(self.traj), moteur.uid,
+                                     motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                      seat_class="economy") / 1000, 3)
             check_avions_compare = customtkinter.CTkCheckBox(self.frame_compare_emission,
                                                              text=f'engine {modele_moteur} : {emission} t',
@@ -462,7 +464,7 @@ class Interface(customtkinter.CTk):
         seat_class = choice
         self.liste_emissions = [[], []]
         value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
-                                                calcule_distance(self.traj),
+                                                calcule_distance(self.traj), calcule_duree(self.traj),
                                                 self.liste_vols["uid"].values[self.index_vol - 1],
                                                 motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
                                                 seat_class=seat_class) / 1000, 3)
@@ -478,7 +480,8 @@ class Interface(customtkinter.CTk):
             texte = element.cget("text")
             value = round(
                 self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
-                                     calcule_distance(self.traj), self.liste_moteurs_sim["uid"].values[i],
+                                     calcule_distance(self.traj), calcule_duree(self.traj),
+                                     self.liste_moteurs_sim["uid"].values[i],
                                      motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
                                      seat_class=seat_class) / 1000, 3)
             element.configure(text=texte[0:len(texte) - 8] + str(value) + " t")
@@ -504,7 +507,7 @@ class Interface(customtkinter.CTk):
         pdf.set_data(vol, liste_emission)
         pdf.generer_pdf()
 
-    def calculer_carbon(self, modele, distance, uid, motors_nb, seat_class):
+    def calculer_carbon(self, modele, distance, duration, uid, motors_nb, seat_class):
         """
         Cette procédure est déclenchée à l'exécution de :func:button_vol_event et permet de récupérer l'émission
         carbone d'un modèle d'avion donné pour la distance parcourue et l'affiche dans la zone dédiée.
@@ -512,7 +515,7 @@ class Interface(customtkinter.CTk):
         :param str modele: Nom du modèle d'avion (ex : B777)
         :param float distance: Valeur de la distance parcourue calculée à l'aide de la fonction :func:calcule_distance.
         """
-        value = passenger_carbon_emissions(distance, modele, uid, motors_nb, seat_class)
+        value = passenger_carbon_emissions(distance, duration, modele, uid, motors_nb, seat_class)
         return value
 
     def save_map_as_png(self, file_path):
