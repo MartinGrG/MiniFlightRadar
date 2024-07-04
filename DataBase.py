@@ -275,7 +275,7 @@ def model_is_present(reduced_model):
 
 def similar_models(reduced_model):
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
-    emission_df.drop(index=[0,1], inplace=True)
+    emission_df.drop(index=[0, 1], inplace=True)
     reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
     emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
     emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
