@@ -1,7 +1,6 @@
 """Programme de récupération et traitement des bases de données utilisées"""
 
 from opensky_api import OpenSkyApi
-from ast import literal_eval
 import pandas as pd
 
 
@@ -265,7 +264,6 @@ def aircraft_emission(reduced_model):
     :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
     """
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
-    emission_df['CW'] = emission_df['CW'].apply(lambda x: literal_eval(x))
     return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
 
 

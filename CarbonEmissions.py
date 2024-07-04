@@ -12,11 +12,11 @@ AF = 0.00034  # Facteur de l’aéronef
 A = 11.68  # Facteaur d'aéroport/infrastructure
 
 # Classe économique, Premium Economy, Affaires, 1ère
-SEAT_CLASS = {
-    "economy": 0,
-    "premium economy": 1,
-    "affaires": 2,
-    "première": 3
+SEAT_CLASS = {  # court-courrier, long-courrier, fret, jet privé
+    "economy": [1,1,1,4],
+    "premium economy": [1,1.5,1,4],
+    "affaires": [1.5,4,1,4],
+    "première": [1.5,5,1,4]
 }
 
 
@@ -69,5 +69,5 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
 
     # Calcule les émissions de CO2 par passager en tenant compte de la classe de siège
     return (global_carbon_emissions(duration, uid, engines_nb)*(1-aircraft_info["CF"][0]) *
-            aircraft_info["CW"][0][SEAT_CLASS[seat_class]]/(aircraft_info["S"][0]*aircraft_info["PLF"][0]) +
+            SEAT_CLASS[seat_class][aircraft_info["CW"][0]]/(aircraft_info["S"][0]*aircraft_info["PLF"][0]) +
             AF*distance+A)
