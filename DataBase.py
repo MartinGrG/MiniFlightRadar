@@ -202,7 +202,7 @@ def engine_emission(uid):
     Fonction fournissant les caractéristiques données par l'EASA du moteur du vol à l'indice 'index' du DataFrame
     d'entrée.
 
-    :param int uid: Numéro uid unique au moteur
+    :param str uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
     emission_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8')
