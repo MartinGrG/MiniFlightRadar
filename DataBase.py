@@ -185,7 +185,7 @@ def easa(df):
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
-    easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8',
+    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
                           usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
@@ -206,7 +206,7 @@ def engine_emission(uid):
     :param int uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
-    emission_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8')
+    emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
@@ -214,7 +214,7 @@ def engine_emission(uid):
 def similaire(uid):
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
-    easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
+    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
