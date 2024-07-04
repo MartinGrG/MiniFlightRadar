@@ -202,7 +202,7 @@ def engine_emission(uid):
     Fonction fournissant les caractéristiques données par l'EASA du moteur du vol à l'indice 'index' du DataFrame
     d'entrée.
 
-    :param int uid: Numéro uid unique au moteur
+    :param str uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
     emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
@@ -267,6 +267,13 @@ def aircraft_emission(reduced_model):
 
 
 def model_is_present(reduced_model):
+    """
+    Vérifie si un modèle d'avion reduced_model est présent dans la base de données.
+
+    :param int reduced_model: Abbréviation du modèle de l'avion.
+    :return: True si le modèle est présent, False sinon.
+    :rtype: bool
+    """
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     if reduced_model in emission_df["modelReduit"].values:
         return True
@@ -274,6 +281,16 @@ def model_is_present(reduced_model):
 
 
 def similar_models(reduced_model):
+    """
+    Trouve des modèles d'avion similaires à un modèle d'avion reduced_model donné.
+
+    Les modèles similaires sont ceux qui ont le même facteur de classe de sièges (CW) et une capacité de sièges (S)
+    supérieure ou égale à celle du modèle réduit, à l'exception du modèle réduit lui-même.
+
+    :param int reduced_model: Abbréviation du modèle de l'avion.
+    :return: Liste des abréviations des modèles d'avion similaires.
+    :rtype: numpy.ndarray
+    """
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     emission_df.drop(index=[0, 1], inplace=True)
     reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]

@@ -544,6 +544,17 @@ def date_to_timestamp(date):  # En construction
 
 
 def calcule_distance(traj):
+    """
+    Calcule la distance totale parcourue sur une trajectoire donnée.
+
+    Cette fonction utilise la formule de Haversine pour calculer la distance entre chaque point successif de la trajectoire.
+
+    :param list traj: Liste de points de la trajectoire où chaque point est une liste ou un tuple
+                      contenant le temps en UNIX, la latitude, la longitude, et un indicateur optionnel de validité.
+
+    :return: La distance totale parcourue en kilomètres.
+    :rtype: float
+    """
     somme = 0
     for i in range(len(traj) - 1):
         lat1 = traj[i][1]
@@ -559,6 +570,17 @@ def calcule_distance(traj):
 
 
 def calcule_duree(traj):
+    """
+    Calcule la durée totale d'une trajectoire donnée.
+
+    Cette fonction somme les différences de temps entre chaque point successif de la trajectoire.
+
+    :param list traj: Liste de points de la trajectoire où chaque point est une liste ou un tuple
+                      contenant le temps en UNIX, la latitude, la longitude, et un indicateur optionnel de validité.
+
+    :return: La durée totale de la trajectoire en secondes.
+    :rtype: int
+    """
     duree = 0
     for i in range(len(traj)-1):
         if traj[i][3] and traj[i+1][3]:

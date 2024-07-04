@@ -5,18 +5,19 @@ l'équivalent pour un passager.
 
 from DataBase import engine_emission, aircraft_emission, model_is_present
 
+# Facteurs et constantes
 EF = 3.16  # Facteur d’émission
 P = 0.538  # Facteur de pré-production
 M = 3  # Multiplicateur
 AF = 0.00034  # Facteur de l’aéronef
 A = 11.68  # Facteaur d'aéroport/infrastructure
 
-# Classe économique, Premium Economy, Affaires, 1ère
-SEAT_CLASS = {  # court-courrier, long-courrier, fret, jet privé
-    "economy": [1,1,1,4],
-    "premium economy": [1,1.5,1,4],
-    "affaires": [1.5,4,1,4],
-    "première": [1.5,5,1,4]
+# Classes de sièges et multiplicateurs correspondants
+SEAT_CLASS = {
+    "economy": [1, 1, 1, 4],  # court-courrier, long-courrier, fret, jet privé
+    "premium economy": [1, 1.5, 1, 4],
+    "affaires": [1.5, 4, 1, 4],
+    "première": [1.5, 5, 1, 4]
 }
 
 
@@ -24,19 +25,18 @@ def global_carbon_emissions(duration, uid, engines_nb=1):
     """
     Calcule les émissions globales de CO2 pour un vol donné.
 
-    Cette fonction utilise les données de distance de vol et le modèle d'avion pour
-    estimer les émissions de CO2 en utilisant une formule quadratique basée sur plusieurs
-    facteurs spécifiques au modèle d'avion.
+    Cette fonction utilise la durée du vol et les moteurs du modèle d'avion pour estimer les émissions de CO2 en
+    utilisant une estimation de la consommation.
 
-    Arguments :
-    gcd (float) : La distance géodésique (great circle distance) en kilomètres.
-    model (str) : Le modèle de l'avion. Si le modèle n'est pas reconnu, un modèle par défaut
-                  est sélectionné en fonction de la distance (court-courrier ou long-courrier).
+    :param float duration: La durée du vol en heures.
+    :param str uid: L'identifiant unique du moteur du modèle d'avion.
+    :param int engines_nb: Le nombre de moteurs de l'avion (par défaut : 1).
 
-    Retour :
-    float : Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
+    :return: Les émissions estimées de CO2 en kilogrammes pour le vol spécifié.
+    :rtype: float
     """
 
+    # Récupère les facteurs de CO2 pour le moteur déterminé
     engine_info = engine_emission(uid).reset_index(drop=True)
 
     # Calcule les émissions de carbone globales en utilisant les facteurs et la formule quadratique
@@ -48,13 +48,15 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
     """
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
-    Parameters:
-    gcd (int): Distance en kilomètres.
-    model (str): Modèle de l'avion.
-    seat_class (str): Classe de siège du passager (par défaut : "economy").
+    :param float distance: La distance en kilomètres.
+    :param float duration: La durée du vol en heures.
+    :param str model: Le modèle de l'avion.
+    :param str uid: L'identifiant unique du moteur du modèle d'avion.
+    :param int engines_nb: Le nombre de moteurs de l'avion (par défaut : 1).
+    :param str seat_class: La classe de siège du passager (par défaut : "economy").
 
-    Returns:
-    float: Emissions de CO2 par passager.
+    :return: Les émissions de CO2 par passager en kilogrammes.
+    :rtype: float
     """
     # Vérifie si le modèle donné est dans le dictionnaire des facteurs de CO2 (CO2_factors)
     if not model_is_present(model):
