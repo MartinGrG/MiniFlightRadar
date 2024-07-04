@@ -10,7 +10,7 @@ from PIL import Image, ImageTk, ImageGrab
 import datetime
 import time
 # Librairies pour la gestion des données
-from DataBase import sortie, airplane_traj, similaire
+from DataBase import sortie, airplane_traj, similar_engines
 import pandas as pd
 # Librairie pour générer document PDF
 from Pdf_generateur import Pdf
@@ -377,7 +377,7 @@ class Interface(customtkinter.CTk):
         self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[index - 1])
         self.liste_emissions[1].append(value_emmi)
 
-        self.liste_moteurs_sim = similaire(self.liste_vols["uid"].values[index - 1])
+        self.liste_moteurs_sim = similar_engines(self.liste_vols["uid"].values[index - 1])
         i = 0
         for moteur in self.liste_moteurs_sim.itertuples():
             check_avions_compare_var = customtkinter.StringVar(value="on")

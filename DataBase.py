@@ -210,7 +210,7 @@ def engine_emission(uid):
     return ligne
 
 
-def similaire(uid):
+def similar_engines(uid):
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
     easa_df = pd.read_csv('BaseDonnees/EASA/nvPM Emissions.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
@@ -254,7 +254,6 @@ def sortie(aeroport, debut, fin):
     return df
 
 
-
 def aircraft_emission(reduced_model):
     """
     Fonction fournissant les caractéristiques d'un modèle d'avion reduced_model, nécessaires pour calculer les émissions
@@ -272,3 +271,13 @@ def model_is_present(reduced_model):
     if reduced_model in emission_df["modelReduit"].values:
         return True
     return False
+
+
+def similar_models(reduced_model):
+    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    emission_df.drop(index=[0,1], inplace=True)
+    reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
+    emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
+    emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
+    emission_df.drop(index=reduced_model_index, inplace=True)
+    return emission_df["modelReduit"].values
