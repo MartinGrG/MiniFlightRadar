@@ -173,4 +173,4 @@ class Pdf(FPDF):
         self.rect(4, 4, self.w-8, self.h-8)
 
         # Enregistrer le PDF
-        self.output("Compte_rendu.pdf")
+        self.output("Interface/Compte_rendu.pdf")
