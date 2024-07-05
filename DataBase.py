@@ -289,7 +289,7 @@ def similar_models(reduced_model):
 
     :param int reduced_model: Abbréviation du modèle de l'avion.
     :return: Liste des abréviations des modèles d'avion similaires.
-    :rtype: numpy.ndarray
+    :rtype: list
     """
     emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     emission_df.drop(index=[0, 1], inplace=True)
@@ -297,4 +297,4 @@ def similar_models(reduced_model):
     emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
     emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
     emission_df.drop(index=reduced_model_index, inplace=True)
-    return emission_df["modelReduit"].values
+    return emission_df["modelReduit"].values.tolist()
