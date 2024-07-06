@@ -185,11 +185,13 @@ def easa(df):
     :rtype: DataFrame
     """
     easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
-                          usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
+                          usecols=['UID No', 'Engine Identification', 'UID No', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
     easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
     easa_df = easa_df.drop_duplicates(subset=['modelEngine'])   # Suppression des doublons dans la colonne 'modelEngine'
+    easa_df = easa_df.dropna(subset=["Fuel Flow T/O (kg/sec)"])
+    easa_df = easa_df.dropna(subset=["Fuel LTO Cycle (kg)  "])
 
     df['modelEngine'] = df['modelEngine'].str.strip()
 
@@ -206,6 +208,9 @@ def engine_emission(uid):
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
     emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
+    emission_df = emission_df.dropna(subset=["Fuel Flow T/O (kg/sec)"])
+    emission_df = emission_df.dropna(subset=["Fuel LTO Cycle (kg)  "])
+    emission_df.to_csv('1.csv')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
@@ -217,7 +222,8 @@ def similar_engines(uid):
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
-    easa_df = easa_df[easa_df['UID No'] != uid]
+    engine_id_to_remove = easa_df.loc[easa_df['UID No'] == uid, 'Engine Identification'].values[0]
+    easa_df = easa_df[easa_df['Engine Identification'] != engine_id_to_remove]
 
     # Trier les moteurs par cette différence
     easa_df = easa_df.sort_values('difference')

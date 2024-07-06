@@ -289,7 +289,7 @@ class OpenSkyApi(object):
             "{0:s}{1:s}".format(self._api_url, url_post),
             auth=self._auth,
             params=params,
-            timeout=30.00,
+            timeout=60.00,
         )
         if r.status_code == 200:
             self._last_requests[callee] = time.time()
