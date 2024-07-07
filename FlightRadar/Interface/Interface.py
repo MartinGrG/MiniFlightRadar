@@ -10,13 +10,13 @@ from PIL import Image, ImageTk, ImageGrab
 import datetime
 import time
 # Librairies pour la gestion des données
-from DataBase import sortie, airplane_traj, similar_engines
+from FlightRadar.DataBase.DataBase import sortie, airplane_traj, similar_engines
 import pandas as pd
 # Librairie pour générer document PDF
-from Pdf_generateur import Pdf
+from FlightRadar.PDFgenerator.Pdf_generateur import Pdf
 import numpy as np
 # Librairies pour emissions
-from CarbonEmissions import passenger_carbon_emissions
+from FlightRadar.CO2calculator.CarbonEmissions import passenger_carbon_emissions
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
@@ -29,7 +29,7 @@ class Interface(customtkinter.CTk):
         self.liste_vols = pd.DataFrame({})
         self.airport_depart = ''
         self.traj = []
-        self.avion_image = Image.open("Interface/plane_img.png")
+        self.avion_image = Image.open("FlightRadar/Interface/plane_img.png")
         self.marker_avion = None
         self.liste_moteurs_sim = []
         self.index_vol = None

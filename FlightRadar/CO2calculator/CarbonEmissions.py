@@ -3,7 +3,7 @@ Ce script permet d'établir les fonctions nécessaires au calcul de l'empreinte 
 l'équivalent pour un passager.
 """
 
-from DataBase import engine_emission, aircraft_emission, model_is_present
+from FlightRadar.DataBase.DataBase import engine_emission, aircraft_emission, model_is_present
 
 # Facteurs et constantes
 EF = 3.16  # Facteur d’émission
