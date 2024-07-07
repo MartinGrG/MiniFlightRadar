@@ -185,7 +185,7 @@ def easa(df):
     :rtype: DataFrame
     """
     easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
-                          usecols=['UID No', 'Engine Identification', 'UID No', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])  # Lecture des colonnes 'UID No' et 'MODEL'
+                          usecols=['UID No', 'Engine Identification', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
     easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
@@ -217,12 +217,15 @@ def engine_emission(uid):
 def similar_engines(uid):
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
-    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
+    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=['UID No', 'Engine Identification', 'Rated Thrust (kN)', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
     engine_id_to_remove = easa_df.loc[easa_df['UID No'] == uid, 'Engine Identification'].values[0]
     easa_df = easa_df[easa_df['Engine Identification'] != engine_id_to_remove]
+    easa_df.to_csv('1.csv')
+    easa_df = easa_df.dropna(subset=["Fuel Flow T/O (kg/sec)"])
+    easa_df = easa_df.dropna(subset=["Fuel LTO Cycle (kg)  "])
 
     # Trier les moteurs par cette différence
     easa_df = easa_df.sort_values('difference')
@@ -304,3 +307,5 @@ def similar_models(reduced_model):
     emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
     emission_df.drop(index=reduced_model_index, inplace=True)
     return emission_df["modelReduit"].values.tolist()
+
+print(similar_engines("6GE092"))
