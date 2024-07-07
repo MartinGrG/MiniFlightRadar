@@ -211,20 +211,16 @@ def engine_emission(uid):
 
 
 def similar_engines(uid):
-    """
-        Détermine les 5 moteurs, chacun d'une marque différente, ayant une poussée la plus proche du moteur associé au
-        numéro uid en entrée
-
-        :param str uid: Numéro uid unique au moteur
-        :return: DataFrame de deux colonnes : numéro uid et modèle du moteur, 5 lignes pour les 5 moteurs retournés
-        """
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
-    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
+    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=['UID No', 'Engine Identification', 'Rated Thrust (kN)', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
-    easa_df = easa_df[easa_df['UID No'] != uid]
+    engine_id_to_remove = easa_df.loc[easa_df['UID No'] == uid, 'Engine Identification'].values[0]
+    easa_df = easa_df[easa_df['Engine Identification'] != engine_id_to_remove]
+    easa_df = easa_df.dropna(subset=["Fuel Flow T/O (kg/sec)"])
+    easa_df = easa_df.dropna(subset=["Fuel LTO Cycle (kg)  "])
 
     # Trier les moteurs par cette différence
     easa_df = easa_df.sort_values('difference')
