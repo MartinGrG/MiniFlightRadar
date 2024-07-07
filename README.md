@@ -1,4 +1,59 @@
-# MiniFlightRadar
+# Traqueur de vol avec calcul d'émission CO2
 
-Lien drive pour la base de donnée
-https://drive.google.com/drive/folders/1KZl4Zp_mg5ZkMUKfn7LkwkjePj2CEhIC?usp=drive_link
+# Objetcif:
+Le but de l'application est de calculer l'émission carbon par passager sur un vol ayant déjà eu lieu.
+
+# Guide d'utilisation
+Télécharger le dossier GIT et lancer le fichier "main.py".
+L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.
+### Historique des vols
+L'utilisateur fourni le code OACI d'un aéroport, une date et une plage horaire. Il peut ensuite choisir un vol dans la 
+liste contenant tous les vols à partant et à destination de son aéroport dans la période fournie. Pour chacun des vols 
+de la liste est indiqué : la compagnie aérienne, les aéroports de départ et d'arrivé ainsi que les heures de départs et d'arrivées. 
+La date doit être comprise dans les 30 jours précédant et la plage horaire supérieur à 30 minutes.
+### Affichage du vol
+Une fois le vol sélectionné, son itinéraire est affiché sur une carte intéractive avec un gradiant de couleur 
+représentant l'évolution de son altitude. Un slider permet revivre l'évolution du vol dans le temps. En bas à droite de 
+la carte des informations sont fournies sur le vol : la compagnie, les codes OACI de l'aéroport de départ et d'arrivée,
+ le callsign, le numéro oaci24 ainsi que les heures de départs et d'arrivées.
+### Calculateur de CO2
+Le calculateur de CO2 donne l'émission par passager du vol sélectionné pour une certaine classe. La classe est choisie 
+dans un menu déroulant, il y a 4 choix : économie, premium économie, affaire et première.
+De plus, l'application offre la possibilité de tester différentes combinaisons de modèles et moteurs similaires afin de 
+rechercher laquelle serait la pls écologique.
+### Fiche de vol
+Un bouton "Exporter" permet en cliquant dessus de générer une fiche de vol recensant toutes les informations du vol 
+sélectionné.
+
+
+# Interface: 
+L'interface est créée avec la librairie customtkinter.
+![Capture de l'interface](images/interface.png)
+
+
+# Gestion de la base de donnée
+La base de donnée est composé de 8 bases de données : 
+- OpenSky : utilisation de l'api pour récupérer les vols correspondant à l'entrée utilisateur
+- callsigne.csv : lie les callsigns aux compagnies
+- aircraft_parameters.csv : fournies des informations utiles au calcul de l'émission du vol
+- MASTER.csv (fournie par la FAA) : liste tous les avions immatriculés aux États-Unis
+- ENGINE.csv (fournie par la FAA) : lie aux avions immatriculés aux US leurs moteurs 
+- ACFTREF.csv (fournie par la FAA) : fournie le modèle de chaque avion et le nombre de moteurs équipé
+- Gaseous Emissions and Smoke.csv (fournie par l'EASA) : fournies les caractéristiques de nombreux moteurs d'avions
+- flight_data.csv : construite à partir de toutes les précedentes, elle contient toutes les informations sur les vols 
+correspondant à l'entrée de l'utilisateur
+
+Leurs intéractions peut être représentée comme suit :
+![Schema fonctionnement base de donnée](images/schemaBaseDeDonnees.png)
+Les tableaux représentent les informations contenues dans chaque base de donnée que nous conservons dans
+flight_data.csv. 
+Les bases de données trouvées sur internet sont téléchargées automatiquement lors du premier lancement de l'application.
+
+# Calcul des émissions :
+
+
+# Dépendances :
+Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
+
+
+
