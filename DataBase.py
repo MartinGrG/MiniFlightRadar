@@ -210,7 +210,6 @@ def engine_emission(uid):
     emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
     emission_df = emission_df.dropna(subset=["Fuel Flow T/O (kg/sec)"])
     emission_df = emission_df.dropna(subset=["Fuel LTO Cycle (kg)  "])
-    emission_df.to_csv('1.csv')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
@@ -240,6 +239,7 @@ def similar_engines(uid):
 
     # Convertir la liste de résultats en DataFrame
     moteurs_proches_df = pd.DataFrame(moteurs_proches, columns=['uid', 'modelEngine'])
+    print(moteurs_proches_df)
 
     return moteurs_proches_df
 
