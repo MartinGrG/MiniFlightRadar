@@ -124,7 +124,7 @@ class Interface(customtkinter.CTk):
                                                               tag="button",
                                                               font=('Arial', 11, "bold"))
         # Ajouter cadre gradient couleur/altitude :
-        position_info = (620, 15)
+        position_info = (610, 15)
         width_infos = 75
         height_infos = 250
         self.canvas_rect_gradient_fond = self.map_widget.canvas.create_polygon(position_info[0], position_info[1],
@@ -389,7 +389,7 @@ class Interface(customtkinter.CTk):
         if self.map_widget.canvas.itemcget(self.canvas_rect_gradient_fond, 'fill') != "gray25":
             self.map_widget.canvas.itemconfig(self.canvas_rect_gradient_fond, fill="gray25", outline="gray25")
             for x in range(0, 12500, 100):
-                position_gradient = (625, 255 - x * 235 / 12500)
+                position_gradient = (615, 255 - x * 235 / 12500)
                 width_infos = 15
                 height_infos = 2
 
