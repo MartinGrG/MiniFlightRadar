@@ -1,6 +1,6 @@
 """Programme de récupération et traitement des bases de données utilisées"""
 
-from opensky_api import OpenSkyApi
+from FlightRadar.DataBase.opensky_api import OpenSkyApi
 import pandas as pd
 
 
@@ -90,7 +90,7 @@ def faa(df):
     """
 
     """Base de donnee master"""
-    faa_df = pd.read_csv('BaseDonnees/FAA/MASTER.csv', sep=',', encoding='utf-8', low_memory=False,
+    faa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/MASTER.csv', sep=',', encoding='utf-8', low_memory=False,
                          usecols=[2, 3, 33])  # Lecture des colonnes 'MFR MDL CODE', 'ENG MFR MDL' et 'MODE S CODE HEX'
     faa_df.rename(columns={'MODE S CODE HEX': 'icao24'}, inplace=True)  # Changement de nom de 'MODE S CODE HEX' en
     #                                                                     'icao24'
@@ -101,7 +101,7 @@ def faa(df):
     merged_df = pd.merge(df, faa_df, on='icao24')  # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
     #                                                 ayant un numéro oaci24 enregistré aux US sont gardés
     """Base de donnee modele"""
-    model_df = pd.read_csv('BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
+    model_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
                            usecols=[0, 2, 7])  # Lecture des colones 'CODE' et 'MODEL'
     model_df.rename(columns={'NO-ENG': 'numberEngine'}, inplace=True)
     model_df.rename(columns={'CODE': 'codeModel'}, inplace=True)
@@ -115,7 +115,7 @@ def faa(df):
     merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')  # Suppression des '-'
 
     """Base de donnee engine"""
-    engine_df = pd.read_csv('BaseDonnees/FAA/ENGINE.csv', sep=',', encoding='utf-8', usecols=[0, 2],
+    engine_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ENGINE.csv', sep=',', encoding='utf-8', usecols=[0, 2],
                             dtype={'CODE': str})  # Lecture des colonnes 'codeEngine' et 'modelEngine'
     #                                                     Ajout du dtype pour conserver les 0 au début du CODE sinon
     #                                                     00401 devient 401
@@ -147,7 +147,7 @@ def airplane_traj(index):
 
     :rtype: Liste Python
     """
-    traj_df = pd.read_csv('flights_data.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 4, 5])
+    traj_df = pd.read_csv('FlightRadar/DataBase/flights_data.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 4, 5])
     icao24 = traj_df.loc[index, 'icao24'].lower()
     t = traj_df.loc[index, 'firstSeen']
     api = OpenSkyApi()
@@ -164,7 +164,7 @@ def compagnie(df):
     :return: DataFrame d'entrée avec une nouvelle colonne 'compagnie'
     :rtype: DataFrame
     """
-    compagnie_df = pd.read_csv('BaseDonnees/callsign.csv', sep=',', encoding='utf-8')
+    compagnie_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/callsign.csv', sep=',', encoding='utf-8')
     df['callsign3'] = df['callsign'].str[:3]
     df = pd.merge(df, compagnie_df, left_on='callsign3', right_on='callsign', how='left')
     df = df.drop(columns=['callsign3', 'callsign_y'])
@@ -184,7 +184,7 @@ def easa(df):
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
-    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
+    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
                           usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
@@ -205,7 +205,7 @@ def engine_emission(uid):
     :param str uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
-    emission_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
+    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
@@ -220,7 +220,7 @@ def similar_engines(uid):
         """
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
-    easa_df = pd.read_csv('BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
+    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=[0, 3, 8])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
@@ -257,7 +257,7 @@ def sortie(aeroport, debut, fin):
     """
     df = easa(faa(compagnie(vol_aeroport(aeroport, debut, fin))))  # Ajout de la colonne index
     df.insert(0, 'index', range(1, len(df) + 1))
-    df.to_csv('flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
+    df.to_csv('FlightRadar/DataBase/flights_data.csv', index=False)  # Sauvegarde le DataFrame dans un fichier CSV
     return df
 
 
@@ -269,7 +269,7 @@ def aircraft_emission(reduced_model):
     :param int reduced_model: Abbréviation du modèle de l'avion
     :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
     """
-    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
 
 
@@ -281,7 +281,7 @@ def model_is_present(reduced_model):
     :return: True si le modèle est présent, False sinon.
     :rtype: bool
     """
-    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     if reduced_model in emission_df["modelReduit"].values:
         return True
     return False
@@ -298,7 +298,7 @@ def similar_models(reduced_model):
     :return: Liste des abréviations des modèles d'avion similaires.
     :rtype: list
     """
-    emission_df = pd.read_csv('BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
     emission_df.drop(index=[0, 1], inplace=True)
     reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
     emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
