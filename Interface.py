@@ -10,7 +10,7 @@ from PIL import Image, ImageTk, ImageGrab
 import datetime
 import time
 # Librairies pour la gestion des données
-from DataBase import sortie, airplane_traj, similar_engines
+from DataBase import sortie, airplane_traj, similar_engines, similar_models
 import pandas as pd
 # Librairie pour générer document PDF
 from Pdf_generateur import Pdf
@@ -33,8 +33,8 @@ class Interface(customtkinter.CTk):
         self.marker_avion = None
         self.liste_moteurs_sim = []
         self.index_vol = None
-        self.liste_emissions = [[], []]
-        self.liste_modele_sim =[]
+        self.liste_emissions = [[], [[]], [[]]]
+        self.liste_modele_sim = []
         # configuration de la fenêtre :
         self.title("Panneau usager")  # titre
         self.geometry("1300x600")  # dimensions de la fenètre
@@ -338,6 +338,7 @@ class Interface(customtkinter.CTk):
         """
         self.index_vol = index
         self.optionmenu_seat_class.set("economy")
+        self.liste_emissions = [[], [[]], [[]]]
 
         # On supprime les tabs de la zone de tabview pour en afficher par la suite de nouveaux
         if len(self.liste_modele_sim) > 0:
@@ -418,12 +419,12 @@ class Interface(customtkinter.CTk):
                                                       tag="button")
                 if x % 2000 == 0:
                     self.map_widget.canvas.create_text(math.floor(position_gradient[0] + 20),
-                                                       math.floor(position_gradient[1]-5),
+                                                       math.floor(position_gradient[1] - 5),
                                                        anchor="nw",
                                                        fill="white",
                                                        tag="button",
                                                        font=('Arial', 11, "bold"),
-                                                       text=str(x)+"m")
+                                                       text=str(x) + "m")
         # Mise à jour de l'encadré montrant les informations du vol
         self.map_widget.canvas.itemconfig(self.canvas_rect, fill="gray25", outline="gray25")
         self.map_widget.canvas.itemconfig(self.canvas_text,
@@ -442,40 +443,45 @@ class Interface(customtkinter.CTk):
         # Envoie des données de vol au calculateur CO2
         modele_red = self.liste_vols["modelReduit"].values[index - 1]
 
-        value_emmi = round(self.calculer_carbon(modele_red,
+        value_emmi = format(round(self.calculer_carbon(modele_red,
                                                 calcule_distance(self.traj), calcule_duree(self.traj),
                                                 self.liste_vols["uid"].values[index - 1],
                                                 motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                                seat_class="economy") / 1000, 3)
+                                                seat_class="economy") / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
-        self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[index - 1])
-        self.liste_emissions[1].append(value_emmi)
+        self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[index - 1])
+        self.liste_emissions[2][0].append(value_emmi)
 
         self.liste_moteurs_sim = similar_engines(self.liste_vols["uid"].values[index - 1])
-        self.liste_modele_sim = [modele_red]
 
-        #self.liste_modele_sim.append()
+        self.liste_modele_sim = [modele_red]
+        self.liste_modele_sim = self.liste_modele_sim + similar_models(modele_red)
+        j=0
         for modele_red in self.liste_modele_sim:
             self.tabview_modele.add(modele_red)
             i = 0
             for moteur in self.liste_moteurs_sim.itertuples():
                 check_avions_compare_var = customtkinter.StringVar(value="on")
                 modele_moteur = moteur.modelEngine
-                emission = round(
+                emission = format(round(
                     self.calculer_carbon(modele_red, calcule_distance(self.traj),
-                                     calcule_duree(self.traj), moteur.uid,
-                                     motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                     seat_class="economy") / 1000, 3)
+                                         calcule_duree(self.traj), moteur.uid,
+                                         motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                         seat_class="economy") / 1000, 3), ".3f")
                 check_avions_compare = customtkinter.CTkCheckBox(self.tabview_modele.tab(modele_red),
-                                                             text=f'engine {modele_moteur} : {emission} t',
-                                                             variable=check_avions_compare_var, onvalue="on",
-                                                             offvalue="off")
+                                                                 text=f'engine {modele_moteur} : {emission} t',
+                                                                 variable=check_avions_compare_var, onvalue="on",
+                                                                 offvalue="off")
                 check_avions_compare.grid(row=i, sticky="nsw", padx=10, pady=10)
-                self.liste_emissions[0].append(modele_moteur)
-                self.liste_emissions[1].append(emission)
+                self.liste_emissions[1][j].append(modele_moteur)
+                self.liste_emissions[2][j].append(emission)
                 i += 1
+            self.liste_emissions[0].append(modele_red)
+            self.liste_emissions[1].append([])
+            self.liste_emissions[2].append([])
 
+            j += 1
     def button_search_event(self):
         """
         Cette procédure est liée au bouton button_search. Lorsque ce dernier est pressé, la procédure entre
@@ -542,42 +548,55 @@ class Interface(customtkinter.CTk):
 
     def check_optionmenu_seat_class(self, choice):
         seat_class = choice
-        self.liste_emissions = [[], []]
-        value_emmi = round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
+        self.liste_emissions = [[], [[]], [[]]]
+
+        value_emmi = format(round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
                                                 calcule_distance(self.traj), calcule_duree(self.traj),
                                                 self.liste_vols["uid"].values[self.index_vol - 1],
                                                 motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                                seat_class=seat_class) / 1000, 3)
+                                                seat_class=seat_class) / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
+        self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[self.index_vol - 1])
+        self.liste_emissions[2][0].append(value_emmi)
 
-        self.liste_emissions[0].append(self.liste_vols["modelEngine"].values[self.index_vol - 1])
-        self.liste_emissions[1].append(value_emmi)
-
-        nombre_elem_in_frame = len(self.frame_compare_emission.winfo_children())
-        i = 0
-        for element in self.frame_compare_emission.winfo_children()[1:nombre_elem_in_frame]:
-            texte = element.cget("text")
-            value = round(
-                self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
-                                     calcule_distance(self.traj), calcule_duree(self.traj),
-                                     self.liste_moteurs_sim["uid"].values[i],
-                                     motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                     seat_class=seat_class) / 1000, 3)
-            element.configure(text=texte[0:len(texte) - 8] + str(value) + " t")
-            self.liste_emissions[0].append(self.liste_moteurs_sim["modelEngine"].values[i])
-            self.liste_emissions[1].append(value)
-            i += 1
+        j = 0
+        for modele in self.liste_modele_sim:
+            i = 0
+            for element in self.tabview_modele.tab(modele).winfo_children():
+                texte = element.cget("text")
+                value = format(round(
+                    self.calculer_carbon(modele,
+                                         calcule_distance(self.traj), calcule_duree(self.traj),
+                                         self.liste_moteurs_sim["uid"].values[i],
+                                         motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
+                                         seat_class=seat_class) / 1000, 3), ".3f")
+                element.configure(text=texte[0:len(texte) - 7] + str(value) + " t")
+                self.liste_emissions[1][j].append(self.liste_moteurs_sim["modelEngine"].values[i])
+                self.liste_emissions[2][j].append(value)
+                i += 1
+            self.liste_emissions[0].append(modele)
+            self.liste_emissions[1].append([])
+            self.liste_emissions[2].append([])
+            j += 1
 
     def export_event(self):
-        liste_emission = [[self.liste_emissions[0][0]], [self.liste_emissions[1][0]]]
-        i = 0
-        for element in self.frame_compare_emission.winfo_children()[
-                       1:len(self.frame_compare_emission.winfo_children())]:
-            if element.get() == "on":
-                liste_emission[0].append(self.liste_emissions[0][i + 1])
-                liste_emission[1].append(self.liste_emissions[1][i + 1])
-            i += 1
+        liste_emission = [self.liste_emissions[0], [[self.liste_emissions[1][0][0]]], [[self.liste_emissions[2][0][0]]]]
+        j = 0
+        for modele in self.liste_modele_sim:
+            i = 0
+            for element in self.tabview_modele.tab(modele).winfo_children():
+                if element.get() == "on":
+                    if j == 0:
+                        liste_emission[1][j].append(self.liste_emissions[1][j][i + 1])
+                        liste_emission[2][j].append(self.liste_emissions[2][j][i + 1])
+                    else:
+                        liste_emission[1][j].append(self.liste_emissions[1][j][i])
+                        liste_emission[2][j].append(self.liste_emissions[2][j][i])
+                i += 1
+            liste_emission[1].append([])
+            liste_emission[2].append([])
+            j += 1
         self.save_map_as_png("Interface/map.png")
         pdf = Pdf(map_chemin="Interface/map.png")
         vol = self.liste_vols.values[self.index_vol - 1]

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 class Pdf(FPDF):
     titre = "Titre par défaut"
     infos_vol = ["index","callsign","AAAA","AAAA","icao24","aaaa/mm/jj 13:34:se","aaaa/mm/jj 15:23:se","compagnie","codeModel","codeEngine","model", "numberEngine", "modelReduit","modelEngine","uid","1000"]
-    infos_emission = [["engine1_test","engine2_test","engine3_test","CF34-8C5","engine5"],[0.1,0.2,0.3,0.7,1.2]]
+    infos_emission = [['CL6'], [["engine1_test","engine2_test","engine3_test","CF34-8C5","engine5"]], [[0.1,0.2,0.3,0.7,1.2]]]
     graphique_emission = ""
     map_chemin = ""
 
@@ -71,16 +71,29 @@ class Pdf(FPDF):
 
     def ajouter_tableau(self, donnees):
         taille_max = 45
-        self.set_font('helvetica', 'B', 10)
-        self.cell(taille_max, 9, str(donnees[0][0]), 1, align='C')
-        self.cell(taille_max, 9, str(donnees[1][0]), 1, align='C')
-        self.ln()
         self.set_font('helvetica', '', 11)
 
-        for i in range(1,len(donnees[0])):
-            self.cell(taille_max, 9, str(donnees[0][i]), 1, align='C')
-            self.cell(taille_max, 9, str(donnees[1][i]), 1, align='C')
+        for i in range(len(donnees[0])):
+            self.cell(taille_max*2, 9, str(donnees[0][i]), 1, align='C')
             self.ln()
+            self.set_font('helvetica', 'B', 11)
+            self.cell(taille_max, 9, "moteurs", 1, align='C')
+            self.cell(taille_max, 9, "émission t(CO2)/pers", 1, align='C')
+            self.set_font('helvetica', '', 11)
+            self.ln()
+            for j in range(len(donnees[1][i])):
+                if i == 0 and j == 0:
+                    self.set_text_color(0, 150, 0)
+                    self.cell(taille_max, 9, str(donnees[1][i][j]), 1, align='C')
+                    self.cell(taille_max, 9, str(donnees[2][i][j]), 1, align='C')
+                    self.ln()
+                    self.set_text_color(0, 0, 0)
+
+
+                else:
+                    self.cell(taille_max, 9, str(donnees[1][i][j]), 1, align='C')
+                    self.cell(taille_max, 9, str(donnees[2][i][j]), 1, align='C')
+                    self.ln()
         self.ln()
 
     def ajouter_separateur(self):
@@ -160,13 +173,13 @@ class Pdf(FPDF):
 
 
         # Image
-        self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
+        #self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
 
         self.ln(5)
         # Tableau
         donnees = self.infos_emission
-        donnees[0].insert(0, 'Modèles de moteurs')
-        donnees[1].insert(0, 'Emissions CO2 (t/prs)')
+        #donnees[0].insert(0, 'Modèles de moteurs')
+        #donnees[1].insert(0, 'Emissions CO2 (t/prs)')
         self.ajouter_tableau(donnees)
 
         self.set_line_width(1)  # Épaisseur de trait de 2 points
