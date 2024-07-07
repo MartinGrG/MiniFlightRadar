@@ -37,9 +37,9 @@ class Pdf(FPDF):
         # plt.bar_label(graph_bar1.container[1], labels=y[1:len(y)])
         plt.xticks(rotation=15)
         plt.legend()
-        plt.savefig("Interface/graphique_emission.png")
+        plt.savefig("FlightRadar/Interface/graphique_emission.png")
         plt.close()
-        return "Interface/graphique_emission.png"
+        return "FlightRadar/Interface/graphique_emission.png"
 
     def en_tete(self, texte):
         self.set_font('helvetica', 'B', 12)
@@ -193,4 +193,4 @@ class Pdf(FPDF):
         self.rect(4, 4, self.w - 8, self.h - 8)
 
         # Enregistrer le PDF
-        self.output("Interface/Compte_rendu.pdf")
+        self.output("Compte_rendu.pdf")

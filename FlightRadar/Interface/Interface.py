@@ -597,8 +597,8 @@ class Interface(customtkinter.CTk):
             liste_emission[1].append([])
             liste_emission[2].append([])
             j += 1
-        self.save_map_as_png("Interface/map.png")
-        pdf = Pdf(map_chemin="Interface/map.png")
+        self.save_map_as_png("FlightRadar/Interface/map.png")
+        pdf = Pdf(map_chemin="FlightRadar/Interface/map.png")
         vol = self.liste_vols.values[self.index_vol - 1]
         vol = np.append(vol, calcule_distance(self.traj))
         vol[5] = timestamp_to_date(vol[5])
