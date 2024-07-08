@@ -1,21 +1,22 @@
 # Cas test du traqueur de vol avec calcul d'émission CO2
 
 Une fois le projet installé et le "main.py" lancée, le panneau usagé se créé :
-![Image panneau usage initial](images/test1.png)
+![Image panneau usage initial](FlightRadar/images/imagesTest/test1.png)
 
 
 Nous choisissons comme aéroport celui de New York de code OACI 'KJFK', le 20 juin 2024, sur la plage horaire de 13h00 à 13h35 
 et sélectionnons le premier vol : Endeavor Air. On peut observer son itinéraire ainsi que sa consommation pour un 
 passager en classe économie, ainsi que pour plusieurs autres modèles de moteurs :
-![Image panneau usage initial](images/test2.png)
+![Image panneau usage initial](FlightRadar/images/imagesTest/test2.png)
 
 
 On peut faire glisser le slider et afficher la position de l'avion à 14h12. On change également la classe du passager en
 affaire et on observe une augmentation de l'émission.
-![Image panneau usage initial](images/test3.png)
+![Image panneau usage initial](FlightRadar/images/imagesTest/test3.png)
 
 Enfin, on souhaite récupérer un document résumant le vol, on clique alors sur "Exporter". Un fichier "Compte_rendu.pdf" 
 est créé dans le dossier du projet.
+![Fiche de vol](FlightRadar/images/fiche_vol.png)
 
 
 
