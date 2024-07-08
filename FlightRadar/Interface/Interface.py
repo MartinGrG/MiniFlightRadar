@@ -159,7 +159,7 @@ class Interface(customtkinter.CTk):
         self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=10)
 
         self.optionmenu_seat_class = customtkinter.CTkOptionMenu(self.frame_droite,
-                                                                 values=["economy", "premium economy", "affaires",
+                                                                 values=["économique", "économique premium", "affaires",
                                                                          "première"],
                                                                  command=self.check_optionmenu_seat_class)
         self.optionmenu_seat_class.grid(row=1, column=0, sticky="swe", padx=10, pady=10)
@@ -337,7 +337,7 @@ class Interface(customtkinter.CTk):
         :param int index: Indice lié au boutton pressé (vol selectionné)
         """
         self.index_vol = index
-        self.optionmenu_seat_class.set("economy")
+        self.optionmenu_seat_class.set("économique")
         self.liste_emissions = [[], [[]], [[]]]
 
         # On supprime les tabs de la zone de tabview pour en afficher par la suite de nouveaux
@@ -447,7 +447,7 @@ class Interface(customtkinter.CTk):
                                                 calcule_distance(self.traj), calcule_duree(self.traj),
                                                 self.liste_vols["uid"].values[index - 1],
                                                 motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                                seat_class="economy") / 1000, 3), ".3f")
+                                                seat_class="économique") / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
         self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[index - 1])
@@ -468,7 +468,7 @@ class Interface(customtkinter.CTk):
                     self.calculer_carbon(modele_red, calcule_distance(self.traj),
                                          calcule_duree(self.traj), moteur.uid,
                                          motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                         seat_class="economy") / 1000, 3), ".3f")
+                                         seat_class="économique") / 1000, 3), ".3f")
                 check_avions_compare = customtkinter.CTkCheckBox(self.tabview_modele.tab(modele_red),
                                                                  text=f'engine {modele_moteur} : {emission} t',
                                                                  variable=check_avions_compare_var, onvalue="on",

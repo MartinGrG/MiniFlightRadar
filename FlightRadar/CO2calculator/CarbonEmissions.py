@@ -14,8 +14,8 @@ A = 11.68  # Facteaur d'aéroport/infrastructure
 
 # Classes de sièges et multiplicateurs correspondants
 SEAT_CLASS = {
-    "economy": [1, 1, 1, 4],  # court-courrier, long-courrier, fret, jet privé
-    "premium economy": [1, 1.5, 1, 4],
+    "économique": [1, 1, 1, 4],  # court-courrier, long-courrier, fret, jet privé
+    "économique premium": [1, 1.5, 1, 4],
     "affaires": [1.5, 4, 1, 4],
     "première": [1.5, 5, 1, 4]
 }
@@ -44,7 +44,7 @@ def global_carbon_emissions(duration, uid, engines_nb=1):
             * (P+EF*M))
 
 
-def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, seat_class="economy"):
+def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, seat_class="économique"):
     """
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
