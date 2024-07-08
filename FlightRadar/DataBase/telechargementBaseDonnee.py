@@ -1,3 +1,5 @@
+"""Programme permettant de télécharger les bases de données en ligne. Le code a été généré via chat GPT car il nécessite
+la comprehension des "certificats" que nous n'avons eu le temps d'apprendre"""
 import urllib.request
 import ssl
 import os
@@ -10,6 +12,7 @@ import pandas as pd
 # FAA("https://registry.faa.gov/database/ReleasableAircraft.zip",'BaseDonnees/FAA',
     #               ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt'])
 def base_de_donnees_FAA():
+    """Télécharge la base de donnée de la FAA et l'enregistre dans le dossier FAA"""
     # URL du fichier à télécharger
     url = "https://registry.faa.gov/database/ReleasableAircraft.zip"
 
@@ -86,6 +89,7 @@ def base_de_donnees_FAA():
 
 
 def base_de_donnees_EASA():
+    """Télécharge la base de donnée de l'EASA et l'enregistre dans le dossier EASA"""
     # URL du fichier à télécharger
     url = 'https://www.easa.europa.eu/en/downloads/131424/en'
 
