@@ -1,26 +1,27 @@
 # Traqueur de vol avec calcul d'émission CO2
 
-# Objetcif:
-Le but de l'application est de calculer l'émission carbon par passager sur un vol ayant déjà eu lieu.
+# Objectif:
+Le but de l'application est de calculer l'émission carbone par passager sur un vol ayant déjà eu lieu.
 
 # Guide d'utilisation
 Télécharger le dossier GIT et lancer le fichier "main.py".
 L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.
 ### Historique des vols
 L'utilisateur fourni le code OACI d'un aéroport, une date et une plage horaire. Il peut ensuite choisir un vol dans la 
-liste contenant tous les vols à partant et à destination de son aéroport dans la période fournie. Pour chacun des vols 
-de la liste est indiqué : la compagnie aérienne, les aéroports de départ et d'arrivé ainsi que les heures de départs et d'arrivées. 
-La date doit être comprise dans les 30 jours précédant et la plage horaire supérieur à 30 minutes.
+liste contenant tous les vols en partant et à destination de son aéroport dans la période fournie. Pour chacun des vols 
+de la liste est indiqué : la compagnie aérienne, l'aéroport de départ et d'arrivé ainsi que l'heure de départ et d'arrivée. 
+La date doit être comprise dans les 30 jours précédant et la plage horaire supérieure à 30 minutes.
 ### Affichage du vol
 Une fois le vol sélectionné, son itinéraire est affiché sur une carte intéractive avec un gradiant de couleur 
 représentant l'évolution de son altitude. Un slider permet revivre l'évolution du vol dans le temps. En bas à droite de 
-la carte des informations sont fournies sur le vol : la compagnie, les codes OACI de l'aéroport de départ et d'arrivée,
- le callsign, le numéro oaci24 ainsi que les heures de départs et d'arrivées.
+la carte des informations sont fournies sur le vol : la compagnie, le code OACI de l'aéroport de départ et d'arrivée,
+le callsign, le numéro oaci24 ainsi que l'heure de départ et d'arrivée.
 ### Calculateur de CO2
 Le calculateur de CO2 donne l'émission par passager du vol sélectionné pour une certaine classe. La classe est choisie 
 dans un menu déroulant, il y a 4 choix : économie, premium économie, affaire et première.
 De plus, l'application offre la possibilité de tester différentes combinaisons de modèles et moteurs similaires afin de 
-rechercher laquelle serait la pls écologique.
+rechercher laquelle serait la plus écologique.(Attention les combinaisons ne prennent pas en compte la compatibilité entre 
+le moteur et le modèle de l'avion et peut ne pas être réalisable, nous recherchons seulement l'émission la plus faible)
 ### Fiche de vol
 Un bouton "Exporter" permet en cliquant dessus de générer une fiche de vol recensant toutes les informations du vol 
 sélectionné.
@@ -51,6 +52,11 @@ Les bases de données trouvées sur internet sont téléchargées automatiquemen
 
 # Calcul des émissions :
 
+
+# Fiche de vol :
+
+# Documentation :
+La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier ???
 
 # Dépendances :
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
