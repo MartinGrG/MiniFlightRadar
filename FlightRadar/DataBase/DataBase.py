@@ -122,8 +122,6 @@ def faa(df):
     engine_df.rename(columns={'CODE': 'codeEngine'}, inplace=True)
     engine_df.rename(columns={'MODEL': 'modelEngine'}, inplace=True)
 
-    # merged_df['codeEngine'] = merged_df['codeEngine'].astype(str)   # Changement en str des colonnes 'codeEngine' pour
-    # engine_df['codeEngine'] = engine_df['codeEngine'].astype(str)   # pouvoir les comparer et fusionner
     merged_df = pd.merge(merged_df, engine_df, on='codeEngine', how='left')  # Association de chaque avion à son moteur
     return merged_df
 
@@ -276,7 +274,13 @@ def aircraft_emission(reduced_model):
     :param str reduced_model: Abbréviation du modèle de l'avion
     :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
     """
+
+    # Chargement du fichier CSV contenant les paramètres des avions nécessaires pour les calculs d'émission CO2
+    # dans un DataFrame pandas
     emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+
+    # Filtrage du DataFrame pour ne conserver que la ligne correspondant au modèle réduit spécifié
+    # Réinitialisation des index du DataFrame filtré et retour du DataFrame d'une seule ligne
     return emission_df[emission_df['modelReduit'] == reduced_model].reset_index(drop=True)
 
 
@@ -288,9 +292,17 @@ def model_is_present(reduced_model):
     :return: True si le modèle est présent, False sinon.
     :rtype: bool
     """
+
+    # Chargement du fichier CSV contenant les paramètres des avions nécessaires pour les calculs d'émission CO2
+    # dans un DataFrame pandas
     emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+
+    # Vérification si le modèle réduit spécifié est présent dans la colonne "modelReduit" du DataFrame
     if reduced_model in emission_df["modelReduit"].values:
+        # Si le modèle est présent, retourner True
         return True
+
+    # Si le modèle n'est pas présent, retourner False
     return False
 
 
@@ -305,12 +317,31 @@ def similar_models(reduced_model):
     :return: Liste des abréviations des modèles d'avion similaires.
     :rtype: list
     """
+
+    # Vérifie si le modèle réduit est présent dans la base de données
     if model_is_present(reduced_model):
+
+        # Chargement du fichier CSV contenant les paramètres des avions nécessaires pour les calculs d'émission CO2
+        # dans un DataFrame pandas
         emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+
+        # Suppression des deux premières lignes du DataFrame contenant les modèles génériques court/long-courrier
         emission_df.drop(index=[0, 1], inplace=True)
+
+        # Trouver l'index du modèle réduit dans le DataFrame
         reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
+
+        # Filtrer les modèles étant du même type d'avion
         emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
+
+        # Filtrer les modèles ayant une capacité de sièges (S) supérieure ou égale à celle du modèle réduit
         emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
+
+        # Supprimer le modèle réduit lui-même de la liste des modèles similaires
         emission_df.drop(index=reduced_model_index, inplace=True)
+
+        # Retourner une liste des abréviations des modèles similaires (maximum 4)
         return emission_df["modelReduit"].values.tolist()[:4]
+
+    # Retourner une liste vide si le modèle réduit n'est pas présent dans la base de données
     return []

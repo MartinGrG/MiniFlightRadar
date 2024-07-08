@@ -1,5 +1,6 @@
 """Programme permettant de télécharger les bases de données en ligne. Le code a été généré via chat GPT car il nécessite
 la comprehension des "certificats" que nous n'avons eu le temps d'apprendre"""
+
 import urllib.request
 import ssl
 import os
@@ -9,9 +10,37 @@ import certifi
 import pandas as pd
 
 
+# Fonction pour télécharger un fichier avec des tentatives de réessai
+def download_file(url, destination_file_path, ssl_context, max_retries=5):
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            print(f"Tentative {attempt + 1} de téléchargement...")
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with (urllib.request.urlopen(req, context=ssl_context, timeout=30) as response,
+                  open(destination_file_path, 'wb') as out_file):
+                file_size = int(response.getheader('Content-Length'))
+                downloaded = 0
+                buffer_size = 1024 * 1024  # 1MB
+                while True:
+                    buffer = response.read(buffer_size)
+                    if not buffer:
+                        break
+                    downloaded += len(buffer)
+                    out_file.write(buffer)
+                    print(f"Téléchargé {downloaded} de {file_size} octets ({downloaded / file_size:.2%})")
+            print(f"Le fichier a été téléchargé dans : {destination_file_path}")
+            return
+        except Exception as e:
+            print(f"Une erreur est survenue lors de la tentative {attempt + 1} : {e}")
+            attempt += 1
+            time.sleep(5)  # Attendez 5 secondes avant de réessayer
+    print("Échec du téléchargement après plusieurs tentatives.")
+
+
 # FAA("https://registry.faa.gov/database/ReleasableAircraft.zip",'BaseDonnees/FAA',
-    #               ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt'])
-def base_de_donnees_FAA():
+#               ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt'])
+def base_de_donnees_faa():
     """Télécharge la base de donnée de la FAA et l'enregistre dans le dossier FAA"""
     # URL du fichier à télécharger
     url = "https://registry.faa.gov/database/ReleasableAircraft.zip"
@@ -30,37 +59,12 @@ def base_de_donnees_FAA():
     # Créez un contexte SSL en utilisant les certificats de certifi
     ssl_context = ssl.create_default_context(cafile=certifi.where())
 
-    # Fonction pour télécharger un fichier avec des tentatives de réessai
-    def download_file(url, destination_file_path, ssl_context, max_retries=5):
-        attempt = 0
-        while attempt < max_retries:
-            try:
-                print(f"Tentative {attempt + 1} de téléchargement...")
-                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req, context=ssl_context, timeout=30) as response, open(destination_file_path, 'wb') as out_file:
-                    file_size = int(response.getheader('Content-Length'))
-                    downloaded = 0
-                    buffer_size = 1024 * 1024  # 1MB
-                    while True:
-                        buffer = response.read(buffer_size)
-                        if not buffer:
-                            break
-                        downloaded += len(buffer)
-                        out_file.write(buffer)
-                        print(f"Téléchargé {downloaded} de {file_size} octets ({downloaded/file_size:.2%})")
-                print(f"Le fichier a été téléchargé dans : {destination_file_path}")
-                return
-            except Exception as e:
-                print(f"Une erreur est survenue lors de la tentative {attempt + 1} : {e}")
-                attempt += 1
-                time.sleep(5)  # Attendez 5 secondes avant de réessayer
-        print("Échec du téléchargement après plusieurs tentatives.")
-
     # Télécharger le fichier avec des tentatives de réessai
     download_file(url, destination_file_path, ssl_context)
 
     # Spécifiez les fichiers à extraire
-    fichiers_a_extraire = ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt']  # Remplacez par les noms des fichiers dont vous avez besoin
+    # Remplacez par les noms des fichiers dont vous avez besoin
+    fichiers_a_extraire = ['MASTER.txt', 'ENGINE.txt', 'ACFTREF.txt']
 
     # Extraire et renommer les fichiers nécessaires
     print("Extraction et renommage des fichiers nécessaires du fichier ZIP...")
@@ -85,10 +89,7 @@ def base_de_donnees_FAA():
         print(f"Une erreur est survenue lors de l'extraction : {e}")
 
 
-
-
-
-def base_de_donnees_EASA():
+def base_de_donnees_easa():
     """Télécharge la base de donnée de l'EASA et l'enregistre dans le dossier EASA"""
     # URL du fichier à télécharger
     url = 'https://www.easa.europa.eu/en/downloads/131424/en'
@@ -111,7 +112,8 @@ def base_de_donnees_EASA():
 
     try:
         # Ouvrir une connexion avec l'URL en utilisant le contexte SSL
-        with urllib.request.urlopen(url, context=ssl_context) as response, open(destination_file_path, 'wb') as out_file:
+        with (urllib.request.urlopen(url, context=ssl_context) as response, open(destination_file_path, 'wb')
+              as out_file):
             # Lire les données depuis la réponse et les écrire dans le fichier local
             out_file.write(response.read())
 
@@ -120,7 +122,7 @@ def base_de_donnees_EASA():
         # Charger le fichier Excel en utilisant pandas
         xl = pd.ExcelFile(destination_file_path)
 
-        sheet_names = ["Gaseous Emissions and Smoke", "nvPM Emissions"]
+        sheet_names = ["Gaseous Emissions and Smoke"]
         for sheet_name in sheet_names:
             # Vérifier si la feuille spécifiée existe
             if sheet_name in xl.sheet_names:
@@ -142,6 +144,3 @@ def base_de_donnees_EASA():
 
     except Exception as e:
         print(f"Une erreur est survenue lors du téléchargement : {e}")
-
-
-

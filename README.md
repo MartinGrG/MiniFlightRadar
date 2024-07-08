@@ -32,7 +32,7 @@ sélectionné. La comparaison d'émissions des moteurs se fera entre ceux ayant 
 
 # Interface: 
 L'interface est créée avec la librairie customtkinter.
-![Capture de l'interface](images/interface.png)
+![Capture de l'interface](FlightRadar/images/interface.png)
 
 
 # Gestion de la base de donnée
@@ -48,7 +48,7 @@ La base de donnée est composé de 8 bases de données :
 correspondant à l'entrée de l'utilisateur
 
 Leurs intéractions peut être représentée comme suit :
-![Schema fonctionnement base de donnée](images/schemaBaseDeDonnees.png)
+![Schema fonctionnement base de donnée](FlightRadar/images/schemaBaseDeDonnees.png)
 Les tableaux représentent les informations contenues dans chaque base de donnée que nous conservons dans
 flight_data.csv. 
 Les bases de données trouvées sur internet sont téléchargées automatiquement lors du premier lancement de l'application.
@@ -60,10 +60,11 @@ Les bases de données trouvées sur internet sont téléchargées automatiquemen
 La fiche de vol est un document résumant les informations importantes du vol choisit par l'utilisateur, il se présente comme suit :
 (Il peut y avoir un problème avec l'affichage de la carte sur la fiche de vol sur macOs, au lieu de prendre une capture de 
 la carte intéractive l'application prend une capture du fond d'écran)
+![Fiche de vol](FlightRadar/images/fiche_vol.png)
+
 
 # Documentation :
 La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier "Documentation".
-
 
 # Dépendances :
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
