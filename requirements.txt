@@ -10,15 +10,5 @@ fpdf
 matplotlib
 numpy
 setuptools
-calendar
 logging
-pprint
-time
-collections
 datetime
-zipfile
-os
-ssl
-urllib
-math
-PIL
