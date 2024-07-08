@@ -62,7 +62,7 @@ class Interface(customtkinter.CTk):
         self.frame_droite.grid_rowconfigure(3, weight=1)
 
         # Création des éléments de la frame gauche :
-        self.label_airport = customtkinter.CTkLabel(self.frame_gauche, text="Code de l'aéroport de départ")
+        self.label_airport = customtkinter.CTkLabel(self.frame_gauche, text="Code de l'aéroport")
         self.label_airport.grid(row=0, column=0, columnspan=3, sticky="nsw", padx=10, pady=(5, 0))
 
         self.input_airport = customtkinter.CTkEntry(self.frame_gauche, placeholder_text="ex : KJFK")
@@ -330,9 +330,11 @@ class Interface(customtkinter.CTk):
         """
         Cette procédure est liée à tous les bouttons portant les informations de chaque vol dans la liste
         de la frame de gauche. Lorsqu'un des bouttons est pressé, la procédure se lance, récupère les informations
-        de trajectoire du vol en question via la méthode airplane_traj(), trace cette dernière sur la mapView,
-        ajoute un marqueur en forme d'avion, indique en bas à droite les informations détaillées du vol à
-        l'utilisateur et envoie les données du vol au calculateur d'émission CO2.
+        de trajectoire du vol en question via la méthode airplane_traj(), trace cette dernière sur la mapView avec
+        les informations d'altitude par gradient de couleurs, ajoute un marqueur en forme d'avion, indique en bas
+        à droite les informations détaillées du vol à l'utilisateur et envoie les données du vol au calculateur
+        d'émission CO2. De plus, c'est dans cette partie que se déroule la mise en place de la comparaison d'émission.
+        CO2.
 
         :param int index: Indice lié au boutton pressé (vol selectionné)
         """
@@ -546,6 +548,13 @@ class Interface(customtkinter.CTk):
         self.map_widget.set_path(traj[0:value], color="#242424", width=3)
 
     def check_optionmenu_seat_class(self, choice):
+        """
+        Cette méthode est appelée lorsque l'utilisateur sélectionne une classe de siège dans l'option menu.
+        Elle met à jour les émissions de CO2 affichées en fonction de la classe de siège sélectionnée.
+
+        :param str choice: La classe du siège sélectionné par l'utilisateur.
+
+        """
         seat_class = choice
         self.liste_emissions = [[], [[]], [[]]]
 
@@ -580,6 +589,16 @@ class Interface(customtkinter.CTk):
             j += 1
 
     def export_event(self):
+        """
+        Cette fonction est appelée lorsque l'utilisateur clique sur le bouton exporter.
+        Les données de comparaison des émissions sont exportées vers un fichier PDF.
+
+        La procédure prépare les données à exporter en ne prenant que les 5 meilleures performances globales
+        en proposant toujours le/les meilleur/s score/s d'émission/s CO2 pour chaque modèle d'avion.
+
+        Enfin, elle génère le PDF correspondant.
+
+        """
         compteur = 0
         liste_emission = [self.liste_emissions[0], [[self.liste_emissions[1][0][0]]], [[self.liste_emissions[2][0][0]]]]
         j = 0
@@ -607,7 +626,7 @@ class Interface(customtkinter.CTk):
                     plus_grande_len = i
             if plus_grande_len == 0 :
                 (maxi, indice) = find_max_number([0] + liste_emission[2][plus_grande_len][1:len(liste_emission[2][plus_grande_len])])
-            else : 
+            else :
                 (maxi, indice) = find_max_number(liste_emission[2][plus_grande_len])
 
             del liste_emission[1][plus_grande_len][indice]
@@ -626,13 +645,26 @@ class Interface(customtkinter.CTk):
         Cette procédure est déclenchée à l'exécution de :func:button_vol_event et permet de récupérer l'émission
         carbone d'un modèle d'avion donné pour la distance parcourue et l'affiche dans la zone dédiée.
 
-        :param str modele: Nom du modèle d'avion (ex : B777)
-        :param float distance: Valeur de la distance parcourue calculée à l'aide de la fonction :func:calcule_distance.
+        :param str modele: Nom du modèle d'avion (par exemple : B777).
+        :param float distance: Distance parcourue du vol.
+        :param float duration: Durée du vol.
+        :param str uid: Identifiant du modèle de moteur.
+        :param int motors_nb: Nombre de moteurs de l'avion.
+        :param str seat_class: Classe de siège spécifiée pour le calcul des émissions.
+        :returns: Valeur des émissions de CO2 pour l'avion spécifié, en tonnes de CO2.
+        :rtype: Float
+
         """
         value = passenger_carbon_emissions(distance, duration, modele, uid, motors_nb, seat_class)
         return value
 
     def save_map_as_png(self, file_path):
+        """
+        Cette fonction enregistre la carte affichée dans le widget de la carte comme une image PNG.
+        Attention particulière : il semble y avoir un léger souci avec MacOS, l'image prise est celle de l'arrière-plan.
+
+        :param str file_path: Chemin complet du fichier où l'image PNG sera enregistrée.
+        """
         widget = self.map_widget
         x = widget.winfo_rootx()
         y = widget.winfo_rooty()
@@ -652,22 +684,18 @@ def timestamp_to_date(timestamp):
     """
     return str(datetime.datetime.fromtimestamp(timestamp))
 
-
-def date_to_timestamp(date):  # En construction
-    return
-
-
 def calcule_distance(traj):
     """
     Calcule la distance totale parcourue sur une trajectoire donnée.
 
-    Cette fonction utilise la formule de Haversine pour calculer la distance entre chaque point successif de la trajectoire.
+    Cette fonction utilise la formule de Haversine pour calculer la distance entre chaque point successif
+    de la trajectoire.
 
     :param list traj: Liste de points de la trajectoire où chaque point est une liste ou un tuple
                       contenant le temps en UNIX, la latitude, la longitude, et un indicateur optionnel de validité.
 
     :return: La distance totale parcourue en kilomètres.
-    :rtype: float
+    :rtype: Float
     """
     somme = 0
     for i in range(len(traj) - 1):
@@ -692,8 +720,8 @@ def calcule_duree(traj):
     :param list traj: Liste de points de la trajectoire où chaque point est une liste ou un tuple
                       contenant le temps en UNIX, la latitude, la longitude, et un indicateur optionnel de validité.
 
-    :return: La durée totale de la trajectoire en secondes.
-    :rtype: int
+    :returns: La durée totale de la trajectoire en secondes.
+    :rtype: Int
     """
     duree = 0
     for i in range(len(traj) - 1):
@@ -701,7 +729,17 @@ def calcule_duree(traj):
             duree += traj[i + 1][0] - traj[i][0]
     return duree
 
+
 def find_max_number(liste_de_nombres):
+    """
+    Cette fonction recherche le nombre maximum dans une liste de nombres (str) et retourne à la fois la valeur maximale
+    et son indice dans la liste.
+
+    :param list[float] liste_de_nombres: Liste de nombres parmi lesquels on recherche le maximum.
+    :returns: Un tuple contenant la valeur maximale trouvée dans la liste et son indice.
+    :rtype: Float, Int
+    """
+
     maxi = 0
     indice = 0
     for i in range(len(liste_de_nombres)):

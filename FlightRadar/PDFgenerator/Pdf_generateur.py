@@ -12,19 +12,43 @@ class Pdf(FPDF):
     graphique_emission = ""
     map_chemin = ""
     classe = ''
+
     def __init__(self, map_chemin, classe):
+        """
+        Initialise l'objet Pdf avec les paramètres spécifiés.
+
+        Ajoute une page au document et définit les marges et la classe du
+        passager lors du vol.
+
+        :param str map_chemin: Chemin de l'image de la carte du vol.
+        :param str classe: Classe du passager lors du vol.
+        """
         super().__init__(orientation="portrait", unit="mm", format="A4", font_cache_dir="DEPRECATED")
         self.add_page()
         self.map_chemin = map_chemin
         self.set_margins(12.7, 12.7, 12.7)
         self.classe = classe
+
     def set_data(self, infos_vol, emission):
+        """
+        Update les données du vol et les informations des émissions.
+
+        :param list infos_vol: Liste contenant les informations du vol (ligne de flight_data.csv).
+        :param list emission: Liste contenant les informations des émissions CO2 comparatives.
+        """
         self.infos_vol = infos_vol
         self.infos_emission = emission
         self.titre = f"Compte rendu du vol : {self.infos_vol[3]} - {self.infos_vol[2]}"
 
     def generer_graphique(self):
+        """
+        Génère un graphique des émissions de CO2 pour le vol sélectionné.
 
+        Le graphique est sauvegardé sous le chemin spécifié.
+
+        :returns: Chemin du fichier du graphique généré.
+        :rtype: Str
+        """
         x = self.infos_emission[1]
         y = self.infos_emission[2]
         plt.title(f"émission pour le vol sélectionné\navec différents modèles et moteurs d'avions")
@@ -41,29 +65,36 @@ class Pdf(FPDF):
         plt.close()
         return "FlightRadar/Interface/graphique_emission.png"
 
-    def en_tete(self, texte):
-        self.set_font('helvetica', 'B', 12)
-        self.cell(0, 10, texte, 0, 1, 'C')
-
-    def pied_de_page(self):
-        self.set_y(-15)
-        self.set_font('helvetica', 'I', 8)
-        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
-
     def titre_chapitre(self, titre):
+        """
+        Ajoute un titre de chapitre au PDF avec le titre spécifié.
+
+        :param str titre: Titre du chapitre.
+        """
         self.set_font('helvetica', 'B', 12)
         self.cell(0, 10, titre, 0, align='L')
         self.ln()
 
-    def corps_chapitre(self, corps):
-        self.set_font('helvetica', '', 12)
-        self.multi_cell(0, 10, corps)
-        self.ln()
-
     def ajouter_image(self, chemin_image, x, y, taille):
+        """
+        Ajoute une image au PDF à l'emplacement spécifié.
+
+        :param str chemin_image: Chemin de l'image à ajouter.
+        :param float x: Position x de l'image.
+        :param float y: Position y de l'image.
+        :param float taille: Taille de l'image.
+        """
         self.image(chemin_image, x=x, y=y, w=taille)
 
     def calcule_duree(self, h1, h2):
+        """
+        Calcule la durée entre deux horaires spécifiés.
+
+        :param str h1: Horaire de départ au format 'aaaa/mm/jj hh:mm:ss'.
+        :param str h2: Horaire d'arrivée au format 'aaaa/mm/jj hh:mm:ss'.
+        :returns: Durée sous forme de chaîne de caractères.
+        :rtype: Str
+        """
         heure1 = float(h1[11:13]) + float(h1[14:16]) / 60
         heure2 = float(h2[11:13]) + float(h2[14:16]) / 60
         diff = heure2 - heure1
@@ -72,6 +103,12 @@ class Pdf(FPDF):
         return str(diff_h) + 'h' + str(diff_m) + 'min'
 
     def ajouter_tableau(self, donnees):
+        """
+        Ajoute un tableau au PDF. Formatage spécialement réalisé
+        pour réceptionner les données d'émissions CO2 du programme.
+
+        :param list donnees: Données à ajouter au tableau.
+        """
         taille_max = 45
 
         self.set_font('helvetica', 'B', 10)
@@ -99,11 +136,20 @@ class Pdf(FPDF):
         self.ln()
 
     def ajouter_separateur(self):
+        """
+        Ajoute un séparateur au PDF pour séparer les sections.
+        Ajoute une ligne vide et une ligne de séparation.
+        """
         self.ln(3)
         self.cell(0, 0, '', 'T')
         self.ln(2)
 
     def generer_pdf(self):
+        """
+        Génère le PDF avec toutes les sections et les informations du vol.
+
+        Enregistre le PDF sous le nom 'Compte_rendu.pdf'.
+        """
         # En-tête et pied de page personnalisés
         self.alias_nb_pages()
         self.set_auto_page_break(auto=True)
