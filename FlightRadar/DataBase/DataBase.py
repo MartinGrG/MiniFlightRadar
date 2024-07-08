@@ -110,7 +110,8 @@ def faa(df):
     #                                                       celle contenant les modèles des avions associés à leur
     #                                                       'code'
     merged_df['model'] = merged_df['model'].str.strip()
-    merged_df['modelReduit'] = merged_df['model'].str[:4].str.strip()  # Nouvelle colonne 'modelReduit contenant les 4 premiers
+    merged_df['modelReduit'] = merged_df['model'].str[:4].str.strip()  # Nouvelle colonne 'modelReduit contenant les 4
+    #                                                                    premiers
     #                                                        caractères de la colonne 'model'
     merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')  # Suppression des '-'
 
