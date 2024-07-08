@@ -28,7 +28,7 @@ def global_carbon_emissions(duration, uid, engines_nb=1):
     Cette fonction utilise la durée du vol et les moteurs du modèle d'avion pour estimer les émissions de CO2 en
     utilisant une estimation de la consommation.
 
-    :param float duration: La durée du vol en heures.
+    :param int duration: La durée du vol en secondes.
     :param str uid: L'identifiant unique du moteur du modèle d'avion.
     :param int engines_nb: Le nombre de moteurs de l'avion (par défaut : 1).
 
@@ -49,7 +49,7 @@ def passenger_carbon_emissions(distance, duration, model, uid, engines_nb=1, sea
     Calcule les émissions de CO2 par passager en fonction de la distance, du modèle d'avion et de la classe de siège.
 
     :param float distance: La distance en kilomètres.
-    :param float duration: La durée du vol en heures.
+    :param int duration: La durée du vol en secondes.
     :param str model: Le modèle de l'avion.
     :param str uid: L'identifiant unique du moteur du modèle d'avion.
     :param int engines_nb: Le nombre de moteurs de l'avion (par défaut : 1).
