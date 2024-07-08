@@ -7,8 +7,8 @@ class Pdf(FPDF):
     infos_vol = ["index", "callsign", "AAAA", "AAAA", "icao24", "aaaa/mm/jj 13:34:se", "aaaa/mm/jj 15:23:se",
                  "compagnie", "codeModel", "codeEngine", "model", "numberEngine", "modelReduit", "modelEngine", "uid",
                  "1000"]
-    infos_emission = [['CL6'], [["engine1_test", "engine2_test", "engine3_test", "CF34-8C5", "engine5"]],
-                      [[0.1, 0.2, 0.3, 0.7, 1.2]]]
+    infos_emission = [['CL6','B777'], [["engine1_test","engine2_test","engine3_test"],["engine1_test", "engine2_test"]],
+                      [[0.1,0.6,0.2],[0.1,0.5]]]
     graphique_emission = ""
     map_chemin = ""
 
@@ -24,17 +24,17 @@ class Pdf(FPDF):
         self.titre = f"Compte rendu du vol : {self.infos_vol[3]} - {self.infos_vol[2]}"
 
     def generer_graphique(self):
-        x = self.infos_emission[0]
-        y = self.infos_emission[1]
+
+        x = self.infos_emission[1]
+        y = self.infos_emission[2]
         plt.title(f"émission du {self.infos_vol[12]} pour le vol sélectionné\navec différents moteurs")
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (t)")
-        graph_bar1 = plt.bar(x[0], y[0], color="green", label="Moteur d'origine")
-        graph_bar2 = plt.bar(x[1:len(x)], y[1:len(y)], color="gray", label="Autres moteurs")
-        plt.bar_label(graph_bar1, labels=[y[0]])
-        plt.bar_label(graph_bar2, labels=y[1:len(y)])
 
-        # plt.bar_label(graph_bar1.container[1], labels=y[1:len(y)])
+        for i in range(len(self.infos_emission[0])) :
+            x[i] = [f'({self.infos_emission[0][i]}){item}' for item in x[i]]
+            y[i] = [float(y) for y in y[i]]
+            plt.bar(x[i], y[i], label=self.infos_emission[0][i])
         plt.xticks(rotation=15)
         plt.legend()
         plt.savefig("FlightRadar/Interface/graphique_emission.png")
@@ -73,35 +73,35 @@ class Pdf(FPDF):
 
     def ajouter_tableau(self, donnees):
         taille_max = 45
-        self.set_font('helvetica', '', 11)
 
+        self.set_font('helvetica', 'B', 10)
+        self.cell(taille_max, 7, "moteurs", 1, align='C')
+        self.cell(taille_max, 7, "émission t(CO2)/pers", 1, align='C')
+        self.set_font('helvetica', '', 10)
+        self.ln()
         for i in range(len(donnees[0])):
-            self.cell(taille_max * 2, 9, str(donnees[0][i]), 1, align='C')
-            self.ln()
-            self.set_font('helvetica', 'B', 11)
-            self.cell(taille_max, 9, "moteurs", 1, align='C')
-            self.cell(taille_max, 9, "émission t(CO2)/pers", 1, align='C')
-            self.set_font('helvetica', '', 11)
+            self.cell(taille_max * 2, 7, str(donnees[0][i]), 1, align='C')
+            self.set_font('helvetica', '', 10)
             self.ln()
             for j in range(len(donnees[1][i])):
                 if i == 0 and j == 0:
                     self.set_text_color(0, 150, 0)
-                    self.cell(taille_max, 9, str(donnees[1][i][j]), 1, align='C')
-                    self.cell(taille_max, 9, str(donnees[2][i][j]), 1, align='C')
+                    self.cell(taille_max, 7, str(donnees[1][i][j].split(' ')[0]), 1, align='C')
+                    self.cell(taille_max, 7, str(donnees[2][i][j]), 1, align='C')
                     self.ln()
                     self.set_text_color(0, 0, 0)
 
 
                 else:
-                    self.cell(taille_max, 9, str(donnees[1][i][j]), 1, align='C')
-                    self.cell(taille_max, 9, str(donnees[2][i][j]), 1, align='C')
+                    self.cell(taille_max, 7, str(donnees[1][i][j].split(' ')[0]), 1, align='C')
+                    self.cell(taille_max, 7, str(donnees[2][i][j]), 1, align='C')
                     self.ln()
         self.ln()
 
     def ajouter_separateur(self):
         self.ln(6)
         self.cell(0, 0, '', 'T')
-        self.ln(6)
+        self.ln(3)
 
     def generer_pdf(self):
         # En-tête et pied de page personnalisés
@@ -180,13 +180,11 @@ class Pdf(FPDF):
         self.titre_chapitre('Emission CO2 du vol (en t par passager)')
 
         # Image
-        # self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
+        self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
 
-        self.ln(5)
+        self.ln(1)
         # Tableau
         donnees = self.infos_emission
-        # donnees[0].insert(0, 'Modèles de moteurs')
-        # donnees[1].insert(0, 'Emissions CO2 (t/prs)')
         self.ajouter_tableau(donnees)
 
         self.set_line_width(1)  # Épaisseur de trait de 2 points

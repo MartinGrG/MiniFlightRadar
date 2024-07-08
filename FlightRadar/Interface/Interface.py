@@ -155,8 +155,8 @@ class Interface(customtkinter.CTk):
         # configuration de la frame de droite
 
         self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2",
-                                                         font=('Arial', 25, "bold"))
-        self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=10)
+                                                         font=('Arial', 20, "bold"))
+        self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=(10,5))
 
         self.optionmenu_seat_class = customtkinter.CTkOptionMenu(self.frame_droite,
                                                                  values=["economy", "premium economy", "affaires",
@@ -180,7 +180,7 @@ class Interface(customtkinter.CTk):
         self.tabview_modele.grid(row=0, column=0, sticky="swe", padx=10, pady=10)
 
         self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter")
-        self.button_export_data.grid(row=2, column=0, sticky="swe", padx=10, pady=10)
+        self.button_export_data.grid(row=2, column=0, sticky="swe", padx=10, pady=(5,10))
 
     def check_text_airport(self, event):
         """
@@ -450,10 +450,9 @@ class Interface(customtkinter.CTk):
                                                 seat_class="economy") / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
-        self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[index - 1])
-        self.liste_emissions[2][0].append(value_emmi)
-
-        self.liste_moteurs_sim = similar_engines(self.liste_vols["uid"].values[index - 1])
+        modele_engine = {'uid': [self.liste_vols["uid"].values[index-1]], 'modelEngine': [self.liste_vols["modelEngine"].values[index-1]]}
+        self.liste_moteurs_sim = pd.DataFrame(data=modele_engine)
+        self.liste_moteurs_sim = pd.concat([self.liste_moteurs_sim, similar_engines(self.liste_vols["uid"].values[index - 1])])
 
         self.liste_modele_sim = [modele_red]
         self.liste_modele_sim = self.liste_modele_sim + similar_models(modele_red)
@@ -470,7 +469,7 @@ class Interface(customtkinter.CTk):
                                          motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                          seat_class="economy") / 1000, 3), ".3f")
                 check_avions_compare = customtkinter.CTkCheckBox(self.tabview_modele.tab(modele_red),
-                                                                 text=f'engine {modele_moteur} : {emission} t',
+                                                                 text=f'engine {modele_moteur.split(' ')[0]} : {emission} t',
                                                                  variable=check_avions_compare_var, onvalue="on",
                                                                  offvalue="off")
                 check_avions_compare.grid(row=i, sticky="nsw", padx=10, pady=10)
@@ -581,22 +580,38 @@ class Interface(customtkinter.CTk):
             j += 1
 
     def export_event(self):
+        compteur = 0
         liste_emission = [self.liste_emissions[0], [[self.liste_emissions[1][0][0]]], [[self.liste_emissions[2][0][0]]]]
         j = 0
         for modele in self.liste_modele_sim:
             i = 0
             for element in self.tabview_modele.tab(modele).winfo_children():
                 if element.get() == "on":
-                    if j == 0:
-                        liste_emission[1][j].append(self.liste_emissions[1][j][i + 1])
-                        liste_emission[2][j].append(self.liste_emissions[2][j][i + 1])
-                    else:
-                        liste_emission[1][j].append(self.liste_emissions[1][j][i])
-                        liste_emission[2][j].append(self.liste_emissions[2][j][i])
+                    compteur += 1
+                    liste_emission[1][j].append(self.liste_emissions[1][j][i])
+                    liste_emission[2][j].append(self.liste_emissions[2][j][i])
                 i += 1
             liste_emission[1].append([])
             liste_emission[2].append([])
             j += 1
+
+        somme_totale = compteur
+        while somme_totale > 6 :
+            somme_totale = 0
+            nombre = 0
+            plus_grande_len = 0
+            for i in range(len(liste_emission[0])):
+                somme_totale += len(liste_emission[1][i])
+                if len(liste_emission[1][i]) >= nombre:
+                    nombre = len(liste_emission[1][i])
+                    plus_grande_len = i
+            if plus_grande_len == 0 :
+                (maxi, indice) = find_max_number([0] + liste_emission[2][plus_grande_len][1:len(liste_emission[2][plus_grande_len])])
+            else : 
+                (maxi, indice) = find_max_number(liste_emission[2][plus_grande_len])
+
+            del liste_emission[1][plus_grande_len][indice]
+            del liste_emission[2][plus_grande_len][indice]
         self.save_map_as_png("FlightRadar/Interface/map.png")
         pdf = Pdf(map_chemin="FlightRadar/Interface/map.png")
         vol = self.liste_vols.values[self.index_vol - 1]
@@ -685,3 +700,13 @@ def calcule_duree(traj):
         if traj[i][3] and traj[i + 1][3]:
             duree += traj[i + 1][0] - traj[i][0]
     return duree
+
+def find_max_number(liste_de_nombres):
+    maxi = 0
+    indice = 0
+    for i in range(len(liste_de_nombres)):
+        if float(liste_de_nombres[i]) >= maxi:
+            maxi = float(liste_de_nombres[i])
+            indice  = i
+
+    return maxi, indice
