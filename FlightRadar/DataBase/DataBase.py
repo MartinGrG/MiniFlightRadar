@@ -101,8 +101,8 @@ def faa(df):
     merged_df = pd.merge(df, faa_df, on='icao24')  # Fusion de la base de donnée d'entrée avec celle de la FAA. Seuls
     #                                                 ayant un numéro oaci24 enregistré aux US sont gardés
     """Base de donnee modele"""
-    model_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8', low_memory=False,
-                           usecols=[0, 2, 7])  # Lecture des colones 'CODE' et 'MODEL'
+    model_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ACFTREF.csv', sep=',', encoding='utf-8',
+                           low_memory=False, usecols=[0, 2, 7])  # Lecture des colones 'CODE' et 'MODEL'
     model_df.rename(columns={'NO-ENG': 'numberEngine'}, inplace=True)
     model_df.rename(columns={'CODE': 'codeModel'}, inplace=True)
     model_df.rename(columns={'MODEL': 'model'}, inplace=True)
@@ -111,13 +111,12 @@ def faa(df):
     #                                                       'code'
     merged_df['model'] = merged_df['model'].str.strip()
     merged_df['modelReduit'] = merged_df['model'].str[:4].str.strip()  # Nouvelle colonne 'modelReduit contenant les 4
-    #                                                                    premiers
-    #                                                        caractères de la colonne 'model'
+    #                                                                   premiers caractères de la colonne 'model'
     merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')  # Suppression des '-'
 
     """Base de donnee engine"""
-    engine_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ENGINE.csv', sep=',', encoding='utf-8', usecols=[0, 2],
-                            dtype={'CODE': str})  # Lecture des colonnes 'codeEngine' et 'modelEngine'
+    engine_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/FAA/ENGINE.csv', sep=',', encoding='utf-8',
+                            usecols=[0, 2], dtype={'CODE': str})  # Lecture des colonnes 'codeEngine' et 'modelEngine'
     #                                                     Ajout du dtype pour conserver les 0 au début du CODE sinon
     #                                                     00401 devient 401
     engine_df.rename(columns={'CODE': 'codeEngine'}, inplace=True)
@@ -148,7 +147,8 @@ def airplane_traj(index):
 
     :rtype: Liste Python
     """
-    traj_df = pd.read_csv('FlightRadar/DataBase/flights_data.csv', sep=',', encoding='utf-8', low_memory=False, usecols=[0, 4, 5])
+    traj_df = pd.read_csv('FlightRadar/DataBase/flights_data.csv', sep=',', encoding='utf-8',
+                          low_memory=False, usecols=[0, 4, 5])
     icao24 = traj_df.loc[index, 'icao24'].lower()
     t = traj_df.loc[index, 'firstSeen']
     api = OpenSkyApi()
@@ -185,8 +185,8 @@ def easa(df):
     :return: DataFrame d'entrée avec une nouvelle colonne 'uid'
     :rtype: DataFrame
     """
-    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8',
-                          usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
+    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv',
+                          sep=',', encoding='utf-8', usecols=[0, 3])  # Lecture des colonnes 'UID No' et 'MODEL'
 
     easa_df.rename(columns={'Engine Identification': 'modelEngine'}, inplace=True)
     easa_df.rename(columns={'UID No': 'uid'}, inplace=True)
@@ -206,7 +206,8 @@ def engine_emission(uid):
     :param str uid: Numéro uid unique au moteur
     :return: DataFrame d'une ligne contenant les caractéristiques du moteur du vol en question
     """
-    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8')
+    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv',
+                              sep=',', encoding='utf-8')
     ligne = emission_df[emission_df['UID No'] == uid]
     return ligne
 
@@ -221,7 +222,9 @@ def similar_engines(uid):
     """
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
-    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=['UID No', 'Engine Identification', 'Rated Thrust (kN)', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])
+    easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv',
+                          sep=',', encoding='utf-8', usecols=['UID No', 'Engine Identification', 'Rated Thrust (kN)',
+                                                              'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])
     easa_df['Rated Thrust (kN)'] = easa_df['Rated Thrust (kN)'].astype(float)
     # Calculer la différence absolue entre la poussée de chaque moteur et la valeur cible
     easa_df['difference'] = abs(easa_df['Rated Thrust (kN)'] - poussee)
@@ -270,7 +273,7 @@ def aircraft_emission(reduced_model):
     Fonction fournissant les caractéristiques d'un modèle d'avion reduced_model, nécessaires pour calculer les émissions
     CO2 par passager.
 
-    :param int reduced_model: Abbréviation du modèle de l'avion
+    :param str reduced_model: Abbréviation du modèle de l'avion
     :return: DataFrame d'une ligne contenant les caractéristiques de l'avion du vol en question
     """
     emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
@@ -281,7 +284,7 @@ def model_is_present(reduced_model):
     """
     Vérifie si un modèle d'avion reduced_model est présent dans la base de données.
 
-    :param int reduced_model: Abbréviation du modèle de l'avion.
+    :param str reduced_model: Abbréviation du modèle de l'avion.
     :return: True si le modèle est présent, False sinon.
     :rtype: bool
     """
@@ -298,7 +301,7 @@ def similar_models(reduced_model):
     Les modèles similaires sont ceux qui ont le même facteur de classe de sièges (CW) et une capacité de sièges (S)
     supérieure ou égale à celle du modèle réduit, à l'exception du modèle réduit lui-même.
 
-    :param int reduced_model: Abbréviation du modèle de l'avion.
+    :param str reduced_model: Abbréviation du modèle de l'avion.
     :return: Liste des abréviations des modèles d'avion similaires.
     :rtype: list
     """
