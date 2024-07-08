@@ -57,9 +57,10 @@ Les bases de données trouvées sur internet sont téléchargées automatiquemen
 
 
 # Fiche de vol :
+La fiche de vol est un document résumant les informations importantes du vol choisit par l'utilisateur, il se présente comme suit :
 
 # Documentation :
-La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier ???
+La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier "Documentation"
 
 # Dépendances :
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
@@ -68,9 +69,9 @@ Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
 Un cas test est développé dans le fichier "test.md" du projet.
 
 # Erreurs connues :
-Il est possible qu'après avoir cliqué sur le "Rechercher" ou après avoir sélectionné un vol que le message suivant
-apparraisse : 
+Il est possible qu'après avoir cliqué sur le bouton "Rechercher" ou après avoir sélectionné un vol, le message suivant
+apparaisse : 
 "requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='opensky-network.org', port=443): Read timed out."
-Cela indique que l'API d'OpenSky n'a pas répondu dans un délai acceptable. Pour régler le problème il suffit simplement 
+Cela indique que l'API d'OpenSky n'a pas répondu dans un délai acceptable. Pour régler le problème, il suffit 
 de réitérer une requête. Si cela persiste, cela indique que l'API d'OpenSky n'es pas fonctionnel pour le moment, 
 il faut réessayer plus tard.
