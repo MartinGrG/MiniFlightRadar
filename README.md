@@ -13,8 +13,8 @@ de la liste est indiqué : la compagnie aérienne, l'aéroport de départ et d'a
 La date doit être comprise dans les 30 jours précédant et la plage horaire supérieure à 30 minutes.
 ### Affichage du vol
 Une fois le vol sélectionné, son itinéraire est affiché sur une carte intéractive avec un gradiant de couleur 
-représentant l'évolution de son altitude. Un slider permet revivre l'évolution du vol dans le temps. En bas à droite de 
-la carte des informations sont fournies sur le vol : la compagnie, le code OACI de l'aéroport de départ et d'arrivée,
+représentant l'évolution de son altitude. Un slider permet revivre l'évolution de la position de l'avion dans le temps (mais n'indique plus l'altitude). 
+En bas à droite de la carte des informations sont fournies sur le vol : la compagnie, le code OACI de l'aéroport de départ et d'arrivée,
 le callsign, le numéro oaci24 ainsi que l'heure de départ et d'arrivée.
 ### Calculateur de CO2
 Le calculateur de CO2 donne l'émission par passager du vol sélectionné pour une certaine classe. La classe est choisie 
@@ -61,5 +61,13 @@ La documentation de toutes les fonctions et classes a été générée avec l'ou
 # Dépendances :
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
 
+# Exemple d'exécution 
+Un cas test est développé dans le fichier "test.md" du projet.
 
-
+# Erreurs connues :
+Il est possible qu'après avoir cliqué sur le "Rechercher" ou après avoir sélectionné un vol que le message suivant
+apparraisse : 
+"requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='opensky-network.org', port=443): Read timed out."
+Cela indique que l'API d'OpenSky n'a pas répondu dans un délai acceptable. Pour régler le problème il suffit simplement 
+de réitérer une requête. Si cela persiste, cela indique que l'API d'OpenSky n'es pas fonctionnel pour le moment, 
+il faut réessayer plus tard.
