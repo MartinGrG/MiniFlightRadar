@@ -11,13 +11,13 @@ class Pdf(FPDF):
                                         ["engine1_test", "engine2_test"]],[[0.1, 0.6, 0.2], [0.1, 0.5]]]
     graphique_emission = ""
     map_chemin = ""
-
-    def __init__(self, map_chemin):
+    classe = ''
+    def __init__(self, map_chemin, classe):
         super().__init__(orientation="portrait", unit="mm", format="A4", font_cache_dir="DEPRECATED")
         self.add_page()
         self.map_chemin = map_chemin
         self.set_margins(12.7, 12.7, 12.7)
-
+        self.classe = classe
     def set_data(self, infos_vol, emission):
         self.infos_vol = infos_vol
         self.infos_emission = emission
@@ -175,10 +175,9 @@ class Pdf(FPDF):
 
         # Séparateur
         self.ajouter_separateur()
-        y_i = self.y
         # Nouveau titre
-        self.titre_chapitre('Emission CO2 du vol (en t par passager)')
-
+        self.titre_chapitre(f'Emissions CO2 du vol en classe {self.classe} (en t par passager)')
+        y_i = self.y
         # Image
         self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
 
