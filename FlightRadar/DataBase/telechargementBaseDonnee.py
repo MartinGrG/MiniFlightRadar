@@ -122,7 +122,7 @@ def base_de_donnees_easa():
         # Charger le fichier Excel en utilisant pandas
         xl = pd.ExcelFile(destination_file_path)
 
-        sheet_names = ["Gaseous Emissions and Smoke", "nvPM Emissions"]
+        sheet_names = ["Gaseous Emissions and Smoke"]
         for sheet_name in sheet_names:
             # Vérifier si la feuille spécifiée existe
             if sheet_name in xl.sheet_names:
