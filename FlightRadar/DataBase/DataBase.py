@@ -110,7 +110,7 @@ def faa(df):
     #                                                       celle contenant les modèles des avions associés à leur
     #                                                       'code'
     merged_df['model'] = merged_df['model'].str.strip()
-    merged_df['modelReduit'] = merged_df['model'].str[:4]  # Nouvelle colonne 'modelReduit contenant les 4 premiers
+    merged_df['modelReduit'] = merged_df['model'].str[:4].str.strip()  # Nouvelle colonne 'modelReduit contenant les 4 premiers
     #                                                        caractères de la colonne 'model'
     merged_df['modelReduit'] = merged_df['modelReduit'].str.replace('-', '')  # Suppression des '-'
 
@@ -294,10 +294,12 @@ def similar_models(reduced_model):
     :return: Liste des abréviations des modèles d'avion similaires.
     :rtype: list
     """
-    emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
-    emission_df.drop(index=[0, 1], inplace=True)
-    reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
-    emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
-    emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
-    emission_df.drop(index=reduced_model_index, inplace=True)
-    return emission_df["modelReduit"].values.tolist()
+    if model_is_present(reduced_model):
+        emission_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/aircraft_parameters.csv', sep=';', encoding='utf-8')
+        emission_df.drop(index=[0, 1], inplace=True)
+        reduced_model_index = emission_df.loc[emission_df["modelReduit"] == reduced_model].index[0]
+        emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
+        emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
+        emission_df.drop(index=reduced_model_index, inplace=True)
+        return emission_df["modelReduit"].values.tolist()[:5]
+    return []
