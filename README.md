@@ -19,12 +19,15 @@ le callsign, le numéro oaci24 ainsi que l'heure de départ et d'arrivée.
 ### Calculateur de CO2
 Le calculateur de CO2 donne l'émission par passager du vol sélectionné pour une certaine classe. La classe est choisie 
 dans un menu déroulant, il y a 4 choix : économie, premium économie, affaire et première.
-De plus, l'application offre la possibilité de tester différentes combinaisons de modèles et moteurs similaires afin de 
-rechercher laquelle serait la plus écologique.(Attention les combinaisons ne prennent pas en compte la compatibilité entre 
+De plus, l'application offre la possibilité de tester différentes combinaisons de modèles d'avions et moteurs similaires afin de 
+rechercher laquelle serait la plus écologique. 
+Pour ce faire, il est possible de sélectionner un avion parmi une sélection de modèles d'avion semblable à celui du vol choisit pour
+afficher leurs émissions en fonction de divers moteurs.
+(Attention les combinaisons ne prennent pas en compte la compatibilité entre 
 le moteur et le modèle de l'avion et peut ne pas être réalisable, nous recherchons seulement l'émission la plus faible)
 ### Fiche de vol
 Un bouton "Exporter" permet en cliquant dessus de générer une fiche de vol recensant toutes les informations du vol 
-sélectionné.
+sélectionné. La comparaison d'émissions des moteurs se fera entre ceux ayant leurs cases cochées.
 
 
 # Interface: 
