@@ -58,9 +58,12 @@ Les bases de données trouvées sur internet sont téléchargées automatiquemen
 
 # Fiche de vol :
 La fiche de vol est un document résumant les informations importantes du vol choisit par l'utilisateur, il se présente comme suit :
+(Il peut y avoir un problème avec l'affichage de la carte sur la fiche de vol sur macOs, au lieu de prendre une capture de 
+la carte intéractive l'application prend une capture du fond d'écran)
 
 # Documentation :
-La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier "Documentation"
+La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier "Documentation".
+
 
 # Dépendances :
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
