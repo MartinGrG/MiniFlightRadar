@@ -212,6 +212,13 @@ def engine_emission(uid):
 
 
 def similar_engines(uid):
+    """
+        Fonction retournant 5 moteurs de poussée similaire à celui correspondant au numéro uid en entrée.
+        Chaque moteur est de marque différente.
+
+        :param str uid: Numéro uid unique au moteur
+        :return: DataFrame de 5 lignes pour les 5 moteurs et 2 colonnes [uid, modelEngine]
+    """
     poussee = float(engine_emission(uid)['Rated Thrust (kN)'].iloc[0])
 
     easa_df = pd.read_csv('FlightRadar/DataBase/BaseDonnees/EASA/Gaseous Emissions and Smoke.csv', sep=',', encoding='utf-8', usecols=['UID No', 'Engine Identification', 'Rated Thrust (kN)', 'Fuel Flow T/O (kg/sec)', 'Fuel LTO Cycle (kg)  '])
