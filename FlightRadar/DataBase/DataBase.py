@@ -309,5 +309,5 @@ def similar_models(reduced_model):
         emission_df = emission_df[emission_df["CW"] == emission_df["CW"][reduced_model_index]]
         emission_df = emission_df[emission_df["S"] >= emission_df["S"][reduced_model_index]]
         emission_df.drop(index=reduced_model_index, inplace=True)
-        return emission_df["modelReduit"].values.tolist()[:5]
+        return emission_df["modelReduit"].values.tolist()[:4]
     return []

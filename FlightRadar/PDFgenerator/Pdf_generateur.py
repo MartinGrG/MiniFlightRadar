@@ -7,8 +7,8 @@ class Pdf(FPDF):
     infos_vol = ["index", "callsign", "AAAA", "AAAA", "icao24", "aaaa/mm/jj 13:34:se", "aaaa/mm/jj 15:23:se",
                  "compagnie", "codeModel", "codeEngine", "model", "numberEngine", "modelReduit", "modelEngine", "uid",
                  "1000"]
-    infos_emission = [['CL6','B777'], [["engine1_test","engine2_test","engine3_test"],["engine1_test", "engine2_test"]],
-                      [[0.1,0.6,0.2],[0.1,0.5]]]
+    infos_emission = [['CL6', 'B777'], [["engine1_test", "engine2_test", "engine3_test"],
+                                        ["engine1_test", "engine2_test"]],[[0.1, 0.6, 0.2], [0.1, 0.5]]]
     graphique_emission = ""
     map_chemin = ""
 
@@ -27,7 +27,7 @@ class Pdf(FPDF):
 
         x = self.infos_emission[1]
         y = self.infos_emission[2]
-        plt.title(f"émission du {self.infos_vol[12]} pour le vol sélectionné\navec différents moteurs")
+        plt.title(f"émission pour le vol sélectionné\navec différents modèles et moteurs d'avions")
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (t)")
 
@@ -99,9 +99,9 @@ class Pdf(FPDF):
         self.ln()
 
     def ajouter_separateur(self):
-        self.ln(6)
-        self.cell(0, 0, '', 'T')
         self.ln(3)
+        self.cell(0, 0, '', 'T')
+        self.ln(2)
 
     def generer_pdf(self):
         # En-tête et pied de page personnalisés
