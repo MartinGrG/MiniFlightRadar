@@ -2,6 +2,7 @@
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 
+
 class Pdf(FPDF):
     """
     Cette classe étend les fonctionnalités de FPDF pour générer un document PDF personnalisé.
@@ -26,7 +27,7 @@ class Pdf(FPDF):
                  "compagnie", "codeModel", "codeEngine", "model", "numberEngine", "modelReduit", "modelEngine", "uid",
                  "1000"]
     infos_emission = [['CL6', 'B777'], [["engine1_test", "engine2_test", "engine3_test"],
-                                        ["engine1_test", "engine2_test"]],[[0.1, 0.6, 0.2], [0.1, 0.5]]]
+                                        ["engine1_test", "engine2_test"]], [[0.1, 0.6, 0.2], [0.1, 0.5]]]
     graphique_emission = ""
     map_chemin = ""
     classe = ''
@@ -74,8 +75,8 @@ class Pdf(FPDF):
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (t)")
 
-        #on génère les barres d'émission CO2 pour chaque modèle d'avion.
-        for i in range(len(self.infos_emission[0])) :
+        # On génère les barres d'émission CO2 pour chaque modèle d'avion.
+        for i in range(len(self.infos_emission[0])):
             x[i] = [f'({self.infos_emission[0][i]}){item}' for item in x[i]]
             y[i] = [float(y) for y in y[i]]
             plt.bar(x[i], y[i], label=self.infos_emission[0][i])
@@ -153,7 +154,6 @@ class Pdf(FPDF):
                     self.cell(taille_max, 7, str(donnees[2][i][j]), 1, align='C')
                     self.ln()
                     self.set_text_color(0, 0, 0)
-
 
                 else:
                     self.cell(taille_max, 7, str(donnees[1][i][j].split(' ')[0]), 1, align='C')

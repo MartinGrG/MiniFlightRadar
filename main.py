@@ -8,6 +8,5 @@ telechargementBaseDonnee.base_de_donnees_easa()
 # On crée l'objet Interface
 interface = Interface.Interface()
 
-
 # on lance l'interface
 interface.mainloop()

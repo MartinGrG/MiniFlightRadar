@@ -164,7 +164,7 @@ class Interface(customtkinter.CTk):
 
         self.label_carbon_titre = customtkinter.CTkLabel(self.frame_droite, text="Calculateur\nCO2",
                                                          font=('Arial', 20, "bold"))
-        self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=(10,5))
+        self.label_carbon_titre.grid(row=0, column=0, padx=10, pady=(10, 5))
 
         self.optionmenu_seat_class = customtkinter.CTkOptionMenu(self.frame_droite,
                                                                  values=["économique", "économique premium", "affaires",
@@ -188,7 +188,7 @@ class Interface(customtkinter.CTk):
         self.tabview_modele.grid(row=0, column=0, sticky="swe", padx=10, pady=10)
 
         self.button_export_data = customtkinter.CTkButton(self.frame_compare_emission, text="Exporter")
-        self.button_export_data.grid(row=2, column=0, sticky="swe", padx=10, pady=(5,10))
+        self.button_export_data.grid(row=2, column=0, sticky="swe", padx=10, pady=(5, 10))
 
     def check_text_airport(self, event):
         """
@@ -377,20 +377,20 @@ class Interface(customtkinter.CTk):
         # Gestion de l'affichage de l'altitude par couleur
         for i in range(len(traj) - 1):
             altitude_moy = (self.traj[i][3] + self.traj[i + 1][3]) / 2
-            couleur_R = int(459 - (204 / 6250) * altitude_moy)
-            if couleur_R > 255:
-                couleur_R = 255
-            elif couleur_R < 0:
-                couleur_R = 0
-            couleur_G = int(229 + ((128 - 229) / 6250) * altitude_moy)
-            if couleur_G < 0:
-                couleur_G = 0
+            couleur_r = int(459 - (204 / 6250) * altitude_moy)
+            if couleur_r > 255:
+                couleur_r = 255
+            elif couleur_r < 0:
+                couleur_r = 0
+            couleur_g = int(229 + ((128 - 229) / 6250) * altitude_moy)
+            if couleur_g < 0:
+                couleur_g = 0
 
-            couleur_B = int(204 - (204 / 6250) * altitude_moy)
-            if couleur_B < 0:
-                couleur_B = 0
+            couleur_b = int(204 - (204 / 6250) * altitude_moy)
+            if couleur_b < 0:
+                couleur_b = 0
             self.map_widget.set_path([traj[i], traj[i + 1]],
-                                     color='#{:02x}{:02x}{:02x}'.format(*(couleur_R, couleur_G, couleur_B)), width=3)
+                                     color='#{:02x}{:02x}{:02x}'.format(*(couleur_r, couleur_g, couleur_b)), width=3)
 
         # Adaptation du curseur au vol selectionné
         self.curseur_temps.configure(state="normal")
@@ -404,18 +404,18 @@ class Interface(customtkinter.CTk):
                 width_infos = 15
                 height_infos = 2
 
-                couleur_R = int(459 - (204 / 6250) * x)
-                if couleur_R > 255:
-                    couleur_R = 255
-                elif couleur_R < 0:
-                    couleur_R = 0
-                couleur_G = int(229 + ((128 - 229) / 6250) * x)
-                if couleur_G < 0:
-                    couleur_G = 0
+                couleur_r = int(459 - (204 / 6250) * x)
+                if couleur_r > 255:
+                    couleur_r = 255
+                elif couleur_r < 0:
+                    couleur_r = 0
+                couleur_g = int(229 + ((128 - 229) / 6250) * x)
+                if couleur_g < 0:
+                    couleur_g = 0
 
-                couleur_B = int(204 - (204 / 6250) * x)
-                if couleur_B < 0:
-                    couleur_B = 0
+                couleur_b = int(204 - (204 / 6250) * x)
+                if couleur_b < 0:
+                    couleur_b = 0
 
                 self.map_widget.canvas.create_polygon(position_gradient[0], position_gradient[1],
                                                       position_gradient[0] + width_infos,
@@ -426,7 +426,7 @@ class Interface(customtkinter.CTk):
                                                       position_gradient[1] + height_infos,
                                                       width=10,
                                                       fill='#{:02x}{:02x}{:02x}'.format(
-                                                          *(couleur_R, couleur_G, couleur_B)),
+                                                          *(couleur_r, couleur_g, couleur_b)),
                                                       tag="button")
                 if x % 2000 == 0:
                     self.map_widget.canvas.create_text(math.floor(position_gradient[0] + 20),
@@ -456,19 +456,21 @@ class Interface(customtkinter.CTk):
         modele_red = self.liste_vols["modelReduit"].values[index - 1]
 
         value_emmi = format(round(self.calculer_carbon(modele_red,
-                                                calcule_distance(self.traj), calcule_duree(self.traj),
-                                                self.liste_vols["uid"].values[index - 1],
-                                                motors_nb=self.liste_vols["numberEngine"].values[index - 1],
-                                                seat_class="économique") / 1000, 3), ".3f")
+                                                       calcule_distance(self.traj), calcule_duree(self.traj),
+                                                       self.liste_vols["uid"].values[index - 1],
+                                                       motors_nb=self.liste_vols["numberEngine"].values[index - 1],
+                                                       seat_class="économique") / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
-        modele_engine = {'uid': [self.liste_vols["uid"].values[index-1]], 'modelEngine': [self.liste_vols["modelEngine"].values[index-1]]}
+        modele_engine = {'uid': [self.liste_vols["uid"].values[index-1]], 'modelEngine': 
+                         [self.liste_vols["modelEngine"].values[index-1]]}
         self.liste_moteurs_sim = pd.DataFrame(data=modele_engine)
-        self.liste_moteurs_sim = pd.concat([self.liste_moteurs_sim, similar_engines(self.liste_vols["uid"].values[index - 1])])
+        self.liste_moteurs_sim = pd.concat([self.liste_moteurs_sim, 
+                                            similar_engines(self.liste_vols["uid"].values[index - 1])])
 
         self.liste_modele_sim = [modele_red]
         self.liste_modele_sim = self.liste_modele_sim + similar_models(modele_red)
-        j=0
+        j = 0
         for modele_red in self.liste_modele_sim:
             self.tabview_modele.add(modele_red)
             i = 0
@@ -481,7 +483,8 @@ class Interface(customtkinter.CTk):
                                          motors_nb=self.liste_vols["numberEngine"].values[index - 1],
                                          seat_class="économique") / 1000, 3), ".3f")
                 check_avions_compare = customtkinter.CTkCheckBox(self.tabview_modele.tab(modele_red),
-                                                                 text=f'engine {modele_moteur.split(' ')[0]} : {emission} t',
+                                                                 text=f'engine {modele_moteur.split(' ')[0]} : '
+                                                                      f'{emission} t',
                                                                  variable=check_avions_compare_var, onvalue="on",
                                                                  offvalue="off")
                 check_avions_compare.grid(row=i, sticky="nsw", padx=10, pady=10)
@@ -493,6 +496,7 @@ class Interface(customtkinter.CTk):
             self.liste_emissions[2].append([])
 
             j += 1
+    
     def button_search_event(self):
         """
         Cette procédure est liée au bouton button_search. Lorsque ce dernier est pressé, la procédure entre
@@ -570,10 +574,11 @@ class Interface(customtkinter.CTk):
 
         # Update de l'émission du vol sélectionné
         value_emmi = format(round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
-                                                calcule_distance(self.traj), calcule_duree(self.traj),
-                                                self.liste_vols["uid"].values[self.index_vol - 1],
-                                                motors_nb=self.liste_vols["numberEngine"].values[self.index_vol - 1],
-                                                seat_class=seat_class) / 1000, 3), ".3f")
+                                                       calcule_distance(self.traj), calcule_duree(self.traj),
+                                                       self.liste_vols["uid"].values[self.index_vol - 1],
+                                                       motors_nb=self.liste_vols["numberEngine"]
+                                                       .values[self.index_vol - 1],
+                                                       seat_class=seat_class) / 1000, 3), ".3f")
         self.label_carbon_resultat.configure(
             text=f'émission CO2 du vol\npar passager\n{value_emmi} tonnes de CO2')
         self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[self.index_vol - 1])
@@ -632,7 +637,7 @@ class Interface(customtkinter.CTk):
         # S'il y a plus de 5 checkboxes, on va envoyer les 5 plus opti parmi les modèles,
         # on essaye de montre le meilleur pour chacun des modèles d'avions.
         somme_totale = compteur
-        while somme_totale > 6 :
+        while somme_totale > 6:
             somme_totale = 0
             nombre = 0
             plus_grande_len = 0
@@ -641,16 +646,17 @@ class Interface(customtkinter.CTk):
                 if len(liste_emission[1][i]) >= nombre:
                     nombre = len(liste_emission[1][i])
                     plus_grande_len = i
-            if plus_grande_len == 0 :
-                (maxi, indice) = find_max_number([0] + liste_emission[2][plus_grande_len][1:len(liste_emission[2][plus_grande_len])])
-            else :
+            if plus_grande_len == 0:
+                (maxi, indice) = find_max_number([0] + liste_emission[2][plus_grande_len][1:len(liste_emission[2]
+                                                                                                [plus_grande_len])])
+            else:
                 (maxi, indice) = find_max_number(liste_emission[2][plus_grande_len])
 
             del liste_emission[1][plus_grande_len][indice]
             del liste_emission[2][plus_grande_len][indice]
         # on exporte la map et on lance la création du rapport de vol sous format PDF.
         self.save_map_as_png("FlightRadar/Interface/map.png")
-        pdf = Pdf(map_chemin="FlightRadar/Interface/map.png", classe = self.optionmenu_seat_class.get())
+        pdf = Pdf(map_chemin="FlightRadar/Interface/map.png", classe=self.optionmenu_seat_class.get())
         vol = self.liste_vols.values[self.index_vol - 1]
         vol = np.append(vol, calcule_distance(self.traj))
         vol[5] = timestamp_to_date(vol[5])
@@ -702,6 +708,7 @@ def timestamp_to_date(timestamp):
     :rtype: str
     """
     return str(datetime.datetime.fromtimestamp(timestamp))
+
 
 def calcule_distance(traj):
     """
@@ -765,6 +772,6 @@ def find_max_number(liste_de_nombres):
     for i in range(len(liste_de_nombres)):
         if float(liste_de_nombres[i]) >= maxi:
             maxi = float(liste_de_nombres[i])
-            indice  = i
+            indice = i
 
     return maxi, indice
