@@ -250,10 +250,10 @@ class Interface(customtkinter.CTk):
         en place les mécanismes de sécurité permettant d'assurer une saisie de l'heure minimale
         du créneau de sélection des vols bien formatée :
 
-        |- On s'assure que l'heure contient tout juste 5 caractères.
-        |- On s'assure que les : s'ajoutent automatiquement.
-        |- On s'assure que l'heure ne contient que des chiffres.
-        |- On empêche l'entrée de l'heure de fin tant que l'entrée de l'heure de début n'est pas complète.
+        | - On s'assure que l'heure contient tout juste 5 caractères.
+        | - On s'assure que les : s'ajoutent automatiquement.
+        | - On s'assure que l'heure ne contient que des chiffres.
+        | - On empêche l'entrée de l'heure de fin tant que l'entrée de l'heure de début n'est pas complète.
 
         :param tkinter.event event: Contient les informations sur la keyRealeased.
         """
@@ -296,10 +296,10 @@ class Interface(customtkinter.CTk):
         en place les mécanismes de sécurité permettant d'assurer une saisie de l'heure maximale
         du créneau de sélection des vols bien formatée :
 
-        |- On s'assure que l'heure contient tout juste 5 caractères.
-        |- On s'assure que les : s'ajoutent automatiquement.
-        |- On s'assure que l'heure ne contient que des chiffres.
-        |- On vérifie que l'heure est bien supérieure à l'heure de début entrée précèdemment.
+        | - On s'assure que l'heure contient tout juste 5 caractères.
+        | - On s'assure que les : s'ajoutent automatiquement.
+        | - On s'assure que l'heure ne contient que des chiffres.
+        | - On vérifie que l'heure est bien supérieure à l'heure de début entrée précèdemment.
 
         :param tkinter.event event: Contient les informations sur la keyRealeased.
         """
