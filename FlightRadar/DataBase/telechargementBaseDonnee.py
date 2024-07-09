@@ -15,8 +15,8 @@ def download_file(url, destination_file_path, ssl_context, max_retries=5):
     """
     Télécharge un fichier depuis une URL donnée et l'enregistre dans un chemin de fichier de destination spécifié.
 
-    Cette fonction tente de télécharger un fichier en utilisant une connexion sécurisée, avec un maximum de tentatives spécifiées
-    en cas d'échec. Elle affiche également la progression du téléchargement.
+    Cette fonction tente de télécharger un fichier en utilisant une connexion sécurisée, avec un maximum de tentatives
+    spécifiées en cas d'échec. Elle affiche également la progression du téléchargement.
 
     :param str url: URL du fichier à télécharger.
     :param str destination_file_path: Chemin du fichier où le contenu téléchargé sera enregistré.
