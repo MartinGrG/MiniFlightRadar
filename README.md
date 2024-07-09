@@ -1,11 +1,12 @@
 # Traqueur de vol avec calcul d'émission CO2
 
-# Objectif:
+# Objectif
 Le but de l'application est de calculer l'émission carbone par passager sur un vol ayant déjà eu lieu.
 
 # Guide d'utilisation
-Télécharger le dossier GIT et lancer le fichier "main.py".
-L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.
+Télécharger le dossier GIT, installer les librairies nécessaires et lancer le fichier "main.py".
+L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.<br><br>
+Pour installer les librairies, il est possible d'utiliser la commande `pip install -r requirements.txt`dans le terminal.
 ### Historique des vols
 L'utilisateur fourni le code OACI d'un aéroport, une date et une plage horaire. Il peut ensuite choisir un vol dans la 
 liste contenant tous les vols en partant et à destination de son aéroport dans la période fournie. Pour chacun des vols 
@@ -29,11 +30,9 @@ le moteur et le modèle de l'avion et peut ne pas être réalisable, nous recher
 Un bouton "Exporter" permet en cliquant dessus de générer une fiche de vol recensant toutes les informations du vol 
 sélectionné. La comparaison d'émissions des moteurs se fera entre ceux ayant leurs cases cochées.
 
-
-# Interface: 
+# Interface
 L'interface est créée avec la librairie customtkinter.
 ![Capture de l'interface](FlightRadar/images/interface.png)
-
 
 # Gestion de la base de donnée
 La base de donnée est composé de 8 bases de données : 
@@ -53,29 +52,62 @@ Les tableaux représentent les informations contenues dans chaque base de donné
 flight_data.csv. 
 Les bases de données trouvées sur internet sont téléchargées automatiquement lors du premier lancement de l'application.
 
-# Calcul des émissions :
+# Calcul des émissions CO₂
+## Équations
+Les émissions de CO₂ pour un vol d'avion peuvent-être calculées en utilisant les équations et les variables définies 
+ci-dessous.
+### Émissions de CO₂ globales
+Les émissions CO₂ émises lors du vol ne dépendent que de la consommation du kérosène. Le flux du moteur en croisière est 
+estimé à $0.3$ fois celui au décollage.
+$$E_{CO2, globales} = (C_{LTO} + c \times 0,3 \times d) \times (EF \times M + P)$$
+### Émissions de CO₂ par personne
+Les émissions CO₂ par passager dépendent de nombreux facteurs, notamment de la classe du passager. Le CO₂ produit par 
+les infrastructures et la construction de l'avion sont également prises en compte.
+$$E_{CO2 / personne} = \frac{E_{CO2, globales}}{S \times PLF} \times CW \times (1 - CF) + AF \times dist + A$$
+## Variables
+- **$C_{LTO}$** : Consommation de kérosène (kg) au décollage.
+- **$c$** : Flux de carburant au décollage (kg/s).
+- **$d$** : Durée en croisière (s).
+- **$EF$** : Facteur d’émission de CO₂ pour la combustion du carburéacteur (kg CO₂/kg).
+- **$M$** : Multiplicateur.
+- **$P$** : Facteur de préproduction (kg CO₂/kg).
+- **$S$** : Nombre moyen de sièges.
+- **$PLF$** : Facteur de charge des passagers.
+- **$CW$** : Facteur de classe.
+- **$CF$** : Facteur de fret.
+- **$AF$** : Facteur d’avion.
+- **$dist$** : Distance totale du vol (km).
+- **$A$** : Facteur d’infrastructure (kg CO₂).
 
-
-# Fiche de vol :
+# Fiche de vol
 La fiche de vol est un document résumant les informations importantes du vol choisit par l'utilisateur, il se présente comme suit :
 (Il peut y avoir un problème avec l'affichage de la carte sur la fiche de vol sur macOs, au lieu de prendre une capture de 
 la carte intéractive l'application prend une capture du fond d'écran)
 ![Fiche de vol](FlightRadar/images/fiche_vol.png)
 
-
-# Documentation :
+# Documentation
 La documentation de toutes les fonctions et classes a été générée avec l'outil sphinx et se trouve dans le dossier "Documentation".
 
-# Dépendances :
+# Dépendances
 Toutes les librairies utilisées sont présentes dans le fichier requirement.txt
 
 # Exemple d'exécution 
 Un cas test est développé dans le fichier "test.md" du projet.
 
-# Erreurs connues :
+# Erreurs connues
 Il est possible qu'après avoir cliqué sur le bouton "Rechercher" ou après avoir sélectionné un vol, le message suivant
 apparaisse : 
 "requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='opensky-network.org', port=443): Read timed out."
 Cela indique que l'API d'OpenSky n'a pas répondu dans un délai acceptable. Pour régler le problème, il suffit 
 de réitérer une requête. Si cela persiste, cela indique que l'API d'OpenSky n'es pas fonctionnel pour le moment, 
 il faut réessayer plus tard.
+
+# Références
+## Bases de données
+- [FAA Aircraft Certification Database](https://www.faa.gov/licenses_certificates/aircraft_certification/aircraft_registry/releasable_aircraft_download)
+- [EASA ICAO Aircraft Engine Emissions Databank](https://www.easa.europa.eu/en/domains/environment/icao-aircraft-engine-emissions-databank)
+## Pour le calcul des émissions CO₂
+Pour plus d'informations sur les calculs des émissions de CO₂, vous pouvez consulter les ressources suivantes :
+- [myclimate Flight Emission Calculator](https://www.myclimate.org/en/information/about-myclimate/downloads/flight-emission-calculator/)
+- [EUROCONTROL Advanced Emission Model](https://www.eurocontrol.int/model/advanced-emission-model)
+- [IATA Passenger Emissions Methodology](https://www.iata.org/en/programs/environment/passenger-emissions-methodology/?_fs=16412957987-15131799132&_fsRef=https://services.iata.org/co2-connect-demo/#tab-1)
