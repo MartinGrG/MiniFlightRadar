@@ -4,8 +4,9 @@
 Le but de l'application est de calculer l'émission carbone par passager sur un vol ayant déjà eu lieu.
 
 # Guide d'utilisation
-Télécharger le dossier GIT et lancer le fichier "main.py".
-L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.
+Télécharger le dossier GIT, installer les librairies nécessaires et lancer le fichier "main.py".
+L'application propose un panneau usager permettant une utilisation de l'application simple et un affichage clair.<br><br>
+Pour installer les librairies, il est possible d'utiliser la commande `pip install -r requirements.txt`dans le terminal.
 ### Historique des vols
 L'utilisateur fourni le code OACI d'un aéroport, une date et une plage horaire. Il peut ensuite choisir un vol dans la 
 liste contenant tous les vols en partant et à destination de son aéroport dans la période fournie. Pour chacun des vols 
