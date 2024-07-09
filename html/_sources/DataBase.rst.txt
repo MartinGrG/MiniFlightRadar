@@ -1,0 +1,7 @@
+DataBase module
+===============
+
+.. automodule:: FlightRadar.DataBase.DataBase
+   :members:
+   :undoc-members:
+   :show-inheritance:

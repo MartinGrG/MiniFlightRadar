@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PDF_generateur module &#8212; MiniFlightRadar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="CarbonEmission module" href="CarbonEmissions.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-FlightRadar.PDFgenerator.Pdf_generateur">
+<span id="pdf-generateur-module"></span><h1>PDF_generateur module<a class="headerlink" href="#module-FlightRadar.PDFgenerator.Pdf_generateur" title="Link to this heading">¶</a></h1>
+<p>Ce script décrit l’objet PDF et donne les fonctions associées</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.PDFgenerator.Pdf_generateur.</span></span><span class="sig-name descname"><span class="pre">Pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_chemin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FPDF</span></code></p>
+<p>Cette classe étend les fonctionnalités de FPDF pour générer un document PDF personnalisé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>titre</strong> (<em>Str</em>) – Titre du document PDF, par défaut “Titre par défaut”.</p></li>
+<li><p><strong>infos_vol</strong> (<em>list</em>) – Informations sur le vol sous forme de liste, contenant différents détails
+comme l’index, le callsign, les dates de départ et d’arrivée, la compagnie, le modèle d’avion, etc.</p></li>
+<li><p><strong>infos_emission</strong> (<em>list</em>) – Informations sur les émissions de carbone, comprenant des données sur les moteurs,
+les émissions associées à chaque moteur, les modèles d’avions, etc.</p></li>
+<li><p><strong>graphique_emission</strong> (<em>Str</em>) – Chemin vers le graphique des émissions de carbone.</p></li>
+<li><p><strong>map_chemin</strong> (<em>Str</em>) – Chemin vers l’image de la carte capturée.</p></li>
+<li><p><strong>classe</strong> (<em>Str</em>) – Classe de siège pour laquelle les émissions sont calculées, par exemple économique, affaires, etc.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_image">
+<span class="sig-name descname"><span class="pre">ajouter_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chemin_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taille</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_image" title="Link to this definition">¶</a></dt>
+<dd><p>Ajoute une image au PDF à l’emplacement spécifié.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chemin_image</strong> (<em>str</em>) – Chemin de l’image à ajouter.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – Position x de l’image.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – Position y de l’image.</p></li>
+<li><p><strong>taille</strong> (<em>float</em>) – Taille de l’image.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_separateur">
+<span class="sig-name descname"><span class="pre">ajouter_separateur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_separateur" title="Link to this definition">¶</a></dt>
+<dd><p>Ajoute un séparateur au PDF pour séparer les sections.
+Ajoute une ligne vide et une ligne de séparation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_tableau">
+<span class="sig-name descname"><span class="pre">ajouter_tableau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">donnees</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.ajouter_tableau" title="Link to this definition">¶</a></dt>
+<dd><p>Ajoute un tableau au PDF. Formatage spécialement réalisé
+pour réceptionner les données d’émissions CO2 du programme.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>donnees</strong> (<em>list</em>) – Données à ajouter au tableau.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.calcule_duree">
+<span class="sig-name descname"><span class="pre">calcule_duree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.calcule_duree" title="Link to this definition">¶</a></dt>
+<dd><p>Calcule la durée entre deux horaires spécifiés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h1</strong> (<em>str</em>) – Horaire de départ au format ‘aaaa/mm/jj hh:mm:ss’.</p></li>
+<li><p><strong>h2</strong> (<em>str</em>) – Horaire d’arrivée au format ‘aaaa/mm/jj hh:mm:ss’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Durée sous forme de chaîne de caractères.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.classe">
+<span class="sig-name descname"><span class="pre">classe</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.classe" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.generer_graphique">
+<span class="sig-name descname"><span class="pre">generer_graphique</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.generer_graphique" title="Link to this definition">¶</a></dt>
+<dd><p>Génère un graphique des émissions de CO2 pour le vol sélectionné.</p>
+<p>Le graphique est sauvegardé sous le chemin spécifié.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Chemin du fichier du graphique généré.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.generer_pdf">
+<span class="sig-name descname"><span class="pre">generer_pdf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.generer_pdf" title="Link to this definition">¶</a></dt>
+<dd><p>Génère le PDF avec toutes les sections et les informations du vol.</p>
+<p>Enregistre le PDF sous le nom ‘Compte_rendu.pdf’.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.graphique_emission">
+<span class="sig-name descname"><span class="pre">graphique_emission</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.graphique_emission" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.infos_emission">
+<span class="sig-name descname"><span class="pre">infos_emission</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[['CL6',</span> <span class="pre">'B777'],</span> <span class="pre">[['engine1_test',</span> <span class="pre">'engine2_test',</span> <span class="pre">'engine3_test'],</span> <span class="pre">['engine1_test',</span> <span class="pre">'engine2_test']],</span> <span class="pre">[[0.1,</span> <span class="pre">0.6,</span> <span class="pre">0.2],</span> <span class="pre">[0.1,</span> <span class="pre">0.5]]]</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.infos_emission" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.infos_vol">
+<span class="sig-name descname"><span class="pre">infos_vol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['index',</span> <span class="pre">'callsign',</span> <span class="pre">'AAAA',</span> <span class="pre">'AAAA',</span> <span class="pre">'icao24',</span> <span class="pre">'aaaa/mm/jj</span> <span class="pre">13:34:se',</span> <span class="pre">'aaaa/mm/jj</span> <span class="pre">15:23:se',</span> <span class="pre">'compagnie',</span> <span class="pre">'codeModel',</span> <span class="pre">'codeEngine',</span> <span class="pre">'model',</span> <span class="pre">'numberEngine',</span> <span class="pre">'modelReduit',</span> <span class="pre">'modelEngine',</span> <span class="pre">'uid',</span> <span class="pre">'1000']</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.infos_vol" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.map_chemin">
+<span class="sig-name descname"><span class="pre">map_chemin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.map_chemin" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infos_vol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emission</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.set_data" title="Link to this definition">¶</a></dt>
+<dd><p>Update les données du vol et les informations des émissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infos_vol</strong> (<em>list</em>) – Liste contenant les informations du vol (ligne de flight_data.csv).</p></li>
+<li><p><strong>emission</strong> (<em>list</em>) – Liste contenant les informations des émissions CO2 comparatives.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.titre">
+<span class="sig-name descname"><span class="pre">titre</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Titre</span> <span class="pre">par</span> <span class="pre">défaut'</span></em><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.titre" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.PDFgenerator.Pdf_generateur.Pdf.titre_chapitre">
+<span class="sig-name descname"><span class="pre">titre_chapitre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">titre</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.PDFgenerator.Pdf_generateur.Pdf.titre_chapitre" title="Link to this definition">¶</a></dt>
+<dd><p>Ajoute un titre de chapitre au PDF avec le titre spécifié.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>titre</strong> (<em>str</em>) – Titre du chapitre.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MiniFlightRadar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MiniFlightRadar</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="DataBase.html">DataBase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interface.html">Interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opensky_api.html">telechargement_base_de_donees module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telechargementBaseDonnee.html">opensky_api module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CarbonEmissions.html">CarbonEmission module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PDF_generateur module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MiniFlightRadar</a><ul>
+      <li>Previous: <a href="CarbonEmissions.html" title="previous chapter">CarbonEmission module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Martin Grangé, Emilio Scottu, Lou-Anne Vilette.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/Pdf_generateur.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DataBase module &#8212; MiniFlightRadar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Interface module" href="Interface.html" />
+    <link rel="prev" title="MiniFlightRadar" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-FlightRadar.DataBase.DataBase">
+<span id="database-module"></span><h1>DataBase module<a class="headerlink" href="#module-FlightRadar.DataBase.DataBase" title="Link to this heading">¶</a></h1>
+<p>Programme de récupération et traitement des bases de données utilisées</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.aircraft_emission">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">aircraft_emission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduced_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.aircraft_emission" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction fournissant les caractéristiques d’un modèle d’avion reduced_model, nécessaires pour calculer les émissions
+CO2 par passager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reduced_model</strong> (<em>str</em>) – Abbréviation du modèle de l’avion</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame d’une ligne contenant les caractéristiques de l’avion du vol en question</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.airplane_traj">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">airplane_traj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.airplane_traj" title="Link to this definition">¶</a></dt>
+<dd><p>Permet d’obtenir grâce à l’api d’OpenSky le trajet d’un certain vol du fichier ‘flights_data.csv’ identifié par son
+index. La trajectoire est caractérisée par :</p>
+<div class="line-block">
+<div class="line">-temps : int - temps du waypoint donné en UNIX</div>
+<div class="line">-latitude : float - latitude géographique en dixième de degré</div>
+<div class="line">-longitude : float - longitude géographique en dixième de degré</div>
+<div class="line">-altitude barométrique : float - altitude barométrique en mètre</div>
+<div class="line">-cap vrai : float - cap vrai de l’avion en dixième de degré (nord = 0°)</div>
+<div class="line">-état : bool - état au sol de l’avion : True → au sol, False → pas au sol</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> – Index de l’avion dans le fichier ‘flights_data.csv’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Liste de liste, de la forme : [‘temps’, ‘latitude’, ‘longitude’, ‘altitude barométrique’, ‘cap vrai’, ‘état
+‘]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Liste Python</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.compagnie">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">compagnie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.compagnie" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction qui associe à chaque vol du DataFrame en entrée sa compagnie. La base de donnée ‘callsign.csv’ (créée pour
+le projet) est utilisée, elle fait le lien entre les 3 premières lettres du callsign à la compagnie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – DataFrame contenant au moins le callsign des vols</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame d’entrée avec une nouvelle colonne ‘compagnie’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.easa">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">easa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.easa" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction qui associe à chaque vol du DataFrame en entrée le numéro UID de l’easa de son moteur. La base de donnée
+‘easaEmission.csv’ (fournie par l’EASA) est utilisée. Elle contient les différentes émissions d’un grand nombre de
+moteurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – DataFrame contenant au moins des moteurs</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame d’entrée avec une nouvelle colonne ‘uid’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.engine_emission">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">engine_emission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.engine_emission" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction fournissant les caractéristiques données par l’EASA du moteur du vol à l’indice ‘index’ du DataFrame
+d’entrée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uid</strong> (<em>str</em>) – Numéro uid unique au moteur</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame d’une ligne contenant les caractéristiques du moteur du vol en question</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.faa">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">faa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.faa" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction comparant croisant la data frame en entrée avec la base de donnée de la FAA.
+Cela permet de stocker uniquement les avions immatriculés aux États-Unis.</p>
+<p>Utilisation des bases de données :</p>
+<div class="line-block">
+<div class="line">-MASTER.csv (fournie par la FAA) : contient le numéro oaci de tous les appareils immatriculés aux États-Unis, leur
+code ainsi que le code de leur moteur</div>
+<div class="line">-ACFTREF.csv (fournie par la FAA) : contient le code des avions et leur modèle correspondant</div>
+<div class="line">-ENGINE.csv (fournie par la FAA) : contient le code des moteurs et leur modèle correspondant</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – DataFrame contenant au moins une colonne ‘oaci24’</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>DataFrame comportant les données des avions immatriculés aux États-Unis. 4 colonnes sont ajoutées par
+rapport à la data frame en entrée :</p>
+<div class="line-block">
+<div class="line">-index : ajout d’un index unique à chaque vol (de 1 à la taille du DataFrame)</div>
+<div class="line">-code : code de l’avion (donné par la FAA)</div>
+<div class="line">-model : nom du modèle exact de l’appareil</div>
+<div class="line">-modelReduit : nom du modèle réduit aux 4 premiers caractères pour seulement identifier la famille de l’appareil</div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+<p>Un fichier ‘flights_data.csv’ est également sauvegardé. Il représente la base de donnée persistance à chaque requête</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.model_is_present">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">model_is_present</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduced_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.model_is_present" title="Link to this definition">¶</a></dt>
+<dd><p>Vérifie si un modèle d’avion reduced_model est présent dans la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reduced_model</strong> (<em>str</em>) – Abbréviation du modèle de l’avion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si le modèle est présent, False sinon.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.similar_engines">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">similar_engines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.similar_engines" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction retournant 5 moteurs de poussée similaire à celui correspondant au numéro uid en entrée.
+Chaque moteur est de marque différente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uid</strong> (<em>str</em>) – Numéro uid unique au moteur</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame de 5 lignes pour les 5 moteurs et 2 colonnes [uid, modelEngine]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.similar_models">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">similar_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reduced_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.similar_models" title="Link to this definition">¶</a></dt>
+<dd><p>Trouve des modèles d’avion similaires à un modèle d’avion reduced_model donné.</p>
+<p>Les modèles similaires sont ceux qui ont le même facteur de classe de sièges (CW) et une capacité de sièges (S)
+supérieure ou égale à celle du modèle réduit, à l’exception du modèle réduit lui-même.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reduced_model</strong> (<em>str</em>) – Abbréviation du modèle de l’avion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Liste des abréviations des modèles d’avion similaires.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.sortie">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">sortie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aeroport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.sortie" title="Link to this definition">¶</a></dt>
+<dd><p>Fonction qui enchaine dans le bon ordre toutes fonctions de traitements des bases de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aeroport</strong> (<em>str</em>) – Code OACI de l’aéroport en question</p></li>
+<li><p><strong>debut</strong> (<em>int</em>) – Début de l’intervalle de temps pour récupérer les vols en temps Unix</p></li>
+<li><p><strong>fin</strong> (<em>int</em>) – Fin de l’intervalle de temps pour récupérer les vols en temps Unix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame contenant toutes les informations sur les vols provenant et en direction de ‘aeroport’ dans
+l’intervalle de temps [debut, fin]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.DataBase.vol_aeroport">
+<span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.DataBase.</span></span><span class="sig-name descname"><span class="pre">vol_aeroport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aeroport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.DataBase.vol_aeroport" title="Link to this definition">¶</a></dt>
+<dd><p>Utilisation de l’API de OpenSky pour récupérer et stocker dans une data frame les informations suivantes :</p>
+<div class="line-block">
+<div class="line">-‘callsign’ : Numéro donné à l’appareil par la compagnie aérienne</div>
+<div class="line">-‘estArrivalAirport’ : Code de l’aéroport d’arrivée</div>
+<div class="line">-‘estDepartureAirport’ : Code de l’aéroport de départ</div>
+<div class="line">-‘icao24’ : Numéro unique donné à l’appareil par l’OACI</div>
+<div class="line">-‘firstSeen’ : temps en UNIX pour laquelle l’avion a été vu la première fois</div>
+<div class="line">-‘lastSeen’ : temps en UNIX pour laquelle l’avion a été vu la dernière fois</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>aeroport</strong> (<em>str</em>) – code OACI de l’aéroport en question</p></li>
+<li><p><strong>debut</strong> (<em>int</em>) – début de l’intervalle de temps pour récupérer les vols en temps Unix</p></li>
+<li><p><strong>fin</strong> (<em>int</em>) – fin de l’intervalle de temps pour récupérer les vols en temps Unix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame contenant les données des vols de départ ou arrivée ‘aéroport’. De la forme :
+[‘callsign’,’estArrivalAirport’, ‘estDepartureAirport’, ‘icao24’, ‘firstSeen’, ‘lastSeen’]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MiniFlightRadar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MiniFlightRadar</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">DataBase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interface.html">Interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opensky_api.html">opensky_api module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MiniFlightRadar</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">MiniFlightRadar</a></li>
+      <li>Next: <a href="Interface.html" title="next chapter">Interface module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Martin Grangé, Emilio Scottu, Lou-Anne Vilette.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/DataBase.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

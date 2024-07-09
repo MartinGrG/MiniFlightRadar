@@ -1,0 +1,7 @@
+CarbonEmission module
+=====================
+
+.. automodule:: FlightRadar.CO2calculator.CarbonEmissions
+   :members:
+   :undoc-members:
+   :show-inheritance:

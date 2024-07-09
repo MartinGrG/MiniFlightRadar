@@ -1,0 +1,7 @@
+PDF_generateur module
+=====================
+
+.. automodule:: FlightRadar.PDFgenerator.Pdf_generateur
+   :members:
+   :undoc-members:
+   :show-inheritance:

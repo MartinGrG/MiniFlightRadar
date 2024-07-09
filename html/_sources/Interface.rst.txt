@@ -1,0 +1,7 @@
+Interface module
+================
+
+.. automodule:: FlightRadar.Interface.Interface
+   :members:
+   :undoc-members:
+   :show-inheritance:

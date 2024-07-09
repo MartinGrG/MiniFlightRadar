@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>telechargement_base_de_donees module &#8212; MiniFlightRadar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="opensky_api module" href="telechargementBaseDonnee.html" />
+    <link rel="prev" title="main module" href="main.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="telechargement-base-de-donees-module">
+<h1>telechargement_base_de_donees module<a class="headerlink" href="#telechargement-base-de-donees-module" title="Link to this heading">¶</a></h1>
+<dl class="py class" id="module-FlightRadar.DataBase.opensky_api">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.FlightData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">FlightData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.FlightData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents data of certain flight. It has the following fields:</p>
+<div class="line-block">
+<div class="line"><strong>icao24</strong>: <cite>str</cite> - Unique ICAO 24-bit address of the transponder in hex string representation.
+All letters are lower case.</div>
+<div class="line"><strong>firstSeen</strong>: <cite>int</cite> - Estimated time of departure for the flight as Unix time (seconds since epoch).</div>
+<div class="line"><strong>estDepartureAirport</strong>: <cite>str</cite> - ICAO code of the estimated departure airport.
+Can be null if the airport could not be identified.</div>
+<div class="line"><strong>lastSeen</strong>: <cite>int</cite> - Estimated time of arrival for the flight as Unix time (seconds since epoch).</div>
+<div class="line"><strong>estArrivalAirport</strong>: <cite>str</cite> - ICAO code of the estimated arrival airport.
+Can be null if the airport could not be identified.</div>
+<div class="line"><strong>callsign</strong>: <cite>str</cite> - Callsign of the vehicle (8 chars). Can be null if no callsign has been received.
+If the vehicle transmits multiple callsigns during the flight, we take the one seen most frequently.</div>
+<div class="line"><strong>estDepartureAirportHorizDistance</strong>: <cite>int</cite> - Horizontal distance of the last received airborne position to the
+estimated departure airport in meters.</div>
+<div class="line"><strong>estDepartureAirportVertDistance</strong>: <cite>int</cite> - Vertical distance of the last received airborne position to the
+estimated departure airport in meters.</div>
+<div class="line"><strong>estArrivalAirportHorizDistance</strong>: <cite>int</cite> - Horizontal distance of the last received airborne position to the
+estimated arrival airport in meters.</div>
+<div class="line"><strong>estArrivalAirportVertDistance</strong>: <cite>int</cite> - Vertical distance of the last received airborne position to the
+estimated arrival airport in meters.</div>
+<div class="line"><strong>departureAirportCandidatesCount</strong>: <cite>int</cite> - Number of other possible departure airports.
+These are airports in short distance to estDepartureAirport.</div>
+<div class="line"><strong>arrivalAirportCandidatesCount</strong>: <cite>int</cite> - Number of other possible departure airports.</div>
+</div>
+<p>These are airports in short distance to estArrivalAirport.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.FlightData.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['icao24',</span> <span class="pre">'firstSeen',</span> <span class="pre">'estDepartureAirport',</span> <span class="pre">'lastSeen',</span> <span class="pre">'estArrivalAirport',</span> <span class="pre">'callsign',</span> <span class="pre">'estDepartureAirportHorizDistance',</span> <span class="pre">'estDepartureAirportVertDistance',</span> <span class="pre">'estArrivalAirportHorizDistance',</span> <span class="pre">'estArrivalAirportVertDistance',</span> <span class="pre">'departureAirportCandidatesCount',</span> <span class="pre">'arrivalAirportCandidatesCount']</span></em><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.FlightData.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.FlightTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">FlightTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.FlightTrack" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents the trajectory for a certain aircraft at a given time.:</p>
+<div class="line-block">
+<div class="line"><strong>icao24</strong>: <cite>str</cite> - Unique ICAO 24-bit address of the transponder in lower case hex string representation.</div>
+<div class="line"><strong>startTime</strong>: <cite>int</cite> - Time of the first waypoint in seconds since epoch (Unix time).</div>
+<div class="line"><strong>endTime</strong>: <cite>int</cite> - Time of the last waypoint in seconds since epoch (Unix time).</div>
+<div class="line"><strong>calllsign</strong>: <cite>str</cite> - Callsign (8 characters) that holds for the whole track. Can be null.</div>
+<div class="line"><strong>path</strong>: <cite>list</cite> [<cite>Waypoint</cite>] - waypoints of the trajectory.</div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">OpenSkyApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main class of the OpenSky Network API. Instances retrieve data from OpenSky via HTTP.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_arrivals_by_airport">
+<span class="sig-name descname"><span class="pre">get_arrivals_by_airport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_arrivals_by_airport" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves flights for a certain airport which arrived within a given time interval [begin, end].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airport</strong> (<em>str</em>) – ICAO identier for the airport.</p></li>
+<li><p><strong>begin</strong> (<em>int</em>) – Start of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of FlightData objects if request was successful, None otherwise..</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.FlightData" title="FlightRadar.DataBase.opensky_api.FlightData">FlightData</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_departures_by_airport">
+<span class="sig-name descname"><span class="pre">get_departures_by_airport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_departures_by_airport" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves flights for a certain airport which arrived within a given time interval [begin, end].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airport</strong> (<em>str</em>) – ICAO identier for the airport.</p></li>
+<li><p><strong>begin</strong> (<em>int</em>) – Start of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of FlightData objects if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.FlightData" title="FlightRadar.DataBase.opensky_api.FlightData">FlightData</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_flights_by_aircraft">
+<span class="sig-name descname"><span class="pre">get_flights_by_aircraft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">icao24</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_flights_by_aircraft" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves data of flights for certain aircraft and time interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>icao24</strong> (<em>str</em>) – Unique ICAO 24-bit address of the transponder in hex string representation.
+All letters need to be lower case.</p></li>
+<li><p><strong>begin</strong> (<em>int</em>) – Start of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of FlightData objects if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.FlightData" title="FlightRadar.DataBase.opensky_api.FlightData">FlightData</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_flights_from_interval">
+<span class="sig-name descname"><span class="pre">get_flights_from_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">begin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_flights_from_interval" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves data of flights for certain time interval [begin, end].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>begin</strong> (<em>int</em>) – Start of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End of time interval to retrieve flights for as Unix time (seconds since epoch).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of FlightData objects if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.FlightData" title="FlightRadar.DataBase.opensky_api.FlightData">FlightData</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_my_states">
+<span class="sig-name descname"><span class="pre">get_my_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icao24</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_my_states" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve state vectors for your own sensors. Authentication is required for this operation.
+If time = 0 the most recent ones are taken. Optional filters may be applied for ICAO24 addresses and sensor
+serial numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_secs</strong> (<em>int</em>) – time as Unix time stamp (seconds since epoch) or datetime. The datetime must be in UTC!</p></li>
+<li><p><strong>icao24</strong> (<em>str</em>) – optionally retrieve only state vectors for the given ICAO24 address(es).
+The parameter can either be a single address as str or an array of str containing multiple addresses.</p></li>
+<li><p><strong>serials</strong> (<em>int</em>) – optionally retrieve only states of vehicles as seen by the given sensor(s).
+The parameter can either be a single sensor serial number (int) or a list of serial numbers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OpenSkyStates if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.OpenSkyStates" title="FlightRadar.DataBase.opensky_api.OpenSkyStates">OpenSkyStates</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_states">
+<span class="sig-name descname"><span class="pre">get_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icao24</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_states" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve state vectors for a given time. If time = 0 the most recent ones are taken.
+Optional filters may be applied for ICAO24 addresses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_secs</strong> (<em>int</em>) – time as Unix time stamp (seconds since epoch) or datetime. The datetime must be in UTC!</p></li>
+<li><p><strong>icao24</strong> (<em>str</em>) – optionally retrieve only state vectors for the given ICAO24 address(es).
+The parameter can either be a single address as str or an array of str containing multiple addresses.</p></li>
+<li><p><strong>bbox</strong> (<em>tuple</em>) – optionally retrieve state vectors within a bounding box.
+The bbox must be a tuple of exactly four values [min_latitude, max_latitude, min_longitude, max_longitude]
+each in WGS84 decimal degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OpenSkyStates if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.OpenSkyStates" title="FlightRadar.DataBase.opensky_api.OpenSkyStates">OpenSkyStates</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyApi.get_track_by_aircraft">
+<span class="sig-name descname"><span class="pre">get_track_by_aircraft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">icao24</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyApi.get_track_by_aircraft" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the trajectory for a certain aircraft at a given time.
+<strong>The tracks endpoint is purely experimental.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>icao24</strong> (<em>str</em>) – Unique ICAO 24-bit address of the transponder in hex string representation.
+All letters need to be lower case.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Unix time in seconds since epoch. It can be any time between start and end of a known flight.
+If time = 0, get the live track if there is any flight ongoing for the given aircraft.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FlightTrack object if request was successful, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlightRadar.DataBase.opensky_api.FlightTrack" title="FlightRadar.DataBase.opensky_api.FlightTrack">FlightTrack</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.OpenSkyStates">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">OpenSkyStates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.OpenSkyStates" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the state of the airspace as seen by OpenSky at a particular time. It has the following fields:</p>
+<div class="line-block">
+<div class="line"><strong>time</strong>: <cite>int</cite> - in seconds since epoch (Unix time stamp). Gives the validity period of all states.
+All vectors represent the state of a vehicle with the interval <span class="math notranslate nohighlight">\([time - 1, time]\)</span>.</div>
+<div class="line"><strong>states</strong>: <cite>list</cite> [<cite>StateVector</cite>] - a list of <cite>StateVector</cite> or is None if there have been no states received.</div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.StateVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">StateVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.StateVector" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the state of a vehicle at a particular time. It has the following fields:</p>
+<div class="line-block">
+<div class="line"><strong>icao24</strong>: <cite>str</cite> - ICAO24 address of the transmitter in hex string representation.</div>
+<div class="line"><strong>callsign</strong>: <cite>str</cite> - callsign of the vehicle. Can be None if no callsign has been received.</div>
+<div class="line"><strong>origin_country</strong>: <cite>str</cite> - inferred through the ICAO24 address.</div>
+<div class="line"><strong>time_position</strong>: <cite>int</cite> - seconds since epoch of last position report. Can be None if there was no position
+report received by OpenSky within 15s before.</div>
+<div class="line"><strong>last_contact</strong>: <cite>int</cite> - seconds since epoch of last received message from this transponder.</div>
+<div class="line"><strong>longitude</strong>: <cite>float</cite> - in ellipsoidal coordinates (WGS-84) and degrees. Can be None.</div>
+<div class="line"><strong>latitude</strong>: <cite>float</cite> - in ellipsoidal coordinates (WGS-84) and degrees. Can be None.</div>
+<div class="line"><strong>geo_altitude</strong>: <cite>float</cite> - geometric altitude in meters. Can be None.</div>
+<div class="line"><strong>on_ground</strong>: <cite>bool</cite> - true if aircraft is on ground (sends ADS-B surface position reports).</div>
+<div class="line"><strong>velocity</strong>: <cite>float</cite> - over ground in m/s. Can be None if information not present.</div>
+<div class="line"><strong>true_track</strong>: <cite>float</cite> - in decimal degrees (0 is north). Can be None if information not present.</div>
+<div class="line"><strong>vertical_rate</strong>: <cite>float</cite> - in m/s, incline is positive, decline negative. Can be None if information not
+present.</div>
+<div class="line"><strong>sensors</strong>: <cite>list</cite> [<cite>int</cite>] - serial numbers of sensors which received messages from the vehicle within
+the validity period of this state vector. Can be None if no filtering for sensor has been requested.</div>
+<div class="line"><strong>baro_altitude</strong>: <cite>float</cite> - barometric altitude in meters. Can be None.</div>
+<div class="line"><strong>squawk</strong>: <cite>str</cite> - transponder code aka Squawk. Can be None.</div>
+<div class="line"><strong>spi</strong>: <cite>bool</cite> - special purpose indicator.</div>
+<div class="line"><strong>position_source</strong>: <cite>int</cite> - origin of this state’s position: 0 = ADS-B, 1 = ASTERIX, 2 = MLAT, 3 = FLARM</div>
+<div class="line"><strong>category</strong>: <cite>int</cite> - aircraft category: 0 = No information at all, 1 = No ADS-B Emitter Category Information,
+2 = Light (&lt; 15500 lbs), 3 = Small (15500 to 75000 lbs), 4 = Large (75000 to 300000 lbs),
+5 = High Vortex Large (aircraft such as B-757), 6 = Heavy (&gt; 300000 lbs),
+7 = High Performance (&gt; 5g acceleration and 400 kts), 8 = Rotorcraft, 9 = Glider / sailplane,
+10 = Lighter-than-air, 11 = Parachutist / Skydiver, 12 = Ultralight / hang-glider / paraglider,
+13 = Reserved, 14 = Unmanned Aerial Vehicle, 15 = Space / Trans-atmospheric vehicle,
+16 = Surface Vehicle – Emergency Vehicle, 17 = Surface Vehicle – Service Vehicle,
+18 = Point Obstacle (includes tethered balloons), 19 = Cluster Obstacle, 20 = Line Obstacle.</div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.StateVector.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['icao24',</span> <span class="pre">'callsign',</span> <span class="pre">'origin_country',</span> <span class="pre">'time_position',</span> <span class="pre">'last_contact',</span> <span class="pre">'longitude',</span> <span class="pre">'latitude',</span> <span class="pre">'baro_altitude',</span> <span class="pre">'on_ground',</span> <span class="pre">'velocity',</span> <span class="pre">'true_track',</span> <span class="pre">'vertical_rate',</span> <span class="pre">'sensors',</span> <span class="pre">'geo_altitude',</span> <span class="pre">'squawk',</span> <span class="pre">'spi',</span> <span class="pre">'position_source',</span> <span class="pre">'category']</span></em><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.StateVector.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.Waypoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FlightRadar.DataBase.opensky_api.</span></span><span class="sig-name descname"><span class="pre">Waypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.Waypoint" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents the single waypoint that is a basic part of flight trajectory:</p>
+<div class="line-block">
+<div class="line"><strong>time</strong>: <cite>int</cite> - Time which the given waypoint is associated with in seconds since epoch (Unix time).</div>
+<div class="line"><strong>latitude</strong>: <cite>float</cite> - WGS-84 latitude in decimal degrees. Can be null.</div>
+<div class="line"><strong>longitude</strong>: <cite>float</cite> - WGS-84 longitude in decimal degrees. Can be null.</div>
+<div class="line"><strong>baro_altitude</strong>: <cite>float</cite> - Barometric altitude in meters. Can be null.</div>
+<div class="line"><strong>true_track</strong>: <cite>float</cite> - True track in decimal degrees clockwise from north (north=0°). Can be null.</div>
+<div class="line"><strong>on_ground</strong>: <cite>bool</cite> - Boolean value which indicates if the position was retrieved from a surface
+position report.</div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlightRadar.DataBase.opensky_api.Waypoint.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['time',</span> <span class="pre">'latitude',</span> <span class="pre">'longitude',</span> <span class="pre">'baro_altitude',</span> <span class="pre">'true_track',</span> <span class="pre">'on_ground']</span></em><a class="headerlink" href="#FlightRadar.DataBase.opensky_api.Waypoint.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MiniFlightRadar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MiniFlightRadar</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="DataBase.html">DataBase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interface.html">Interface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">telechargement_base_de_donees module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="telechargementBaseDonnee.html">opensky_api module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MiniFlightRadar</a><ul>
+      <li>Previous: <a href="main.html" title="previous chapter">main module</a></li>
+      <li>Next: <a href="telechargementBaseDonnee.html" title="next chapter">opensky_api module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Martin Grangé, Emilio Scottu, Lou-Anne Vilette.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/opensky_api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
