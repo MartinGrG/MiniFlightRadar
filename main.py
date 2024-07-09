@@ -1,3 +1,5 @@
+"""Fichier à lancer pour démarrer l'application"""
+
 from FlightRadar.Interface import Interface
 from FlightRadar.DataBase import telechargementBaseDonnee
 
