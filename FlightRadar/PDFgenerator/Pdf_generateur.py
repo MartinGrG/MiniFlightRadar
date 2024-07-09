@@ -3,6 +3,24 @@ from fpdf import FPDF
 import matplotlib.pyplot as plt
 
 class Pdf(FPDF):
+    """
+    Cette classe étend les fonctionnalités de FPDF pour générer un document PDF personnalisé.
+
+    :param titre: Titre du document PDF, par défaut "Titre par défaut".
+    :type titre: Str
+    :param infos_vol: Informations sur le vol sous forme de liste, contenant différents détails
+            comme l'index, le callsign, les dates de départ et d'arrivée, la compagnie, le modèle d'avion, etc.
+    :type infos_vol: list
+    :param infos_emission: Informations sur les émissions de carbone, comprenant des données sur les moteurs,
+            les émissions associées à chaque moteur, les modèles d'avions, etc.
+    :type infos_emission: list
+    :param graphique_emission: Chemin vers le graphique des émissions de carbone.
+    :type graphique_emission: Str
+    :param map_chemin: Chemin vers l'image de la carte capturée.
+    :type map_chemin: Str
+    :param classe: Classe de siège pour laquelle les émissions sont calculées, par exemple économique, affaires, etc.
+    :type classe: Str
+    """
     titre = "Titre par défaut"
     infos_vol = ["index", "callsign", "AAAA", "AAAA", "icao24", "aaaa/mm/jj 13:34:se", "aaaa/mm/jj 15:23:se",
                  "compagnie", "codeModel", "codeEngine", "model", "numberEngine", "modelReduit", "modelEngine", "uid",
@@ -49,18 +67,24 @@ class Pdf(FPDF):
         :returns: Chemin du fichier du graphique généré.
         :rtype: Str
         """
+
         x = self.infos_emission[1]
         y = self.infos_emission[2]
         plt.title(f"émission pour le vol sélectionné\navec différents modèles et moteurs d'avions")
         plt.xlabel("Noms des moteurs")
         plt.ylabel("Valeurs d'émission CO2 par personne (t)")
 
+        #on génère les barres d'émission CO2 pour chaque modèle d'avion.
         for i in range(len(self.infos_emission[0])) :
             x[i] = [f'({self.infos_emission[0][i]}){item}' for item in x[i]]
             y[i] = [float(y) for y in y[i]]
             plt.bar(x[i], y[i], label=self.infos_emission[0][i])
+
+        # On écrit les labels abscisses de travers
         plt.xticks(rotation=15)
         plt.legend()
+
+        # On sauvegarde le graphique pour l'afficher par la suite dans le pdf.
         plt.savefig("FlightRadar/Interface/graphique_emission.png")
         plt.close()
         return "FlightRadar/Interface/graphique_emission.png"
@@ -111,11 +135,13 @@ class Pdf(FPDF):
         """
         taille_max = 45
 
+        # D'abord, on écrit les deux colonnes du tableau modèle_Engine et émission
         self.set_font('helvetica', 'B', 10)
         self.cell(taille_max, 7, "moteurs", 1, align='C')
         self.cell(taille_max, 7, "émission t(CO2)/pers", 1, align='C')
         self.set_font('helvetica', '', 10)
         self.ln()
+        # Pour chaque modèle, on va afficher les émissions en fonction des moteurs
         for i in range(len(donnees[0])):
             self.cell(taille_max * 2, 7, str(donnees[0][i]), 1, align='C')
             self.set_font('helvetica', '', 10)
@@ -169,6 +195,7 @@ class Pdf(FPDF):
         # Section d'information
         long_page = self.w - 12.7 - 12.7
 
+        # création d'une zone délimitée par plusieurs rectangles
         self.set_font('helvetica', '', 11)
         x_i = self.x
         y_i = self.y
@@ -208,7 +235,8 @@ class Pdf(FPDF):
                   x_f - x_i - (long_page - self.get_string_width(self.infos_vol[9]) - 10), y_f - y_i)
 
         self.ln(5)
-        # Image
+
+        # Image mapView
 
         x_i = self.x
         y_i = self.y
@@ -221,13 +249,16 @@ class Pdf(FPDF):
 
         # Séparateur
         self.ajouter_separateur()
+
         # Nouveau titre
         self.titre_chapitre(f'Emissions CO2 du vol en classe {self.classe} (en t par passager)')
         y_i = self.y
-        # Image
+
+        # Image : Graphique
         self.ajouter_image(self.generer_graphique(), self.w-108, y_i, 105)
 
         self.ln(1)
+
         # Tableau
         donnees = self.infos_emission
         self.ajouter_tableau(donnees)

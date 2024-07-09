@@ -22,8 +22,16 @@ customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark",
 
 
 class Interface(customtkinter.CTk):
+    """
+        Cette classe représente l'interface graphique principale de l'application.
+    """
 
     def __init__(self):
+        """
+        Initialise l'interface graphique.
+
+        Configurations initiales, création des widgets, et configuration de la disposition.
+        """
         super().__init__()
 
         self.liste_vols = pd.DataFrame({})
@@ -366,6 +374,7 @@ class Interface(customtkinter.CTk):
         self.map_widget.set_position((max(traj)[0] + min(traj)[0]) / 2,
                                      (max(traj, key=lambda x: x[1])[1] + min(traj, key=lambda x: x[1])[1]) / 2)
 
+        # Gestion de l'affichage de l'altitude par couleur
         for i in range(len(traj) - 1):
             altitude_moy = (self.traj[i][3] + self.traj[i + 1][3]) / 2
             couleur_R = int(459 - (204 / 6250) * altitude_moy)
@@ -427,6 +436,7 @@ class Interface(customtkinter.CTk):
                                                        tag="button",
                                                        font=('Arial', 11, "bold"),
                                                        text=str(x) + "m")
+
         # Mise à jour de l'encadré montrant les informations du vol
         self.map_widget.canvas.itemconfig(self.canvas_rect, fill="gray25", outline="gray25")
         self.map_widget.canvas.itemconfig(self.canvas_text,
@@ -558,6 +568,7 @@ class Interface(customtkinter.CTk):
         seat_class = choice
         self.liste_emissions = [[], [[]], [[]]]
 
+        # Update de l'émission du vol sélectionné
         value_emmi = format(round(self.calculer_carbon(self.liste_vols["modelReduit"].values[self.index_vol - 1],
                                                 calcule_distance(self.traj), calcule_duree(self.traj),
                                                 self.liste_vols["uid"].values[self.index_vol - 1],
@@ -568,6 +579,9 @@ class Interface(customtkinter.CTk):
         self.liste_emissions[1][0].append(self.liste_vols["modelEngine"].values[self.index_vol - 1])
         self.liste_emissions[2][0].append(value_emmi)
 
+        # Pour chaque modèle (chaque tab), on vient update le texte de chaque checkBox pour afficher
+        # la nouvelle émission liée à la classe du siège.On inscrit les nouvelles émissions dans la liste
+        # self.liste_emissions
         j = 0
         for modele in self.liste_modele_sim:
             i = 0
@@ -599,6 +613,7 @@ class Interface(customtkinter.CTk):
         Enfin, elle génère le PDF correspondant.
 
         """
+        # On exporte que les valeurs portées par des checkBoxes cochées.
         compteur = 0
         liste_emission = [self.liste_emissions[0], [[self.liste_emissions[1][0][0]]], [[self.liste_emissions[2][0][0]]]]
         j = 0
@@ -614,6 +629,8 @@ class Interface(customtkinter.CTk):
             liste_emission[2].append([])
             j += 1
 
+        # S'il y a plus de 5 checkboxes, on va envoyer les 5 plus opti parmi les modèles,
+        # on essaye de montre le meilleur pour chacun des modèles d'avions.
         somme_totale = compteur
         while somme_totale > 6 :
             somme_totale = 0
@@ -631,6 +648,7 @@ class Interface(customtkinter.CTk):
 
             del liste_emission[1][plus_grande_len][indice]
             del liste_emission[2][plus_grande_len][indice]
+        # on exporte la map et on lance la création du rapport de vol sous format PDF.
         self.save_map_as_png("FlightRadar/Interface/map.png")
         pdf = Pdf(map_chemin="FlightRadar/Interface/map.png", classe = self.optionmenu_seat_class.get())
         vol = self.liste_vols.values[self.index_vol - 1]
@@ -665,6 +683,7 @@ class Interface(customtkinter.CTk):
 
         :param str file_path: Chemin complet du fichier où l'image PNG sera enregistrée.
         """
+        # On réalise une capture d'écran de la zone de mapView.
         widget = self.map_widget
         x = widget.winfo_rootx()
         y = widget.winfo_rooty()
@@ -697,6 +716,7 @@ def calcule_distance(traj):
     :return: La distance totale parcourue en kilomètres.
     :rtype: Float
     """
+    # Application directe de la formule d'Haversine entre chaque point de la trajectoire
     somme = 0
     for i in range(len(traj) - 1):
         lat1 = traj[i][1]
