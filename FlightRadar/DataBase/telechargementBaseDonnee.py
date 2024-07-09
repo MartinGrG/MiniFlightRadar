@@ -12,6 +12,17 @@ import pandas as pd
 
 # Fonction pour télécharger un fichier avec des tentatives de réessai
 def download_file(url, destination_file_path, ssl_context, max_retries=5):
+    """
+    Télécharge un fichier depuis une URL donnée et l'enregistre dans un chemin de fichier de destination spécifié.
+
+    Cette fonction tente de télécharger un fichier en utilisant une connexion sécurisée, avec un maximum de tentatives spécifiées
+    en cas d'échec. Elle affiche également la progression du téléchargement.
+
+    :param str url: URL du fichier à télécharger.
+    :param str destination_file_path: Chemin du fichier où le contenu téléchargé sera enregistré.
+    :param ssl.SSLContext ssl_context: Contexte SSL utilisé pour sécuriser la connexion.
+    :param int max_retries: Nombre maximum de tentatives en cas d'échec du téléchargement. Par défaut, il est de 5.
+    """
     attempt = 0
     while attempt < max_retries:
         try:
